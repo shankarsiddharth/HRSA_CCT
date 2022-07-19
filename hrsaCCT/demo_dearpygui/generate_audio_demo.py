@@ -8,7 +8,7 @@ from google.oauth2 import service_account
 from google.cloud import texttospeech
 
 # Get Credentials from JSON file
-credentials = service_account.Credentials.from_service_account_file("decent-lambda-354120-0d9c66891965.json")
+credentials = service_account.Credentials.from_service_account_file("../decent-lambda-354120-0d9c66891965.json")
 # Instantiates a client
 client = texttospeech.TextToSpeechClient(credentials=credentials)
 
@@ -17,7 +17,7 @@ def generate_standard():
 
     file_content = ""
 
-    with open('tts.txt') as f:
+    with open('../tts.txt') as f:
         file_content = f.read()
 
 
@@ -46,7 +46,7 @@ def generate_standard():
     )
 
     # The response's audio_content is binary.
-    with open("output_standard.mp3", "wb") as out:
+    with open("../output_standard.mp3", "wb") as out:
         # Write the response to the output file.
         out.write(response.audio_content)
         print('Audio content written to file "output.mp3"')
@@ -55,7 +55,7 @@ def generate_standard():
 def generate_wavenet():
 
     file_content = ""
-    with open('tts.txt') as f:
+    with open('../tts.txt') as f:
         file_content = f.read()
 
 
@@ -82,7 +82,7 @@ def generate_wavenet():
     )
 
     # The response's audio_content is binary.
-    with open("output_wavenet.mp3", "wb") as out:
+    with open("../output_wavenet.mp3", "wb") as out:
         # Write the response to the output file.
         out.write(response.audio_content)
         print('Audio content written to file "output.mp3"')
