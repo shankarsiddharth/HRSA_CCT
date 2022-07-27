@@ -387,14 +387,15 @@ def translate_text(text="I want to translate this text.", project_id="decent-lam
         return translation.translated_text
 
 def callback_on_translate_text_clicked():
-    global new_data_path
+    global new_data_path_language_code
+    global source_scenario_path
     #copy directory
-    print(data_path)
-    print(new_data_path)
-    copytree(data_path, new_data_path, ignore=ignore_patterns('*.mp3', '*.wav'))
+    print(source_scenario_path)
+    print(new_data_path_language_code)
+    copytree(source_scenario_path, new_data_path_language_code, ignore=ignore_patterns('*.mp3', '*.wav'))
     #find ink files
     ink_files_list = []
-    for root, dirs, files in os.walk(new_data_path):
+    for root, dirs, files in os.walk(new_data_path_language_code):
         for file in files:
             if file.endswith(".ink"):
                 pathToAdd = os.path.join(root, file)
