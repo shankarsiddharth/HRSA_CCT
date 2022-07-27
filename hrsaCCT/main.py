@@ -1,9 +1,14 @@
+from email.policy import default
 import os
 import json
 import subprocess
+from unicodedata import name
 import dearpygui.dearpygui as dpg
 from google.oauth2 import service_account
 from google.cloud import texttospeech
+from google.cloud import translate
+from shutil import copytree, ignore_patterns
+import re
 
 # TODO: Split into modules and change the global data variable to function return values
 
@@ -26,6 +31,7 @@ MAX_DIALOGUE_TEXT_CHARACTER_COUNT = 275  # 300 / 250
 credentials = service_account.Credentials.from_service_account_file("./decent-lambda-354120-0d9c66891965.json")
 # Instantiates a client
 client = texttospeech.TextToSpeechClient(credentials=credentials)
+clientTranslate = translate.TranslationServiceClient(credentials=credentials)
 
 # GUI Element Tags
 HRSA_CCT_TOOL: str = "HRSA_CCT_TOOL"
@@ -40,6 +46,14 @@ SHOW_FILE_DIALOG_BUTTON_SCENARIO_FOLDER: str = "SHOW_FILE_DIALOG_BUTTON_SCENARIO
 DATA_DIRECTORY_PATH_TEXT: str = "DATA_DIRECTORY_PATH_TEXT"
 SCENARIO_DIRECTORY_PATH_TEXT: str = "SCENARIO_DIRECTORY_PATH_TEXT"
 GENERATE_AUDIO_BUTTON: str = "GENERATE_AUDIO_BUTTON"
+FILE_DIALOG_FOR_NEW_DATA_FOLDER: str = "FILE_DIALOG_FOR_NEW_DATA_FOLDER"
+FILE_DIALOG_FOR_SOURCE_SCENARIO_FOLDER: str = "FILE_DIALOG_FOR_SOURCE_SCENARIO_FOLDER"
+SHOW_FILE_DIALOG_BUTTON_NEW_DATA_FOLDER: str = "SHOW_FILE_DIALOG_BUTTON_NEW_DATA_FOLDER"
+SHOW_FILE_DIALOG_BUTTON_SOURCE_SCENARIO_FOLDER: str = "SHOW_FILE_DIALOG_BUTTON_SOURCE_SCENARIO_FOLDER"
+NEW_DATA_DIRECTORY_PATH_TEXT: str = "NEW_DATA_DIRECTORY_PATH_TEXT"
+SOURCE_SCENARIO_DIRECTORY_PATH_TEXT: str = "SOURCE_SCENARIO_DIRECTORY_PATH_TEXT"
+TRANSLATE_TEXT_BUTTON: str = "TRANSLATE_TEXT_BUTTON"
+LANGUAGE_LISTBOX: str = "LANGUAGE_LISTBOX"
 
 # Global Variable
 data_path = ""
@@ -47,6 +61,16 @@ scenario_path = ""
 room_dialogue_data = dict()
 character_voice_config_data = dict()
 ink_file_path_list = []
+new_data_path = ""
+source_scenario_path = ""
+selected_language = "es"
+regStr = '\".*?\"'
+new_language_code = ""
+new_data_path_language_code = ""
+language_list = [
+    'en-US',
+    'es'
+]
 
 
 def create_scenario_folders(scenario_name, scenario_information_json_object) -> None:
@@ -100,7 +124,6 @@ def callback_on_data_folder_selected(sender, app_data):
     print(data_path)
     dpg.configure_item(DATA_DIRECTORY_PATH_TEXT, default_value=data_path)
 
-
 def callback_on_scenario_folder_selected(sender, app_data):
     print("Sender: ", sender)
     print("App Data: ", app_data)
@@ -109,7 +132,6 @@ def callback_on_scenario_folder_selected(sender, app_data):
     print(scenario_path)
     dpg.configure_item(SCENARIO_DIRECTORY_PATH_TEXT, default_value=scenario_path)
     dpg.configure_item(GENERATE_AUDIO_BUTTON, show=True)
-
 
 # def callback_on_select_data_folder_button_clicked():
 #     dpg.configure_item(FILE_DIALOG_FOR_DATA_FOLDER, show=True, modal=True)
@@ -319,6 +341,89 @@ def generate_audio_gc_tts(dialogue_text, audio_file_path, language_code, in_gend
         output_audio_file.write(response.audio_content)
         print("Audio File Written : ", audio_file_path)
 
+def callback_on_new_data_folder_selected(sender, app_data):
+    print("Sender: ", sender)
+    print("App Data: ", app_data)
+    global new_data_path
+    new_data_path = os.path.normpath(str(app_data['file_path_name']))
+    print(new_data_path)
+    dpg.configure_item(NEW_DATA_DIRECTORY_PATH_TEXT, default_value=new_data_path)
+    dpg.configure_item(LANGUAGE_LISTBOX, show=True)
+
+def callback_on_source_scenario_folder_selected(sender, app_data):
+    print("Sender: ", sender)
+    print("App Data: ", app_data)
+    global source_scenario_path
+    source_scenario_path = os.path.normpath(str(app_data['file_path_name']))
+    print(source_scenario_path)
+    dpg.configure_item(SOURCE_SCENARIO_DIRECTORY_PATH_TEXT, default_value=source_scenario_path)
+
+def set_new_language_code(sender):
+    global new_language_code
+    global new_data_path
+    global new_data_path_language_code
+    new_language_code = dpg.get_value(sender)
+    print(new_language_code)
+    new_data_path_language_code = os.path.normpath(new_data_path + '/' + new_language_code)
+    dpg.configure_item(NEW_DATA_DIRECTORY_PATH_TEXT, default_value=new_data_path_language_code)
+    dpg.configure_item(TRANSLATE_TEXT_BUTTON, show=True)
+
+
+def translate_text(text="I want to translate this text.", project_id="decent-lambda-354120", language="es"):
+    location = "global"
+    parent = f"projects/{project_id}/locations/{location}"
+
+    response = clientTranslate.translate_text(
+        request={
+            "parent": parent,
+            "contents": [text],
+            "mime_type": "text/plain",  # mime types: text/plain, text/html
+            "source_language_code": "en-US",
+            "target_language_code": language,
+        }
+    )
+
+    for translation in response.translations:
+        return translation.translated_text
+
+def callback_on_translate_text_clicked():
+    global new_data_path
+    #copy directory
+    print(data_path)
+    print(new_data_path)
+    copytree(data_path, new_data_path, ignore=ignore_patterns('*.mp3', '*.wav'))
+    #find ink files
+    ink_files_list = []
+    for root, dirs, files in os.walk(new_data_path):
+        for file in files:
+            if file.endswith(".ink"):
+                pathToAdd = os.path.join(root, file)
+                ink_files_list.append(pathToAdd)
+                print(pathToAdd)
+    #translate
+    dialogueList = []
+    for newFilePath in ink_files_list:
+        file_ink = open(newFilePath, 'r+')
+        lines = file_ink.readlines()
+        for line in lines:
+            dialogue = re.search(regStr, line)
+            if dialogue:
+                dialogueCheck = dialogue.group(0).replace('"', '')
+                if dialogueCheck not in dialogueList:
+                    dialogueList.append(dialogueCheck)
+
+        file_ink.seek(0,0)
+        data = file_ink.read()
+        #print(data) 
+        file_ink.close()
+        for dialogueItem in dialogueList:
+            translatedDialogue = translate_text(text=dialogueItem, language=selected_language)
+            #print(translatedDialogue)
+            data = data.replace(dialogueItem, translatedDialogue)
+        with open(newFilePath, 'w', encoding='utf-8') as file:
+            file.write(data)
+    print ("done!")
+
 
 def main() -> None:
     dpg.create_context()
@@ -344,6 +449,19 @@ def main() -> None:
                            callback=lambda s, a: callback_on_show_file_dialog_clicked(item_tag=FILE_DIALOG_FOR_SCENARIO_FOLDER))
             dpg.add_text(tag=SCENARIO_DIRECTORY_PATH_TEXT)
             dpg.add_button(tag=GENERATE_AUDIO_BUTTON, label="Generate Audio", show=False, callback=callback_on_generate_audio_clicked)
+            dpg.add_separator()
+
+        with dpg.collapsing_header(label="Choose a location to create the Translated Data Folder", default_open=True):
+            dpg.add_file_dialog(tag=FILE_DIALOG_FOR_SOURCE_SCENARIO_FOLDER, height=300, width=450, directory_selector=True, show=False, callback=callback_on_source_scenario_folder_selected)
+            dpg.add_button(tag=SHOW_FILE_DIALOG_BUTTON_SOURCE_SCENARIO_FOLDER, label="Select Source Scenario Folder",
+                           callback=lambda s, a: callback_on_show_file_dialog_clicked(item_tag=FILE_DIALOG_FOR_SOURCE_SCENARIO_FOLDER))
+            dpg.add_text(tag=SOURCE_SCENARIO_DIRECTORY_PATH_TEXT)
+            dpg.add_file_dialog(tag=FILE_DIALOG_FOR_NEW_DATA_FOLDER, height=300, width=450, directory_selector=True, show=False, callback=callback_on_new_data_folder_selected)
+            dpg.add_button(tag=SHOW_FILE_DIALOG_BUTTON_NEW_DATA_FOLDER, label="Select new location for Scenario Folder",
+                           callback=lambda s, a: callback_on_show_file_dialog_clicked(item_tag=FILE_DIALOG_FOR_NEW_DATA_FOLDER))
+            dpg.add_text(tag=NEW_DATA_DIRECTORY_PATH_TEXT)
+            dpg.add_listbox(tag=LANGUAGE_LISTBOX, label="Language", items=language_list, callback=set_new_language_code, show=False)
+            dpg.add_button(tag=TRANSLATE_TEXT_BUTTON, label="Translate Data", show=False, callback=callback_on_translate_text_clicked)
             dpg.add_separator()
 
     dpg.setup_dearpygui()
