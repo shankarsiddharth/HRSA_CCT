@@ -341,22 +341,17 @@ def generate_audio_gc_tts(dialogue_text, audio_file_path, language_code, in_gend
         output_audio_file.write(response.audio_content)
         print("Audio File Written : ", audio_file_path)
 
-def callback_on_new_data_folder_selected(sender, app_data):
-    print("Sender: ", sender)
-    print("App Data: ", app_data)
-    global new_data_path
-    new_data_path = os.path.normpath(str(app_data['file_path_name']))
-    print(new_data_path)
-    dpg.configure_item(NEW_DATA_DIRECTORY_PATH_TEXT, default_value=new_data_path)
-    dpg.configure_item(LANGUAGE_LISTBOX, show=True)
-
 def callback_on_source_scenario_folder_selected(sender, app_data):
     print("Sender: ", sender)
     print("App Data: ", app_data)
     global source_scenario_path
+    global new_data_path
     source_scenario_path = os.path.normpath(str(app_data['file_path_name']))
+    new_data_path = os.path.dirname(source_scenario_path)
     print(source_scenario_path)
     dpg.configure_item(SOURCE_SCENARIO_DIRECTORY_PATH_TEXT, default_value=source_scenario_path)
+    dpg.configure_item(NEW_DATA_DIRECTORY_PATH_TEXT, default_value=new_data_path)
+    dpg.configure_item(LANGUAGE_LISTBOX, show=True)
 
 def set_new_language_code(sender):
     global new_language_code
@@ -456,11 +451,8 @@ def main() -> None:
             dpg.add_file_dialog(tag=FILE_DIALOG_FOR_SOURCE_SCENARIO_FOLDER, height=300, width=450, directory_selector=True, show=False, callback=callback_on_source_scenario_folder_selected)
             dpg.add_button(tag=SHOW_FILE_DIALOG_BUTTON_SOURCE_SCENARIO_FOLDER, label="Select Source Scenario Folder",
                            callback=lambda s, a: callback_on_show_file_dialog_clicked(item_tag=FILE_DIALOG_FOR_SOURCE_SCENARIO_FOLDER))
-            dpg.add_text(tag=SOURCE_SCENARIO_DIRECTORY_PATH_TEXT)
-            dpg.add_file_dialog(tag=FILE_DIALOG_FOR_NEW_DATA_FOLDER, height=300, width=450, directory_selector=True, show=False, callback=callback_on_new_data_folder_selected)
-            dpg.add_button(tag=SHOW_FILE_DIALOG_BUTTON_NEW_DATA_FOLDER, label="Select new location for Scenario Folder",
-                           callback=lambda s, a: callback_on_show_file_dialog_clicked(item_tag=FILE_DIALOG_FOR_NEW_DATA_FOLDER))
-            dpg.add_text(tag=NEW_DATA_DIRECTORY_PATH_TEXT)
+            dpg.add_text(label="Source", tag=SOURCE_SCENARIO_DIRECTORY_PATH_TEXT)
+            dpg.add_text(label="Destination", tag=NEW_DATA_DIRECTORY_PATH_TEXT)
             dpg.add_listbox(tag=LANGUAGE_LISTBOX, label="Language", items=language_list, callback=set_new_language_code, show=False)
             dpg.add_button(tag=TRANSLATE_TEXT_BUTTON, label="Translate Data", show=False, callback=callback_on_translate_text_clicked)
             dpg.add_separator()
