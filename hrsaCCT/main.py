@@ -128,20 +128,28 @@ def main() -> None:
             dpg.add_separator()
 
         with dpg.collapsing_header(label="Choose the Scenario Folder for Audio Generation", default_open=True):
-            dpg.add_file_dialog(tag=audio_generation.FILE_DIALOG_FOR_SCENARIO_FOLDER, height=300, width=450, directory_selector=True, show=False, callback=audio_generation.callback_on_scenario_folder_selected)
+            dpg.add_file_dialog(tag=audio_generation.FILE_DIALOG_FOR_SCENARIO_FOLDER, height=300, width=450, directory_selector=True, show=False, 
+                            callback=audio_generation.callback_on_scenario_folder_selected)
             dpg.add_button(tag=audio_generation.SHOW_FILE_DIALOG_BUTTON_SCENARIO_FOLDER, label="Select Scenario Folder",
-                           callback=lambda s, a: callback_on_show_file_dialog_clicked(item_tag=audio_generation.FILE_DIALOG_FOR_SCENARIO_FOLDER))
+                            callback=lambda s, a: callback_on_show_file_dialog_clicked(item_tag=audio_generation.FILE_DIALOG_FOR_SCENARIO_FOLDER))
             dpg.add_text(tag=audio_generation.SCENARIO_DIRECTORY_PATH_TEXT)
+            with dpg.collapsing_header(label="Configure Character Voice Settings", default_open=False):
+                dpg.add_listbox(tag=audio_generation.CHARACTER_SELECT_LISTBOX, label="Choose Character", show=True, callback=audio_generation.display_character_info)
+                dpg.add_listbox(tag=audio_generation.LANGUAGE_CODE_TEXT, label="Language Code")
+                dpg.add_listbox(tag=audio_generation.AUDIO_GENDER_TEXT, label="Gender")
+                dpg.add_listbox(tag=audio_generation.AUDIO_VOICE_LIST, label="Voice")
+                dpg.add_button(tag=audio_generation.SAVE_AUDIO_SETTINGS_BUTTON, label="Save voice settings", show=True, callback=audio_generation.save_audio_settings)
             dpg.add_button(tag=audio_generation.GENERATE_AUDIO_BUTTON, label="Generate Audio", show=False, callback=audio_generation.callback_on_generate_audio_clicked)
             dpg.add_separator()
 
         with dpg.collapsing_header(label="Choose a location to create the Translated Data Folder", default_open=True):
-            dpg.add_file_dialog(tag=translate.FILE_DIALOG_FOR_SOURCE_SCENARIO_FOLDER, height=300, width=450, directory_selector=True, show=False, callback=translate.callback_on_source_scenario_folder_selected)
+            dpg.add_file_dialog(tag=translate.FILE_DIALOG_FOR_SOURCE_SCENARIO_FOLDER, height=300, width=450, directory_selector=True, show=False, 
+                            callback=translate.callback_on_source_scenario_folder_selected)
             dpg.add_button(tag=translate.SHOW_FILE_DIALOG_BUTTON_SOURCE_SCENARIO_FOLDER, label="Select Source Scenario Folder",
-                           callback=lambda s, a: callback_on_show_file_dialog_clicked(item_tag=translate.FILE_DIALOG_FOR_SOURCE_SCENARIO_FOLDER))
+                            callback=lambda s, a: callback_on_show_file_dialog_clicked(item_tag=translate.FILE_DIALOG_FOR_SOURCE_SCENARIO_FOLDER))
             dpg.add_text(label="Source", tag=translate.SOURCE_SCENARIO_DIRECTORY_PATH_TEXT)
             dpg.add_text(label="Destination", tag=translate.NEW_DATA_DIRECTORY_PATH_TEXT)
-            dpg.add_listbox(tag=translate.LANGUAGE_LISTBOX, label="Language", items=translate.language_list, callback=translate.set_new_language_code, show=False)
+            dpg.add_listbox(tag=translate.LANGUAGE_LISTBOX, label="Language", items=audio_generation.language_list, callback=translate.set_new_language_code, show=False)
             dpg.add_button(tag=translate.TRANSLATE_TEXT_BUTTON, label="Translate Data", show=False, callback=translate.callback_on_translate_text_clicked)
             dpg.add_separator()
 

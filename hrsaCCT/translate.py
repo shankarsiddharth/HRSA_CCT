@@ -24,10 +24,6 @@ selected_language = "es"
 regStr = '\".*?\"'
 new_language_code = ""
 new_scenario_path_language_code = ""
-language_list = [
-    'en-US',
-    'es'
-]
 
 def callback_on_source_scenario_folder_selected(sender, app_data):
     print("Sender: ", sender)
@@ -107,5 +103,3 @@ def callback_on_translate_text_clicked():
         with open(newFilePath, 'w', encoding='utf-8') as file:
             file.write(data)
     print ("done!")
-    print("generating audio files...")
-    audio_generation.generate_audio(path=new_scenario_path_language_code)

@@ -15,10 +15,21 @@ scenario_path_audio = ""
 room_dialogue_data = dict()
 character_voice_config_data = dict()
 ink_file_path_list = []
+gender_list = ["MALE", "FEMALE"]
+voice_list = []
+language_list = [
+    'en-US',
+    'es-US'
+]
 
 # Constants
 SCENARIO_DIRECTORY_PATH_TEXT: str = "SCENARIO_DIRECTORY_PATH_TEXT"
 GENERATE_AUDIO_BUTTON: str = "GENERATE_AUDIO_BUTTON"
+SAVE_AUDIO_SETTINGS_BUTTON: str = "CONFIGURE_AUDIO_BUTTON"
+CHARACTER_SELECT_LISTBOX: str = "CHARACTER_SELECT_LISTBOX"
+LANGUAGE_CODE_TEXT: str = "LANGUAGE_CODE_TEXT"
+AUDIO_GENDER_TEXT: str = "AUDIO_GENDER_TEXT"
+AUDIO_VOICE_LIST: str = "AUDIO_VOICE_LIST"
 FILE_DIALOG_FOR_SCENARIO_FOLDER: str = "FILE_DIALOG_FOR_SCENARIO_FOLDER"
 SHOW_FILE_DIALOG_BUTTON_SCENARIO_FOLDER: str = "SHOW_FILE_DIALOG_BUTTON_SCENARIO_FOLDER"
 BREAK_ROOM_NAME = "BreakRoom"
@@ -39,7 +50,14 @@ def callback_on_scenario_folder_selected(sender, app_data):
     global scenario_path_audio
     scenario_path_audio = os.path.normpath(str(app_data['file_path_name']))
     print(scenario_path_audio)
+    global character_voice_config_data
+    character_voice_config_file_path = os.path.join(scenario_path_audio, CHARACTER_VOICE_CONFIG_JSON_FILE_NAME)
+    with open(character_voice_config_file_path, 'r', encoding='UTF-8') as json_file:
+        character_voice_config_data = json.load(json_file)
     dpg.configure_item(SCENARIO_DIRECTORY_PATH_TEXT, default_value=scenario_path_audio)
+    dpg.configure_item(CHARACTER_SELECT_LISTBOX, items=list(character_voice_config_data.keys()))
+    dpg.configure_item(AUDIO_GENDER_TEXT, items=gender_list)
+    dpg.configure_item(LANGUAGE_CODE_TEXT, items=language_list)
     dpg.configure_item(GENERATE_AUDIO_BUTTON, show=True)
 
 def generate_audio_files():
@@ -94,11 +112,8 @@ def callback_on_generate_audio_clicked():
 
 def generate_audio(path=""):
     # Check for the Voice Configuration File
-    global scenario_path_audio, character_voice_config_data
+    global scenario_path_audio
     scenario_path_audio = path
-    character_voice_config_file_path = os.path.join(scenario_path_audio, CHARACTER_VOICE_CONFIG_JSON_FILE_NAME)
-    with open(character_voice_config_file_path, 'r', encoding='UTF-8') as json_file:
-        character_voice_config_data = json.load(json_file)
     global room_dialogue_data
     room_dialogue_data = dict()
     # Process Break Room Dialogue Ink Script
@@ -232,3 +247,17 @@ def generate_audio_gc_tts(dialogue_text, audio_file_path, language_code, in_gend
         # Write the response to the output file.
         output_audio_file.write(response.audio_content)
         print("Audio File Written : ", audio_file_path)
+
+def display_character_info(sender):
+    selected_character = dpg.get_value(sender)
+    character_data = character_voice_config_data[selected_character]
+    dpg.configure_item(LANGUAGE_CODE_TEXT, default_value=character_data["language_code"])
+    dpg.configure_item(AUDIO_GENDER_TEXT, default_value=character_data["gender"])
+    voices = client.list_voices(language_code=character_data["language_code"])
+    voice_list.clear()
+    for voice in voices.voices:
+        voice_list.append(voice.name)
+    dpg.configure_item(AUDIO_VOICE_LIST, items=voice_list, default_value=character_data["voice_name"])
+
+def save_audio_settings():
+    print(character_voice_config_data)
