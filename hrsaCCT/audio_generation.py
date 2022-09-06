@@ -4,6 +4,10 @@ import dearpygui.dearpygui as dpg
 import os
 import json
 import subprocess
+import copy
+import hrsa_cct_constants
+import hrsa_cct_globals
+from hrsa_cct_globals import log
 
 # Google Cloud Configuration Data
 # Get Credentials from JSON file
@@ -11,18 +15,15 @@ credentials = service_account.Credentials.from_service_account_file("./decent-la
 # Instantiates a client
 client = texttospeech.TextToSpeechClient(credentials=credentials)
 
-scenario_path_audio = ""
+scenario_language_code_folder_path = ""
+scenario_path_root = ""
 room_dialogue_data = dict()
 character_voice_config_data = dict()
 ink_file_path_list = []
 gender_list = ["MALE", "FEMALE"]
 voice_list = []
-language_list = [
-    'en-US',
-    'es-US'
-]
 
-# Constants
+# GUI Element Tags
 SCENARIO_DIRECTORY_PATH_TEXT: str = "SCENARIO_DIRECTORY_PATH_TEXT"
 GENERATE_AUDIO_BUTTON: str = "GENERATE_AUDIO_BUTTON"
 SAVE_AUDIO_SETTINGS_BUTTON: str = "CONFIGURE_AUDIO_BUTTON"
@@ -32,48 +33,79 @@ AUDIO_GENDER_TEXT: str = "AUDIO_GENDER_TEXT"
 AUDIO_VOICE_LIST: str = "AUDIO_VOICE_LIST"
 FILE_DIALOG_FOR_SCENARIO_FOLDER: str = "FILE_DIALOG_FOR_SCENARIO_FOLDER"
 SHOW_FILE_DIALOG_BUTTON_SCENARIO_FOLDER: str = "SHOW_FILE_DIALOG_BUTTON_SCENARIO_FOLDER"
-BREAK_ROOM_NAME = "BreakRoom"
-PATIENT_ROOM_NAME = "PatientRoom"
-FEEDBACK_ROOM_NAME = "FeedbackRoom"
-FEEDBACK_TYPE_BREAK_ROOM_NAME = "BreakRoomFeedback"
-FEEDBACK_TYPE_PATIENT_ROOM_NAME = "PatientRoomFeedback"
-DIALOGUE_INK_FILE_NAME = "dialogue.ink"
-FEEDBACK_INK_FILE_NAME = "feedback.ink"
-AUDIO_FOLDER_NAME = "Audio"
-SCENARIO_INFORMATION_JSON_FILE_NAME = "scenario_information.json"
-CHARACTER_VOICE_CONFIG_JSON_FILE_NAME = "character_voice_config.json"
-MAX_DIALOGUE_TEXT_CHARACTER_COUNT = 275  # 300 / 250
+AG_LANGUAGE_LISTBOX_GROUP: str = "AG_LANGUAGE_LISTBOX_GROUP"
+AG_LANGUAGE_LISTBOX: str = "AG_LANGUAGE_LISTBOX"
+SCENARIO_LANGUAGE_CODE_DIRECTORY_PATH_TEXT: str = "SCENARIO_LANGUAGE_CODE_DIRECTORY_PATH_TEXT"
+
 
 def callback_on_scenario_folder_selected(sender, app_data):
     print("Sender: ", sender)
     print("App Data: ", app_data)
-    global scenario_path_audio
-    scenario_path_audio = os.path.normpath(str(app_data['file_path_name']))
-    print(scenario_path_audio)
-    global character_voice_config_data
-    character_voice_config_file_path = os.path.join(scenario_path_audio, CHARACTER_VOICE_CONFIG_JSON_FILE_NAME)
-    with open(character_voice_config_file_path, 'r', encoding='UTF-8') as json_file:
-        character_voice_config_data = json.load(json_file)
-    dpg.configure_item(SCENARIO_DIRECTORY_PATH_TEXT, default_value=scenario_path_audio)
-    dpg.configure_item(CHARACTER_SELECT_LISTBOX, items=list(character_voice_config_data.keys()))
-    dpg.configure_item(AUDIO_GENDER_TEXT, items=gender_list)
-    dpg.configure_item(LANGUAGE_CODE_TEXT, items=language_list)
-    dpg.configure_item(GENERATE_AUDIO_BUTTON, show=True)
+    folder_language_list = list()
+    global scenario_path_root
+    scenario_path_root = os.path.normpath(str(app_data['file_path_name']))
+    dpg.configure_item(SCENARIO_DIRECTORY_PATH_TEXT, default_value=scenario_path_root)
+    for file in os.listdir(scenario_path_root):
+        directory_path = os.path.join(scenario_path_root, file)
+        if os.path.isdir(directory_path):
+            if file in hrsa_cct_globals.language_list:
+                folder_language_list.append(file)
+    new_language_list = copy.deepcopy(hrsa_cct_globals.language_list)
+    for language_code in new_language_list:
+        if language_code.casefold() == hrsa_cct_globals.none_language_code:
+            continue
+        if language_code not in folder_language_list:
+            new_language_list.remove(language_code)
+
+    dpg.configure_item(AG_LANGUAGE_LISTBOX, items=new_language_list)
+    dpg.set_value(AG_LANGUAGE_LISTBOX, hrsa_cct_globals.none_language_code)
+    callback_on_language_code_selected(AG_LANGUAGE_LISTBOX)
+    dpg.configure_item(AG_LANGUAGE_LISTBOX_GROUP, show=True)
+
+
+def callback_on_language_code_selected(sender):
+    selected_language_code = dpg.get_value(AG_LANGUAGE_LISTBOX)
+    if selected_language_code.casefold() != hrsa_cct_globals.none_language_code:
+        global scenario_language_code_folder_path
+        scenario_language_code_folder_path = os.path.join(scenario_path_root, selected_language_code)
+        print("scenario_path_audio: ", scenario_language_code_folder_path)
+        global character_voice_config_data
+        character_voice_config_file_path = os.path.join(scenario_language_code_folder_path, hrsa_cct_constants.CHARACTER_VOICE_CONFIG_JSON_FILE_NAME)
+        with open(character_voice_config_file_path, 'r', encoding='UTF-8') as json_file:
+            character_voice_config_data = json.load(json_file)
+        dpg.configure_item(SCENARIO_LANGUAGE_CODE_DIRECTORY_PATH_TEXT, default_value=scenario_language_code_folder_path)
+        dpg.configure_item(SCENARIO_LANGUAGE_CODE_DIRECTORY_PATH_TEXT, show=True)
+        new_button_label = "Generate Audio (" + selected_language_code + ")"
+        dpg.configure_item(GENERATE_AUDIO_BUTTON, label=new_button_label)
+        dpg.configure_item(GENERATE_AUDIO_BUTTON, show=True)
+    else:
+        dpg.configure_item(SCENARIO_LANGUAGE_CODE_DIRECTORY_PATH_TEXT, default_value="")
+        dpg.configure_item(SCENARIO_LANGUAGE_CODE_DIRECTORY_PATH_TEXT, show=False)
+        dpg.configure_item(GENERATE_AUDIO_BUTTON, show=False)
+    # dpg.configure_item(CHARACTER_SELECT_LISTBOX, items=list(character_voice_config_data.keys()))
+    # dpg.configure_item(AUDIO_GENDER_TEXT, items=gender_list)
+    # dpg.configure_item(LANGUAGE_CODE_TEXT, items=language_list)
+
 
 def generate_audio_files():
     global room_dialogue_data, character_voice_config_data
     # Break Room Audio Generation
-    audio_dialogue_data = room_dialogue_data[BREAK_ROOM_NAME]
+    log.info('Processing Break Room Audio files')
+    audio_dialogue_data = room_dialogue_data[hrsa_cct_constants.BREAK_ROOM_NAME]
     generate_audio_files_for_room(audio_dialogue_data)
     # Patient Room Audio Generation
-    audio_dialogue_data = room_dialogue_data[PATIENT_ROOM_NAME]
+    log.info('Processing Patient Room Audio files')
+    audio_dialogue_data = room_dialogue_data[hrsa_cct_constants.PATIENT_ROOM_NAME]
     generate_audio_files_for_room(audio_dialogue_data)
     # Feedback Break Room Audio Generation
-    audio_dialogue_data = room_dialogue_data[FEEDBACK_TYPE_BREAK_ROOM_NAME]
+    log.info('Processing Feedback room - Break Room Audio files')
+    audio_dialogue_data = room_dialogue_data[hrsa_cct_constants.FEEDBACK_TYPE_BREAK_ROOM_NAME]
     generate_audio_files_for_room(audio_dialogue_data)
     # Feedback Patient Room Audio Generation
-    audio_dialogue_data = room_dialogue_data[FEEDBACK_TYPE_PATIENT_ROOM_NAME]
+    log.info('Processing Feedback room - Patient Room Audio files')
+    audio_dialogue_data = room_dialogue_data[hrsa_cct_constants.FEEDBACK_TYPE_PATIENT_ROOM_NAME]
     generate_audio_files_for_room(audio_dialogue_data)
+    log.info('Audio Generation Complete')
 
 
 def generate_audio_files_for_room(audio_dialogue_data):
@@ -108,22 +140,27 @@ def compile_ink_files():
 
 def callback_on_generate_audio_clicked():
     # Check for the Voice Configuration File
-    generate_audio(path=scenario_path_audio)
+    generate_audio(path=scenario_language_code_folder_path)
+
 
 def generate_audio(path=""):
     # Check for the Voice Configuration File
-    global scenario_path_audio
-    scenario_path_audio = path
+    global scenario_language_code_folder_path
+    scenario_language_code_folder_path = path
     global room_dialogue_data
     room_dialogue_data = dict()
     # Process Break Room Dialogue Ink Script
-    process_dialogue_ink_file_for_room(BREAK_ROOM_NAME)
+    log.info('Processing Break Room ink file')
+    process_dialogue_ink_file_for_room(hrsa_cct_constants.BREAK_ROOM_NAME)
     # Process Patient Room Dialogue Ink Script
-    process_dialogue_ink_file_for_room(PATIENT_ROOM_NAME)
+    log.info('Processing Patient Room ink file')
+    process_dialogue_ink_file_for_room(hrsa_cct_constants.PATIENT_ROOM_NAME)
     # Process Break Room Feedback Ink Script
-    process_feedback_ink_file_for_room(FEEDBACK_TYPE_BREAK_ROOM_NAME)
+    log.info('Processing Feedback Room - Break Room ink file')
+    process_feedback_ink_file_for_room(hrsa_cct_constants.FEEDBACK_TYPE_BREAK_ROOM_NAME)
     # Process Patient Room Feedback Ink Script
-    process_feedback_ink_file_for_room(FEEDBACK_TYPE_PATIENT_ROOM_NAME)
+    log.info('Processing Feedback Room - Patient Room ink file')
+    process_feedback_ink_file_for_room(hrsa_cct_constants.FEEDBACK_TYPE_PATIENT_ROOM_NAME)
     print(room_dialogue_data)
     json_object = json.dumps(room_dialogue_data)
     print(json_object)
@@ -132,12 +169,13 @@ def generate_audio(path=""):
     # Process For Audio Generation
     generate_audio_files()
 
+
 def process_dialogue_ink_file_for_room(room_name):
     global ink_file_path_list
-    room_folder_path = os.path.join(scenario_path_audio, room_name)
-    audio_folder_path = os.path.join(room_folder_path, AUDIO_FOLDER_NAME)
+    room_folder_path = os.path.join(scenario_language_code_folder_path, room_name)
+    audio_folder_path = os.path.join(room_folder_path, hrsa_cct_constants.AUDIO_FOLDER_NAME)
     print(audio_folder_path)
-    file_path = os.path.join(room_folder_path, DIALOGUE_INK_FILE_NAME)
+    file_path = os.path.join(room_folder_path, hrsa_cct_constants.DIALOGUE_INK_FILE_NAME)
     print(file_path)
     parse_ink_script(audio_folder_path, file_path, room_name)
     ink_file_path_list.append(file_path)
@@ -145,11 +183,11 @@ def process_dialogue_ink_file_for_room(room_name):
 
 def process_feedback_ink_file_for_room(feedback_room_type):
     global ink_file_path_list
-    feedback_folder_path = os.path.join(scenario_path_audio, FEEDBACK_ROOM_NAME)
+    feedback_folder_path = os.path.join(scenario_language_code_folder_path, hrsa_cct_constants.FEEDBACK_ROOM_NAME)
     room_folder_path = os.path.join(feedback_folder_path, feedback_room_type)
-    audio_folder_path = os.path.join(room_folder_path, AUDIO_FOLDER_NAME)
+    audio_folder_path = os.path.join(room_folder_path, hrsa_cct_constants.AUDIO_FOLDER_NAME)
     print(audio_folder_path)
-    file_path = os.path.join(room_folder_path, FEEDBACK_INK_FILE_NAME)
+    file_path = os.path.join(room_folder_path, hrsa_cct_constants.FEEDBACK_INK_FILE_NAME)
     parse_ink_script(audio_folder_path, file_path, feedback_room_type)
     ink_file_path_list.append(file_path)
 
@@ -159,7 +197,11 @@ def parse_ink_script(audio_folder_path, file_path, room_name):
     audio_dialogue_data = dict()
     with open(file_path, 'r', encoding='UTF-8') as file:
         lines = file.readlines()
+        line_number = 0
         for line in lines:
+            line_number = line_number + 1
+            # Log line number to Visual Logger - cutelog
+            log.debug(line_number)
             string_to_parse = line.strip()
             if not string_to_parse:
                 continue
@@ -173,8 +215,10 @@ def parse_ink_script(audio_folder_path, file_path, room_name):
                 print("string_to_parse: ", string_to_parse)
                 text_to_display = string_to_parse.split("#")[0].strip()
                 # TODO: Check the length of the dialogue text and display error to the user
-                if len(text_to_display) > MAX_DIALOGUE_TEXT_CHARACTER_COUNT:
+                if len(text_to_display) > hrsa_cct_constants.MAX_DIALOGUE_TEXT_CHARACTER_COUNT:
                     # TODO: Display error message by collecting this error data in a collection and display in the end
+                    log_text = str(line_number) + ' : ' + 'Length exceeds max character count'
+                    log.warning(log_text)
                     continue
                 string_without_name = string_to_parse.split(":", 1)
                 print("string_without_name: ", string_without_name)
@@ -198,6 +242,8 @@ def parse_ink_script(audio_folder_path, file_path, room_name):
                 # and contains a dictionary of text, character_type, audio_file_path
                 if audio_file_name in audio_dialogue_data:
                     # TODO: Error duplicate audio names
+                    log_text = str(line_number) + ' : ' + 'Duplicate Audio file names, ' + audio_file_name
+                    log.warning(log_text)
                     continue
                 else:
                     dialogue_data = dict()
@@ -247,6 +293,10 @@ def generate_audio_gc_tts(dialogue_text, audio_file_path, language_code, in_gend
         # Write the response to the output file.
         output_audio_file.write(response.audio_content)
         print("Audio File Written : ", audio_file_path)
+        log_text = "Audio File Written : " + audio_file_path
+        print(log_text)
+        log.debug(log_text)
+
 
 def display_character_info(sender):
     selected_character = dpg.get_value(sender)
@@ -258,6 +308,7 @@ def display_character_info(sender):
     for voice in voices.voices:
         voice_list.append(voice.name)
     dpg.configure_item(AUDIO_VOICE_LIST, items=voice_list, default_value=character_data["voice_name"])
+
 
 def save_audio_settings():
     print(character_voice_config_data)
