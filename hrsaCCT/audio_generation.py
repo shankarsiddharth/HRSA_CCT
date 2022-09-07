@@ -106,6 +106,7 @@ def generate_audio_files():
     audio_dialogue_data = room_dialogue_data[hrsa_cct_constants.FEEDBACK_TYPE_PATIENT_ROOM_NAME]
     generate_audio_files_for_room(audio_dialogue_data)
     log.info('Audio Generation Complete')
+    print('Audio Generation Complete')
 
 
 def generate_audio_files_for_room(audio_dialogue_data):
