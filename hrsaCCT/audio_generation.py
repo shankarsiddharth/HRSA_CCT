@@ -167,8 +167,10 @@ def generate_audio(path=""):
     print(json_object)
     # Compile all ink files to JSON
     compile_ink_files()
+    log.info('compile_ink_files - Complete')
     # Process For Audio Generation
     generate_audio_files()
+    log.info('generate_audio_files - Complete')
 
 
 def process_dialogue_ink_file_for_room(room_name):

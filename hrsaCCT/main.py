@@ -13,9 +13,9 @@ from hrsa_cct_globals import log
 
 # TODO: Split into modules and change the global data variable to function return values
 
-# DPG UI Constants
-VIEWPORT_WIDTH = 700
-VIEWPORT_HEIGHT = 700
+# DearPyGUI's Viewport Constants
+VIEWPORT_WIDTH = 900
+VIEWPORT_HEIGHT = 900  # 700
 
 # Test Logs
 log.debug('Test Debug')
