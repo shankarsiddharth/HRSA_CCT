@@ -15,11 +15,17 @@ credentials = service_account.Credentials.from_service_account_file("./decent-la
 # Instantiates a client
 client = texttospeech.TextToSpeechClient(credentials=credentials)
 
+# TODO: Error Handling / Add a function and a function call to cache the data from service on each application run
+voices = client.list_voices()
+
 scenario_language_code_folder_path = ""
 scenario_path_root = ""
 room_dialogue_data = dict()
 character_voice_config_data = dict()
+new_character_voice_config_data = dict()
+character_voice_config_file_path = ""
 ink_file_path_list = []
+# TODO: Move this into a global constant
 gender_list = ["MALE", "FEMALE"]
 voice_list = []
 
@@ -36,6 +42,7 @@ SHOW_FILE_DIALOG_BUTTON_SCENARIO_FOLDER: str = "SHOW_FILE_DIALOG_BUTTON_SCENARIO
 AG_LANGUAGE_LISTBOX_GROUP: str = "AG_LANGUAGE_LISTBOX_GROUP"
 AG_LANGUAGE_LISTBOX: str = "AG_LANGUAGE_LISTBOX"
 SCENARIO_LANGUAGE_CODE_DIRECTORY_PATH_TEXT: str = "SCENARIO_LANGUAGE_CODE_DIRECTORY_PATH_TEXT"
+VOICE_CONFIG_SECTION: str = "VOICE_CONFIG_SECTION"
 
 
 def callback_on_scenario_folder_selected(sender, app_data):
@@ -69,22 +76,127 @@ def callback_on_language_code_selected(sender):
         global scenario_language_code_folder_path
         scenario_language_code_folder_path = os.path.join(scenario_path_root, selected_language_code)
         print("scenario_path_audio: ", scenario_language_code_folder_path)
-        global character_voice_config_data
+        global character_voice_config_data, character_voice_config_file_path
         character_voice_config_file_path = os.path.join(scenario_language_code_folder_path, hrsa_cct_constants.CHARACTER_VOICE_CONFIG_JSON_FILE_NAME)
+        print("character_voice_config_file_path: ", character_voice_config_file_path)
         with open(character_voice_config_file_path, 'r', encoding='UTF-8') as json_file:
             character_voice_config_data = json.load(json_file)
+            global new_character_voice_config_data
+            new_character_voice_config_data = copy.deepcopy(character_voice_config_data)
+            print("character_voice_config_data : ", character_voice_config_data)
         dpg.configure_item(SCENARIO_LANGUAGE_CODE_DIRECTORY_PATH_TEXT, default_value=scenario_language_code_folder_path)
         dpg.configure_item(SCENARIO_LANGUAGE_CODE_DIRECTORY_PATH_TEXT, show=True)
         new_button_label = "Generate Audio (" + selected_language_code + ")"
         dpg.configure_item(GENERATE_AUDIO_BUTTON, label=new_button_label)
         dpg.configure_item(GENERATE_AUDIO_BUTTON, show=True)
+        # TODO: Voice Configuration
+        selected_character = dpg.get_value(CHARACTER_SELECT_LISTBOX)
+        dpg.configure_item(VOICE_CONFIG_SECTION, show=True)
+        character_list = list(character_voice_config_data.keys())
+        if len(character_list) >= 1:
+            dpg.configure_item(CHARACTER_SELECT_LISTBOX, items=character_list, default_value=selected_character)
+            dpg.configure_item(AUDIO_GENDER_TEXT, items=gender_list)
+            dpg.configure_item(LANGUAGE_CODE_TEXT, items=hrsa_cct_globals.audio_generation_language_list)
+            display_character_info(CHARACTER_SELECT_LISTBOX)
+        else:
+            # TODO: Log Error
+            pass
     else:
         dpg.configure_item(SCENARIO_LANGUAGE_CODE_DIRECTORY_PATH_TEXT, default_value="")
         dpg.configure_item(SCENARIO_LANGUAGE_CODE_DIRECTORY_PATH_TEXT, show=False)
         dpg.configure_item(GENERATE_AUDIO_BUTTON, show=False)
-    # dpg.configure_item(CHARACTER_SELECT_LISTBOX, items=list(character_voice_config_data.keys()))
-    # dpg.configure_item(AUDIO_GENDER_TEXT, items=gender_list)
-    # dpg.configure_item(LANGUAGE_CODE_TEXT, items=language_list)
+        dpg.configure_item(VOICE_CONFIG_SECTION, show=False)
+
+
+def callback_on_change_language_code(sender):
+    selected_language_code = dpg.get_value(LANGUAGE_CODE_TEXT)
+    selected_character_gender = dpg.get_value(AUDIO_GENDER_TEXT)
+    if str(selected_language_code).lower() != str(hrsa_cct_globals.none_language_code).lower():
+        voice_list.clear()
+        global voices
+        for voice in voices.voices:
+            for language_code in voice.language_codes:
+                if str(selected_language_code).lower() == str(language_code).lower():
+                    ssml_gender = texttospeech.SsmlVoiceGender(voice.ssml_gender)
+                    if str(ssml_gender.name).upper() == str(selected_character_gender).upper():
+                        voice_list.append(voice.name)
+                else:
+                    # TODO: Log Error
+                    pass
+        if len(voice_list) >= 1:
+            dpg.configure_item(AUDIO_VOICE_LIST, items=voice_list, default_value=voice_list[0])
+        dpg.configure_item(AUDIO_GENDER_TEXT, show=True)
+        dpg.configure_item(AUDIO_VOICE_LIST, show=True)
+        dpg.configure_item(SAVE_AUDIO_SETTINGS_BUTTON, show=True)
+        dpg.configure_item(GENERATE_AUDIO_BUTTON, show=True)
+    else:
+        # TODO: Handle (none) case
+        dpg.configure_item(AUDIO_GENDER_TEXT, show=False)
+        dpg.configure_item(AUDIO_VOICE_LIST, show=False)
+        dpg.configure_item(SAVE_AUDIO_SETTINGS_BUTTON, show=False)
+        dpg.configure_item(GENERATE_AUDIO_BUTTON, show=False)
+        pass
+
+
+def callback_on_gender_selected(sender):
+    character_language_code = dpg.get_value(LANGUAGE_CODE_TEXT)
+    character_gender = dpg.get_value(AUDIO_GENDER_TEXT)
+    global voice_list
+    voice_list.clear()
+    global voices
+    for voice in voices.voices:
+        for language_code in voice.language_codes:
+            if str(language_code).lower() == str(character_language_code).lower():
+                ssml_gender = texttospeech.SsmlVoiceGender(voice.ssml_gender)
+                if str(ssml_gender.name).upper() == str(character_gender).upper():
+                    voice_list.append(voice.name)
+    if len(voice_list) >= 1:
+        dpg.configure_item(AUDIO_VOICE_LIST, items=voice_list, default_value=voice_list[0])
+    pass
+
+
+def display_character_info(sender):
+    global character_voice_config_data
+    selected_character = dpg.get_value(CHARACTER_SELECT_LISTBOX)
+    character_data = character_voice_config_data[selected_character]
+    dpg.configure_item(LANGUAGE_CODE_TEXT, default_value=character_data["language_code"])
+    dpg.configure_item(AUDIO_GENDER_TEXT, default_value=character_data["gender"])
+    character_language_code = character_data["language_code"]
+    global voice_list
+    voice_list.clear()
+    global voices
+    for voice in voices.voices:
+        for language_code in voice.language_codes:
+            if str(language_code).lower() == str(character_language_code).lower():
+                ssml_gender = texttospeech.SsmlVoiceGender(voice.ssml_gender)
+                if str(ssml_gender.name).upper() == str(character_data["gender"]).upper():
+                    voice_list.append(voice.name)
+    dpg.configure_item(AUDIO_VOICE_LIST, items=voice_list, default_value=character_data["voice_name"])
+    dpg.configure_item(AUDIO_GENDER_TEXT, show=True)
+    dpg.configure_item(AUDIO_VOICE_LIST, show=True)
+    dpg.configure_item(SAVE_AUDIO_SETTINGS_BUTTON, show=True)
+    dpg.configure_item(GENERATE_AUDIO_BUTTON, show=True)
+
+
+def save_audio_settings(sender):
+    selected_character = dpg.get_value(CHARACTER_SELECT_LISTBOX)
+    language_code = dpg.get_value(LANGUAGE_CODE_TEXT)
+    audio_gender = dpg.get_value(AUDIO_GENDER_TEXT)
+    voice_model = dpg.get_value(AUDIO_VOICE_LIST)
+    global new_character_voice_config_data
+    if str(language_code).lower() != str(hrsa_cct_globals.none_language_code).lower():
+        new_character_voice_config_data[selected_character]['language_code'] = language_code
+        new_character_voice_config_data[selected_character]['gender'] = audio_gender
+        new_character_voice_config_data[selected_character]['voice_name'] = voice_model
+        print("character_voice_config_data : ", character_voice_config_data)
+        print("new_character_voice_config_data : ", new_character_voice_config_data)
+        character_voice_config_json_object = json.dumps(new_character_voice_config_data, indent=4)
+        global character_voice_config_file_path
+        with open(character_voice_config_file_path, 'w') as output_json_file:
+            output_json_file.write(character_voice_config_json_object)
+    else:
+        # TODO: Log Error
+        pass
 
 
 def generate_audio_files():
@@ -261,6 +373,7 @@ def parse_ink_script(audio_folder_path, file_path, room_name):
 
 
 def generate_audio_gc_tts(dialogue_text, audio_file_path, language_code, in_gender_text, voice_name):
+    # TODO: Change the 'MALE' & 'FEMALE' string check into a global constant check
     ssml_gender = texttospeech.SsmlVoiceGender.FEMALE
     if in_gender_text == "MALE":
         ssml_gender = texttospeech.SsmlVoiceGender.MALE
@@ -299,19 +412,3 @@ def generate_audio_gc_tts(dialogue_text, audio_file_path, language_code, in_gend
         log_text = "Audio File Written : " + audio_file_path
         print(log_text)
         log.debug(log_text)
-
-
-def display_character_info(sender):
-    selected_character = dpg.get_value(sender)
-    character_data = character_voice_config_data[selected_character]
-    dpg.configure_item(LANGUAGE_CODE_TEXT, default_value=character_data["language_code"])
-    dpg.configure_item(AUDIO_GENDER_TEXT, default_value=character_data["gender"])
-    voices = client.list_voices(language_code=character_data["language_code"])
-    voice_list.clear()
-    for voice in voices.voices:
-        voice_list.append(voice.name)
-    dpg.configure_item(AUDIO_VOICE_LIST, items=voice_list, default_value=character_data["voice_name"])
-
-
-def save_audio_settings():
-    print(character_voice_config_data)

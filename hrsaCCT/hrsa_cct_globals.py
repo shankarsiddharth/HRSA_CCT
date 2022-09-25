@@ -17,3 +17,10 @@ language_list = [
     'en-US',
     'es-US'
 ]
+
+audio_generation_language_list = [
+    '(none)',
+    'en-US',
+    'es-US',
+    'es-ES'
+]

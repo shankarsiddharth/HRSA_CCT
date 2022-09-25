@@ -160,6 +160,7 @@ def callback_on_copy_scenario_button_clicked():
 
 def main() -> None:
     dpg.create_context()
+    dpg.configure_app(manual_callback_management=True)
     dpg.create_viewport(title='HRSA Content Creation Tool', width=VIEWPORT_WIDTH, height=VIEWPORT_HEIGHT)
 
     with dpg.window(label="HRSA CCT", tag=HRSA_CCT_TOOL, width=VIEWPORT_WIDTH, height=VIEWPORT_HEIGHT):
@@ -170,14 +171,14 @@ def main() -> None:
             dpg.add_text(tag=DATA_DIRECTORY_PATH_TEXT)
             dpg.add_separator()
 
-        with dpg.collapsing_header(label="Create Scenario", default_open=True):
+        with dpg.collapsing_header(label="Create Scenario", default_open=False):
             dpg.add_input_text(tag=SCENARIO_NAME_INPUT_TEXT, label="Scenario Name", default_value="")
             dpg.add_input_text(tag=SCENARIO_DESCRIPTION_INPUT_TEXT, label="Scenario Description", multiline=True, tab_input=False)
             dpg.add_input_text(tag=SCENARIO_DETAIL_INPUT_TEXT, label="Scenario Detail", multiline=True, tab_input=False)
             dpg.add_button(tag=CREATE_SCENARIO_INFORMATION_BUTTON, label="Create Scenario Folder", callback=callback_on_create_scenario_button_clicked)
             dpg.add_separator()
 
-        with dpg.collapsing_header(label="Copy Scenario Content", default_open=True):
+        with dpg.collapsing_header(label="Copy Scenario Content", default_open=False):
             dpg.add_file_dialog(tag=FILE_DIALOG_FOR_SCENARIO_FOLDER_SOURCE, height=300, width=450, directory_selector=True, show=False,
                                 callback=callback_on_scenario_source_folder_selected)
             dpg.add_button(tag=SHOW_FILE_DIALOG_BUTTON_SCENARIO_SOURCE_FOLDER, label="Select Source Scenario Folder",
@@ -202,16 +203,17 @@ def main() -> None:
                 dpg.add_listbox(tag=audio_generation.AG_LANGUAGE_LISTBOX, items=hrsa_cct_globals.language_list,
                                 callback=audio_generation.callback_on_language_code_selected, default_value="")
             dpg.add_text(tag=audio_generation.SCENARIO_LANGUAGE_CODE_DIRECTORY_PATH_TEXT, show=False)
-            # with dpg.collapsing_header(label="Configure Character Voice Settings", default_open=False):
-            #     dpg.add_listbox(tag=audio_generation.CHARACTER_SELECT_LISTBOX, label="Choose Character", show=True, callback=audio_generation.display_character_info)
-            #     dpg.add_listbox(tag=audio_generation.LANGUAGE_CODE_TEXT, label="Language Code")
-            #     dpg.add_listbox(tag=audio_generation.AUDIO_GENDER_TEXT, label="Gender")
-            #     dpg.add_listbox(tag=audio_generation.AUDIO_VOICE_LIST, label="Voice")
-            #     dpg.add_button(tag=audio_generation.SAVE_AUDIO_SETTINGS_BUTTON, label="Save voice settings", show=True, callback=audio_generation.save_audio_settings)
+            # TODO: Voice Configuration
+            with dpg.collapsing_header(tag=audio_generation.VOICE_CONFIG_SECTION, label="Configure Character Voice Settings", default_open=True, show=False):
+                dpg.add_listbox(tag=audio_generation.CHARACTER_SELECT_LISTBOX, label="Choose Character", num_items=5, show=True, callback=audio_generation.display_character_info)
+                dpg.add_listbox(tag=audio_generation.LANGUAGE_CODE_TEXT, label="Language Code", num_items=4, callback=audio_generation.callback_on_change_language_code)
+                dpg.add_listbox(tag=audio_generation.AUDIO_GENDER_TEXT, label="Gender", num_items=3, show=True, callback=audio_generation.callback_on_gender_selected)
+                dpg.add_listbox(tag=audio_generation.AUDIO_VOICE_LIST, label="Voice", num_items=10, tracked=True)
+                dpg.add_button(tag=audio_generation.SAVE_AUDIO_SETTINGS_BUTTON, label="Save voice settings", show=True, callback=audio_generation.save_audio_settings)
             dpg.add_button(tag=audio_generation.GENERATE_AUDIO_BUTTON, label="Generate Audio", show=False, callback=audio_generation.callback_on_generate_audio_clicked)
             dpg.add_separator()
 
-        with dpg.collapsing_header(label="Choose a location to create the Translated Data Folder", default_open=True):
+        with dpg.collapsing_header(label="Choose a location to create the Translated Data Folder", default_open=False):
             dpg.add_file_dialog(tag=translate.FILE_DIALOG_FOR_SOURCE_SCENARIO_FOLDER, height=300, width=450, directory_selector=True, show=False,
                                 callback=translate.callback_on_source_scenario_folder_selected)
             dpg.add_button(tag=translate.SHOW_FILE_DIALOG_BUTTON_SOURCE_SCENARIO_FOLDER, label="Select Scenario Folder",
@@ -232,7 +234,13 @@ def main() -> None:
     dpg.setup_dearpygui()
     dpg.show_viewport()
     dpg.set_primary_window(HRSA_CCT_TOOL, True)
-    dpg.start_dearpygui()
+    # dpg.start_dearpygui()
+
+    while dpg.is_dearpygui_running():
+        jobs = dpg.get_callback_queue()  # retrieves and clears queue
+        dpg.run_callbacks(jobs)
+        dpg.render_dearpygui_frame()
+
     dpg.destroy_context()
 
 
