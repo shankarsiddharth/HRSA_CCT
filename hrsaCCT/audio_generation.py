@@ -5,6 +5,7 @@ import os
 import json
 import subprocess
 import copy
+import re
 import hrsa_cct_constants
 import hrsa_cct_globals
 from hrsa_cct_globals import log
@@ -320,11 +321,32 @@ def parse_ink_script(audio_folder_path, file_path, room_name):
             string_to_parse = line.strip()
             if not string_to_parse:
                 continue
+            elif string_to_parse.startswith("==="):
+                continue
             elif string_to_parse.startswith("->"):
                 continue
             elif string_to_parse.startswith("*"):
-                continue
-            elif string_to_parse.startswith("==="):
+                # TODO : #Highpriority Check the option string for the option letter/text
+                # TODO : Throw error if it has any option characters
+                # TODO : Check for valid emotion tags
+                match_list = re.findall(hrsa_cct_globals.option_regular_expression, string_to_parse)
+                if len(match_list) >= 1:
+                    match_group_tuple = match_list[0]
+                    if len(match_group_tuple) >= 3:
+                        option_text = match_group_tuple[1]
+                        option_text_without_spaces = "".join(option_text.split())
+                        if option_text_without_spaces.startswith(tuple(hrsa_cct_globals.option_text_prefixes)):
+                            # TODO : Check for other tags
+                            pass
+                        else:
+                            log_text = str(line_number) + ' : ' + 'Not a valid option index. ' \
+                                                                  'Option index can be in the range A-E or 1-5 and should have a dot character after the index. ' \
+                                                                  'eg. (\'A.\' \'E.\' \'1.\' \'5.\')'
+                            log.warning(log_text)
+                else:
+                    # TODO: Log Error Wrong formatting for Option text
+                    log_text = str(line_number) + ' : ' + " Wrong formatting for Option text"
+                    log.warning(log_text)
                 continue
             else:
                 print("string_to_parse: ", string_to_parse)

@@ -66,7 +66,7 @@ def create_scenario_folders(scenario_name, scenario_information_json_object) -> 
     # Scenario Information JSON
     scenario_information_json_path = os.path.join(scenario_path, hrsa_cct_constants.SCENARIO_INFORMATION_JSON_FILE_NAME)
     print("scenario_information_json_path: ", scenario_information_json_path)
-    with open(scenario_information_json_path, "w") as output_file:
+    with open(scenario_information_json_path, "w", encoding="utf-8") as output_file:
         output_file.write(scenario_information_json_object)
     # Break Room
     break_room_folder_path = os.path.join(scenario_path, hrsa_cct_constants.BREAK_ROOM_NAME)

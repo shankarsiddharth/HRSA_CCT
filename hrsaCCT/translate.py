@@ -1,3 +1,4 @@
+import json
 import os
 import re
 import shutil
@@ -7,8 +8,8 @@ import dearpygui.dearpygui as dpg
 from google.cloud import translate
 from google.oauth2 import service_account
 
+import hrsa_cct_constants
 import hrsa_cct_globals
-
 
 credentials = service_account.Credentials.from_service_account_file("./decent-lambda-354120-0d9c66891965.json")
 clientTranslate = translate.TranslationServiceClient(credentials=credentials)
@@ -16,7 +17,6 @@ clientTranslate = translate.TranslationServiceClient(credentials=credentials)
 new_data_path = ""
 source_scenario_language_code_path = ""
 selected_language = "es"
-regStr = '\".*?\"'
 new_language_code = ""
 new_scenario_path_language_code = ""
 
@@ -97,9 +97,44 @@ def callback_on_translate_text_clicked():
     print(source_scenario_language_code_path)
     print(new_scenario_path_language_code)
     # TODO: Add scenario_information.json once the translation functionality is complete for that file
-    shutil.copytree(source_scenario_language_code_path, new_scenario_path_language_code,
-                    ignore=shutil.ignore_patterns('*.mp3', '*.wav', 'feedback.json', 'dialogue.json'))
-    # find ink files
+    # TODO: add dirs_exist_ok=True to copytree and test the functionality
+    # TODO: if the directory exist delete the entire directory and proceed with translation
+    shutil.copytree(source_scenario_language_code_path,
+                    new_scenario_path_language_code,
+                    ignore=shutil.ignore_patterns('*.mp3', '*.wav',
+                                                  hrsa_cct_constants.DIALOGUE_INK_JSON_FILE_NAME,
+                                                  hrsa_cct_constants.FEEDBACK_INK_JSON_FILE_NAME),
+                    dirs_exist_ok=True)
+    # get and process the scenario information file
+    scenario_information_json_path = os.path.join(new_scenario_path_language_code, hrsa_cct_constants.SCENARIO_INFORMATION_JSON_FILE_NAME)
+    if os.path.exists(scenario_information_json_path):
+        scenario_information_file_content = ""
+        with open(scenario_information_json_path, "r", encoding="utf-8") as file:
+            scenario_information_file_content = file.read()
+        if len(str(scenario_information_file_content)) != 0:
+            scenario_information_json = json.loads(scenario_information_file_content)
+            scenario_localized_name = scenario_information_json['localized_name']
+            scenario_description = scenario_information_json['description']
+            scenario_detail = scenario_information_json['detail']
+            # translate scenario information file
+            localized_name_translated = translate_text(text=scenario_localized_name, language=selected_language)
+            description_translated = translate_text(text=scenario_description, language=selected_language)
+            detail_translated = translate_text(text=scenario_detail, language=selected_language)
+            scenario_information_json['localized_name'] = localized_name_translated
+            scenario_information_json['description'] = description_translated
+            scenario_information_json['detail'] = detail_translated
+            scenario_information_json_encoded = json.dumps(scenario_information_json, indent=4, ensure_ascii=False).encode("utf-8")
+            scenario_information_json_decoded_string = scenario_information_json_encoded.decode()
+            # save translated scenario information json file
+            with open(scenario_information_json_path, "w", encoding="utf-8") as output_file:
+                output_file.write(scenario_information_json_decoded_string)
+        else:
+            # TODO: Error log important file content missing
+            pass
+    else:
+        # TODO: Error log important file missing
+        pass
+    # find ink files for translation
     ink_files_list = []
     for root, dirs, files in os.walk(new_scenario_path_language_code):
         for file in files:
@@ -107,26 +142,59 @@ def callback_on_translate_text_clicked():
                 path_to_add = os.path.join(root, file)
                 ink_files_list.append(path_to_add)
                 print(path_to_add)
-    # translate
-    dialogue_list = []
-    for newFilePath in ink_files_list:
-        file_ink = open(newFilePath, 'r+')
+    # translate ink files
+    dialogue_text_list = []
+    for new_file_path in ink_files_list:
+        file_ink = open(new_file_path, 'r+')
         lines = file_ink.readlines()
         for line in lines:
-            dialogue = re.search(regStr, line)
-            if dialogue:
-                dialogue_check = dialogue.group(0).replace('"', '')
-                if dialogue_check not in dialogue_list:
-                    dialogue_list.append(dialogue_check)
-
+            line_to_process = line.strip()
+            if line_to_process.startswith('*'):  # Check & process option lines
+                match_list = re.findall(hrsa_cct_globals.option_regular_expression, line_to_process)
+                if len(match_list) >= 1:
+                    match_group_tuple = match_list[0]
+                    if len(match_group_tuple) >= 3:
+                        option_text = match_group_tuple[1]
+                        # TODO: Remove the option characters from the options
+                        option_match_list = re.findall(hrsa_cct_globals.option_display_text_regular_expression, option_text)
+                        if len(option_match_list) >= 1:
+                            option_text_without_option_index = option_match_list[0]
+                            option_text_without_option_index = str(option_text_without_option_index).strip()
+                            if option_text_without_option_index not in dialogue_text_list:
+                                dialogue_text_list.append(option_text_without_option_index)
+                        else:
+                            # TODO: log parse error
+                            pass
+                        option_feedback_text = match_group_tuple[2]
+                        if option_feedback_text not in dialogue_text_list:
+                            dialogue_text_list.append(option_feedback_text)
+                    else:
+                        # TODO: log parsing error
+                        pass
+                else:
+                    # TODO: log parsing error
+                    pass
+            elif line_to_process.startswith('='):  # Ignore section headers
+                pass
+            elif line_to_process.startswith('->'):  # Ignore section redirection lines
+                pass
+            elif len(line_to_process) == 0:  # Ignore empty lines
+                pass
+            else:
+                dialogue_text = re.search(hrsa_cct_globals.dialogue_regular_expression, line_to_process)
+                if dialogue_text:
+                    dialogue_check = dialogue_text.group(0).replace('"', '')
+                    if dialogue_check not in dialogue_text_list:
+                        dialogue_text_list.append(dialogue_check)
+        # continue
         file_ink.seek(0, 0)
         data = file_ink.read()
         # print(data)
         file_ink.close()
-        for dialogueItem in dialogue_list:
-            translated_dialogue = translate_text(text=dialogueItem, language=selected_language)
-            # print(translatedDialogue)
-            data = data.replace(dialogueItem, translated_dialogue)
-        with open(newFilePath, 'w', encoding='utf-8') as file:
+        for dialogue_text_list_element in dialogue_text_list:
+            translated_text = translate_text(text=dialogue_text_list_element, language=selected_language)
+            print(translated_text)
+            data = data.replace(dialogue_text_list_element, translated_text)
+        with open(new_file_path, "w", encoding="utf-8") as file:
             file.write(data)
     print("done!")
