@@ -3,6 +3,7 @@ import os
 import re
 import shutil
 import copy
+import pathlib
 
 import dearpygui.dearpygui as dpg
 from google.cloud import translate
@@ -10,6 +11,7 @@ from google.oauth2 import service_account
 
 import hrsa_cct_constants
 import hrsa_cct_globals
+from hrsa_cct_globals import log
 
 credentials = service_account.Credentials.from_service_account_file("./decent-lambda-354120-0d9c66891965.json")
 clientTranslate = translate.TranslationServiceClient(credentials=credentials)
@@ -19,6 +21,8 @@ source_scenario_language_code_path = ""
 selected_language = "es"
 new_language_code = ""
 new_scenario_path_language_code = ""
+total_characters_translated = 0
+total_characters_to_translate = 0
 
 # GUI Element Tags
 FILE_DIALOG_FOR_NEW_DATA_FOLDER: str = "FILE_DIALOG_FOR_NEW_DATA_FOLDER"
@@ -91,8 +95,16 @@ def translate_text(text="I want to translate this text.", project_id="decent-lam
 
 
 def callback_on_translate_text_clicked():
+    global total_characters_translated
+    total_characters_translated = 0
+    global total_characters_to_translate
+    total_characters_to_translate = 0
     global new_scenario_path_language_code
     global source_scenario_language_code_path
+    # Delete the directory if it exists
+    new_language_dir_path = pathlib.Path(new_scenario_path_language_code)
+    if new_language_dir_path.exists() and new_language_dir_path.is_dir():
+        shutil.rmtree(new_language_dir_path, ignore_errors=True)
     # copy directory
     print(source_scenario_language_code_path)
     print(new_scenario_path_language_code)
@@ -173,6 +185,7 @@ def callback_on_translate_text_clicked():
                         pass
                 else:
                     # TODO: log parsing error
+                    # TODO: If it is a feedback room text then ignore
                     pass
             elif line_to_process.startswith('='):  # Ignore section headers
                 pass
@@ -186,7 +199,13 @@ def callback_on_translate_text_clicked():
                     dialogue_check = dialogue_text.group(0).replace('"', '')
                     if dialogue_check not in dialogue_text_list:
                         dialogue_text_list.append(dialogue_check)
-        # continue
+        # Count Characters to translate
+        for dialogue_text_list_element in dialogue_text_list:
+            total_characters_to_translate = total_characters_to_translate + len(dialogue_text_list_element)
+        log_text = "total_characters_to_translate : " + str(total_characters_to_translate)
+        log.info(log_text)
+        print(log_text)
+        continue
         file_ink.seek(0, 0)
         data = file_ink.read()
         # print(data)
@@ -194,7 +213,10 @@ def callback_on_translate_text_clicked():
         for dialogue_text_list_element in dialogue_text_list:
             translated_text = translate_text(text=dialogue_text_list_element, language=selected_language)
             print(translated_text)
+            total_characters_translated = total_characters_translated + len(dialogue_text_list_element)
             data = data.replace(dialogue_text_list_element, translated_text)
         with open(new_file_path, "w", encoding="utf-8") as file:
             file.write(data)
-    print("done!")
+    log_text = "Translation Complete! total_characters_translated : " + str(total_characters_translated)
+    log.info(log_text)
+    print(log_text)

@@ -30,6 +30,8 @@ ink_file_path_list = []
 gender_list = ["MALE", "FEMALE"]
 voice_list = []
 
+total_characters_for_audio_generation = 0
+
 # GUI Element Tags
 SCENARIO_DIRECTORY_PATH_TEXT: str = "SCENARIO_DIRECTORY_PATH_TEXT"
 GENERATE_AUDIO_BUTTON: str = "GENERATE_AUDIO_BUTTON"
@@ -229,11 +231,13 @@ def generate_audio_files_for_room(audio_dialogue_data):
         character_type = dialogue_data["character_type"].lower()
         character_voice_config = character_voice_config_data[character_type]
         gender_text = character_voice_config["gender"].upper()
-        generate_audio_gc_tts(dialogue_data["dialogue_text"],
-                              dialogue_data["output_audio_file_path"],
-                              character_voice_config["language_code"],
-                              gender_text,
-                              character_voice_config["voice_name"])
+        global total_characters_for_audio_generation
+        total_characters_for_audio_generation = total_characters_for_audio_generation + len(dialogue_data["dialogue_text"])
+        # generate_audio_gc_tts(dialogue_data["dialogue_text"],
+        #                       dialogue_data["output_audio_file_path"],
+        #                       character_voice_config["language_code"],
+        #                       gender_text,
+        #                       character_voice_config["voice_name"])
 
 
 def compile_ink_files():
@@ -258,6 +262,8 @@ def callback_on_generate_audio_clicked():
 
 
 def generate_audio(path=""):
+    global total_characters_for_audio_generation
+    total_characters_for_audio_generation = 0
     # Check for the Voice Configuration File
     global scenario_language_code_folder_path
     scenario_language_code_folder_path = path
@@ -284,6 +290,9 @@ def generate_audio(path=""):
     # Process For Audio Generation
     generate_audio_files()
     log.info('generate_audio_files - Complete')
+    log_text = "total_characters_for_audio_generation : " + str(total_characters_for_audio_generation)
+    log.info(log_text)
+    print(log_text)
 
 
 def process_dialogue_ink_file_for_room(room_name):
@@ -345,6 +354,7 @@ def parse_ink_script(audio_folder_path, file_path, room_name):
                             log.warning(log_text)
                 else:
                     # TODO: Log Error Wrong formatting for Option text
+                    # TODO: If it is a feedback room text then ignore
                     log_text = str(line_number) + ' : ' + " Wrong formatting for Option text"
                     log.warning(log_text)
                 continue
