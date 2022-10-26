@@ -11,21 +11,17 @@ import shutil
 import hrsa_cct_globals
 from hrsa_cct_globals import log
 
+from dearpygui_ext import themes
+
+# logger = dpg_logger.mvLogger()
+# logger.log("mv Logger Started")
 # TODO: Split into modules and change the global data variable to function return values
 
 # DearPyGUI's Viewport Constants
 VIEWPORT_WIDTH = 900
 VIEWPORT_HEIGHT = 900  # 700
 
-# Test Logs
-log.debug('Test Debug')
-log.info('Test Info')
-log.warning('Test Warning')
-log.error('Test Error')
-log.critical('Test Critical')
-
 # GUI Element Tags
-HRSA_CCT_TOOL: str = "HRSA_CCT_TOOL"
 SCENARIO_NAME_INPUT_TEXT: str = "SCENARIO_NAME_INPUT_TEXT"
 SCENARIO_DESCRIPTION_INPUT_TEXT: str = "SCENARIO_DESCRIPTION_INPUT_TEXT"
 SCENARIO_DETAIL_INPUT_TEXT: str = "SCENARIO_DETAIL_INPUT_TEXT"
@@ -56,16 +52,17 @@ def create_scenario_folders(scenario_name, scenario_information_json_object) -> 
     global data_path, scenario_path
     # Scenario Folder
     scenario_path_root = os.path.join(data_path, scenario_name)
-    print("scenario_path_root: ", scenario_path_root)
+    log.info("scenario_path_root: " + scenario_path_root)
+    # TODO: Check if the a scenario name already exists and display error information to the user
     os.mkdir(scenario_path_root)
     # Default Language Folder
     default_language_folder = os.path.join(scenario_path_root, hrsa_cct_globals.default_language_code)
-    print("default_language_folder: ", default_language_folder)
+    log.info("default_language_folder: " + default_language_folder)
     os.mkdir(default_language_folder)
     scenario_path = os.path.abspath(default_language_folder)
     # Scenario Information JSON
     scenario_information_json_path = os.path.join(scenario_path, hrsa_cct_constants.SCENARIO_INFORMATION_JSON_FILE_NAME)
-    print("scenario_information_json_path: ", scenario_information_json_path)
+    log.info("scenario_information_json_path: " + scenario_information_json_path)
     with open(scenario_information_json_path, "w", encoding="utf-8") as output_file:
         output_file.write(scenario_information_json_object)
     # Break Room
@@ -99,15 +96,18 @@ def create_scenario_folders(scenario_name, scenario_information_json_object) -> 
     os.mkdir(audio_folder)
     file_path = os.path.join(patient_room_feedback_folder_path, hrsa_cct_constants.FEEDBACK_INK_FILE_NAME)
     open(file_path, 'a').close()
+    log.info("New Scenario Created. Scenario Name: " + scenario_name)
 
 
 def callback_on_data_folder_selected(sender, app_data):
-    print("Sender: ", sender)
-    print("App Data: ", app_data)
+    log.debug("Sender: " + str(sender), False)
+    log.debug("App Data: " + str(app_data), False)
     global data_path
     data_path = os.path.normpath(str(app_data['file_path_name']))
-    print(data_path)
+    log.info('Data Folder Path: ' + data_path)
     dpg.configure_item(DATA_DIRECTORY_PATH_TEXT, default_value=data_path)
+    log.info('Data Folder Selected')
+    # TODO : Error Checking of Valid Data Folder
 
 
 # def callback_on_select_data_folder_button_clicked():
@@ -128,6 +128,7 @@ def callback_on_create_scenario_button_clicked() -> None:
     scenario_detail = dpg.get_value(SCENARIO_DETAIL_INPUT_TEXT)
     scenario_information = dict()
     scenario_information["name"] = scenario_name
+    scenario_information["localized_name"] = scenario_name
     scenario_information["description"] = scenario_description
     scenario_information["detail"] = scenario_detail
     scenario_information_json_object = json.dumps(scenario_information, indent=4)
@@ -135,35 +136,47 @@ def callback_on_create_scenario_button_clicked() -> None:
 
 
 def callback_on_scenario_source_folder_selected(sender, app_data):
-    print("Sender: ", sender)
-    print("App Data: ", app_data)
+    log.debug("Sender: " + str(sender), False)
+    log.debug("App Data: " + str(app_data), False)
     global scenario_path_source
     scenario_path_source = os.path.normpath(str(app_data['file_path_name']))
-    print(scenario_path_source)
+    log.info("Source Scenario Path: " + scenario_path_source)
     dpg.configure_item(SCENARIO_DIRECTORY_PATH_TEXT_SOURCE, default_value=scenario_path_source)
 
 
 def callback_on_scenario_destination_folder_selected(sender, app_data):
-    print("Sender: ", sender)
-    print("App Data: ", app_data)
+    log.debug("Sender: " + str(sender), False)
+    log.debug("App Data: " + str(app_data), False)
     global scenario_path_destination
     scenario_path_destination = os.path.normpath(str(app_data['file_path_name']))
-    print(scenario_path_destination)
+    log.info("Destination Scenario Path: " + scenario_path_destination)
     dpg.configure_item(SCENARIO_DIRECTORY_PATH_TEXT_DESTINATION, default_value=scenario_path_destination)
 
 
 def callback_on_copy_scenario_button_clicked():
+    dpg.configure_item(COPY_SCENARIO_INFORMATION_BUTTON, show=False)
     global scenario_path_source, scenario_path_destination
     shutil.copytree(scenario_path_source, scenario_path_destination, dirs_exist_ok=True,
                     ignore=shutil.ignore_patterns('*.mp3', '*.wav', 'scenario_information.json', 'feedback.json', 'dialogue.json'))
+    log.info("Scenario Folder Copy Complete from: " + scenario_path_source + "\tto: " + scenario_path_destination)
+    dpg.configure_item(COPY_SCENARIO_INFORMATION_BUTTON, show=True)
+
+
+def save_init():
+    dpg.save_init_file("dpg.ini")
 
 
 def main() -> None:
     dpg.create_context()
-    dpg.configure_app(manual_callback_management=True)
+    # light_theme_id = themes.create_theme_imgui_light()
+    # dark_theme_id = themes.create_theme_imgui_dark()
+    # dpg.bind_theme(dark_theme_id)
+    # dpg.configure_app(manual_callback_management=False, docking=True, docking_space=True, init_file="dpg.ini")
+    dpg.configure_app(manual_callback_management=True, docking=True, docking_space=True, init_file="dpg.ini")
     dpg.create_viewport(title='HRSA Content Creation Tool', width=VIEWPORT_WIDTH, height=VIEWPORT_HEIGHT)
 
-    with dpg.window(label="HRSA CCT", tag=HRSA_CCT_TOOL, width=VIEWPORT_WIDTH, height=VIEWPORT_HEIGHT):
+    with dpg.window(label="HRSA CCT", tag=hrsa_cct_constants.HRSA_CCT_TOOL, width=VIEWPORT_WIDTH, height=VIEWPORT_HEIGHT, no_title_bar=True, no_close=True):
+        dpg.add_button(label="Save Init", callback=lambda: save_init)
         with dpg.collapsing_header(label="Choose a location to create the Data Folder", default_open=True):
             dpg.add_file_dialog(tag=FILE_DIALOG_FOR_DATA_FOLDER, height=300, width=450, directory_selector=True, show=False, callback=callback_on_data_folder_selected)
             dpg.add_button(tag=SHOW_FILE_DIALOG_BUTTON_DATA_FOLDER, label="Select Data Folder",
@@ -204,7 +217,7 @@ def main() -> None:
                                 callback=audio_generation.callback_on_language_code_selected, default_value="")
             dpg.add_text(tag=audio_generation.SCENARIO_LANGUAGE_CODE_DIRECTORY_PATH_TEXT, show=False)
             # TODO: Voice Configuration
-            with dpg.collapsing_header(tag=audio_generation.VOICE_CONFIG_SECTION, label="Configure Character Voice Settings", default_open=True, show=False):
+            with dpg.collapsing_header(indent=50, tag=audio_generation.VOICE_CONFIG_SECTION, label="Configure Character Voice Settings", default_open=True, show=False):
                 dpg.add_listbox(tag=audio_generation.CHARACTER_SELECT_LISTBOX, label="Choose Character", num_items=5, show=True, callback=audio_generation.display_character_info)
                 dpg.add_listbox(tag=audio_generation.LANGUAGE_CODE_TEXT, label="Language Code", num_items=4, callback=audio_generation.callback_on_change_language_code)
                 dpg.add_listbox(tag=audio_generation.AUDIO_GENDER_TEXT, label="Gender", num_items=3, show=True, callback=audio_generation.callback_on_gender_selected)
@@ -231,9 +244,13 @@ def main() -> None:
             dpg.add_button(tag=translate.TRANSLATE_TEXT_BUTTON, label="Translate Data", show=False, callback=translate.callback_on_translate_text_clicked)
             dpg.add_separator()
 
+    log.init_ui_logger()
+
     dpg.setup_dearpygui()
     dpg.show_viewport()
-    dpg.set_primary_window(HRSA_CCT_TOOL, True)
+
+    # dpg.set_primary_window(hrsa_cct_constants.HRSA_CCT_TOOL, True)
+
     # dpg.start_dearpygui()
 
     while dpg.is_dearpygui_running():

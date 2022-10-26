@@ -1,11 +1,6 @@
-import logging
-from logging.handlers import SocketHandler
+import hrsa_logger
 
-# Attach Visual Log Viewer - cutelog
-log = logging.getLogger('HRSA CCT Log')
-log.setLevel(1)  # to send all records to cutelog
-socket_handler = SocketHandler('127.0.0.1', 19996)  # default listening address
-log.addHandler(socket_handler)
+log = hrsa_logger.HRSALogger()
 
 # Global Variables
 default_language_code = "en-US"

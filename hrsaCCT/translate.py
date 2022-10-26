@@ -39,14 +39,14 @@ SOURCE_SECTION_GROUP: str = "SOURCE_SECTION_GROUP"
 
 
 def callback_on_source_scenario_folder_selected(sender, app_data):
-    print("Sender: ", sender)
-    print("App Data: ", app_data)
+    log.debug("Sender: " + str(sender), False)
+    log.debug("App Data: " + str(app_data), False)
     global source_scenario_language_code_path
     global new_data_path
     source_scenario_folder_path = os.path.normpath(str(app_data['file_path_name']))
     source_scenario_language_code_path = os.path.join(source_scenario_folder_path, hrsa_cct_globals.default_language_code)
     new_data_path = os.path.abspath(source_scenario_folder_path)
-    print("source_scenario_language_code_path: ", source_scenario_language_code_path)
+    log.info("source_scenario_language_code_path: " + source_scenario_language_code_path)
     new_language_list = copy.deepcopy(hrsa_cct_globals.language_list)
     if hrsa_cct_globals.default_language_code in new_language_list:
         new_language_list.remove(hrsa_cct_globals.default_language_code)
@@ -64,7 +64,7 @@ def set_new_language_code(sender):
     global new_data_path
     global new_scenario_path_language_code
     new_language_code = dpg.get_value(LANGUAGE_LISTBOX)
-    print("new_language_code: ", new_language_code)
+    log.info("new_language_code: " + new_language_code)
     if (new_language_code.casefold() != hrsa_cct_globals.none_language_code.casefold()) \
             and (new_language_code.casefold() != hrsa_cct_globals.default_language_code.casefold()):
         new_scenario_path_language_code = os.path.join(new_data_path, new_language_code)
@@ -79,7 +79,7 @@ def set_new_language_code(sender):
 def translate_text(text="I want to translate this text.", project_id="decent-lambda-354120", language="es"):
     location = "global"
     parent = f"projects/{project_id}/locations/{location}"
-    print("Translating : " + text + " - to " + language)
+    log.info("Translating : " + text + " - to " + language)
     response = clientTranslate.translate_text(
         request={
             "parent": parent,
@@ -106,8 +106,8 @@ def callback_on_translate_text_clicked():
     if new_language_dir_path.exists() and new_language_dir_path.is_dir():
         shutil.rmtree(new_language_dir_path, ignore_errors=True)
     # copy directory
-    print(source_scenario_language_code_path)
-    print(new_scenario_path_language_code)
+    log.info("Source Language Scenario Path: " + source_scenario_language_code_path)
+    log.info("New Language Scenario Path: " + new_scenario_path_language_code)
     # TODO: Add scenario_information.json once the translation functionality is complete for that file
     # TODO: add dirs_exist_ok=True to copytree and test the functionality
     # TODO: if the directory exist delete the entire directory and proceed with translation
@@ -153,7 +153,7 @@ def callback_on_translate_text_clicked():
             if file.endswith(".ink"):
                 path_to_add = os.path.join(root, file)
                 ink_files_list.append(path_to_add)
-                print(path_to_add)
+                log.trace("path_to_add: " + path_to_add, False)
     # translate ink files
     dialogue_text_list = []
     for new_file_path in ink_files_list:
@@ -204,19 +204,18 @@ def callback_on_translate_text_clicked():
             total_characters_to_translate = total_characters_to_translate + len(dialogue_text_list_element)
         log_text = "total_characters_to_translate : " + str(total_characters_to_translate)
         log.info(log_text)
-        print(log_text)
         continue
         file_ink.seek(0, 0)
         data = file_ink.read()
         # print(data)
+        # log.trace(data, False)
         file_ink.close()
         for dialogue_text_list_element in dialogue_text_list:
             translated_text = translate_text(text=dialogue_text_list_element, language=selected_language)
-            print(translated_text)
+            log.info("Translated Text: " + translated_text)
             total_characters_translated = total_characters_translated + len(dialogue_text_list_element)
             data = data.replace(dialogue_text_list_element, translated_text)
         with open(new_file_path, "w", encoding="utf-8") as file:
             file.write(data)
     log_text = "Translation Complete! total_characters_translated : " + str(total_characters_translated)
     log.info(log_text)
-    print(log_text)

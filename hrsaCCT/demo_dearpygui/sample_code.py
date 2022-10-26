@@ -1,22 +1,23 @@
 import dearpygui.dearpygui as dpg
 
-
 dpg.create_context()
 
 
-def callback(sender, app_data):
-    print("Sender: ", sender)
-    print("App Data: ", app_data)
+def callback(sender, filter_string):
+    dpg.set_value("filter_id", filter_string)
 
 
-def callback_show_file():
-    dpg.configure_item("file_dialog_id", show=True, modal=True)
-
-
-dpg.add_file_dialog(directory_selector=True, show=False, callback=callback, tag="file_dialog_id")
-
-with dpg.window(label="Tutorial", width=800, height=300) as window:
-    dpg.add_button(label="Directory Selector", callback=callback_show_file)
+with dpg.window(label="about", width=500, height=300):
+    dpg.add_input_text(label="Filter (inc, -exc)", callback=callback)
+    with dpg.filter_set(id="filter_id"):
+        dpg.add_text("aaa1.c", filter_key="aaa1.c", bullet=True)
+        dpg.add_text("bbb1.c", filter_key="bbb1.c", bullet=True)
+        dpg.add_text("ccc1.c", filter_key="ccc1.c", bullet=True)
+        dpg.add_text("aaa2.cpp", filter_key="aaa2.cpp", bullet=True)
+        dpg.add_text("bbb2.cpp", filter_key="bbb2.cpp", bullet=True)
+        dpg.add_text("ccc2.cpp", filter_key="ccc2.cpp", bullet=True)
+        dpg.add_text("abc.h", filter_key="abc.h", bullet=True)
+        dpg.add_text("hello, world", filter_key="hello, world", bullet=True)
 
 dpg.create_viewport(title='Custom Title', width=800, height=600)
 dpg.setup_dearpygui()

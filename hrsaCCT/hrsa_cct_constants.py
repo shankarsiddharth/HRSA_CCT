@@ -1,4 +1,7 @@
 # Constants
+HRSA_CCT_TOOL: str = "HRSA_CCT_TOOL"
+
+# Constants
 BREAK_ROOM_NAME = "BreakRoom"
 PATIENT_ROOM_NAME = "PatientRoom"
 FEEDBACK_ROOM_NAME = "FeedbackRoom"

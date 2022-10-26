@@ -49,8 +49,8 @@ VOICE_CONFIG_SECTION: str = "VOICE_CONFIG_SECTION"
 
 
 def callback_on_scenario_folder_selected(sender, app_data):
-    print("Sender: ", sender)
-    print("App Data: ", app_data)
+    log.debug("Sender: " + str(sender), False)
+    log.debug("App Data: " + str(app_data), False)
     folder_language_list = list()
     global scenario_path_root
     scenario_path_root = os.path.normpath(str(app_data['file_path_name']))
@@ -71,6 +71,7 @@ def callback_on_scenario_folder_selected(sender, app_data):
     dpg.set_value(AG_LANGUAGE_LISTBOX, hrsa_cct_globals.none_language_code)
     callback_on_language_code_selected(AG_LANGUAGE_LISTBOX)
     dpg.configure_item(AG_LANGUAGE_LISTBOX_GROUP, show=True)
+    log.info("Selected Scenario Folder for Audio Generation: " + scenario_path_root)
 
 
 def callback_on_language_code_selected(sender):
@@ -78,15 +79,15 @@ def callback_on_language_code_selected(sender):
     if selected_language_code.casefold() != hrsa_cct_globals.none_language_code:
         global scenario_language_code_folder_path
         scenario_language_code_folder_path = os.path.join(scenario_path_root, selected_language_code)
-        print("scenario_path_audio: ", scenario_language_code_folder_path)
+        log.debug("scenario_path_audio: " + scenario_language_code_folder_path, False)
         global character_voice_config_data, character_voice_config_file_path
         character_voice_config_file_path = os.path.join(scenario_language_code_folder_path, hrsa_cct_constants.CHARACTER_VOICE_CONFIG_JSON_FILE_NAME)
-        print("character_voice_config_file_path: ", character_voice_config_file_path)
+        log.debug("character_voice_config_file_path: " + character_voice_config_file_path, False)
         with open(character_voice_config_file_path, 'r', encoding='UTF-8') as json_file:
             character_voice_config_data = json.load(json_file)
             global new_character_voice_config_data
             new_character_voice_config_data = copy.deepcopy(character_voice_config_data)
-            print("character_voice_config_data : ", character_voice_config_data)
+            log.debug("character_voice_config_data : " + str(character_voice_config_data), False)
         dpg.configure_item(SCENARIO_LANGUAGE_CODE_DIRECTORY_PATH_TEXT, default_value=scenario_language_code_folder_path)
         dpg.configure_item(SCENARIO_LANGUAGE_CODE_DIRECTORY_PATH_TEXT, show=True)
         new_button_label = "Generate Audio (" + selected_language_code + ")"
@@ -104,11 +105,13 @@ def callback_on_language_code_selected(sender):
         else:
             # TODO: Log Error
             pass
+        log.info("Selected Language for Audio Generation: " + selected_language_code)
     else:
         dpg.configure_item(SCENARIO_LANGUAGE_CODE_DIRECTORY_PATH_TEXT, default_value="")
         dpg.configure_item(SCENARIO_LANGUAGE_CODE_DIRECTORY_PATH_TEXT, show=False)
         dpg.configure_item(GENERATE_AUDIO_BUTTON, show=False)
         dpg.configure_item(VOICE_CONFIG_SECTION, show=False)
+        log.warning("Selected Language for Audio Generation: " + selected_language_code)
 
 
 def callback_on_change_language_code(sender):
@@ -191,12 +194,13 @@ def save_audio_settings(sender):
         new_character_voice_config_data[selected_character]['language_code'] = language_code
         new_character_voice_config_data[selected_character]['gender'] = audio_gender
         new_character_voice_config_data[selected_character]['voice_name'] = voice_model
-        print("character_voice_config_data : ", character_voice_config_data)
-        print("new_character_voice_config_data : ", new_character_voice_config_data)
+        log.debug("character_voice_config_data : " + str(character_voice_config_data), False)
+        log.debug("new_character_voice_config_data : " + str(new_character_voice_config_data), False)
         character_voice_config_json_object = json.dumps(new_character_voice_config_data, indent=4)
         global character_voice_config_file_path
         with open(character_voice_config_file_path, 'w') as output_json_file:
             output_json_file.write(character_voice_config_json_object)
+        log.info("Voice Configuration for Audio Generation Saved")
     else:
         # TODO: Log Error
         pass
@@ -221,7 +225,6 @@ def generate_audio_files():
     audio_dialogue_data = room_dialogue_data[hrsa_cct_constants.FEEDBACK_TYPE_PATIENT_ROOM_NAME]
     generate_audio_files_for_room(audio_dialogue_data)
     log.info('Audio Generation Complete')
-    print('Audio Generation Complete')
 
 
 def generate_audio_files_for_room(audio_dialogue_data):
@@ -250,15 +253,17 @@ def compile_ink_files():
         cmd_string = inklecate_windows + " -o" + " " + json_file_path + " " + ink_file_path
         completed_process_result = subprocess.run([inklecate_windows, "-o", json_file_path, ink_file_path],
                                                   capture_output=True, text=True)
-        print("cmd_string: ", cmd_string)
-        print("stdout: ", completed_process_result.stdout)
-        print("stderr: ", completed_process_result.stderr)
-        print("check_returncode: ", completed_process_result.check_returncode())
+        log.debug("cmd_string: " + cmd_string, False)
+        log.debug("stdout: " + completed_process_result.stdout, False)
+        log.debug("stderr: " + completed_process_result.stderr, False)
+        log.debug("returncode: " + str(completed_process_result.returncode), False)
 
 
 def callback_on_generate_audio_clicked():
     # Check for the Voice Configuration File
+    dpg.configure_item(GENERATE_AUDIO_BUTTON, show=False)
     generate_audio(path=scenario_language_code_folder_path)
+    dpg.configure_item(GENERATE_AUDIO_BUTTON, show=True)
 
 
 def generate_audio(path=""):
@@ -272,36 +277,38 @@ def generate_audio(path=""):
     # Process Break Room Dialogue Ink Script
     log.info('Processing Break Room ink file')
     process_dialogue_ink_file_for_room(hrsa_cct_constants.BREAK_ROOM_NAME)
+    log.info('Complete - Processing Break Room ink file')
     # Process Patient Room Dialogue Ink Script
     log.info('Processing Patient Room ink file')
     process_dialogue_ink_file_for_room(hrsa_cct_constants.PATIENT_ROOM_NAME)
+    log.info('Complete - Processing Patient Room ink file')
     # Process Break Room Feedback Ink Script
     log.info('Processing Feedback Room - Break Room ink file')
     process_feedback_ink_file_for_room(hrsa_cct_constants.FEEDBACK_TYPE_BREAK_ROOM_NAME)
+    log.info('Complete - Processing Feedback Room - Break Room ink file')
     # Process Patient Room Feedback Ink Script
     log.info('Processing Feedback Room - Patient Room ink file')
     process_feedback_ink_file_for_room(hrsa_cct_constants.FEEDBACK_TYPE_PATIENT_ROOM_NAME)
-    print(room_dialogue_data)
+    log.info('Complete - Processing Feedback Room - Patient Room ink file')
     json_object = json.dumps(room_dialogue_data)
-    print(json_object)
+    log.debug("Room Dialogue Dict: " + json_object, False)
     # Compile all ink files to JSON
     compile_ink_files()
-    log.info('compile_ink_files - Complete')
+    log.info('Complete - compile_ink_files')
     # Process For Audio Generation
     generate_audio_files()
-    log.info('generate_audio_files - Complete')
+    log.info('Complete - generate_audio_files')
     log_text = "total_characters_for_audio_generation : " + str(total_characters_for_audio_generation)
     log.info(log_text)
-    print(log_text)
 
 
 def process_dialogue_ink_file_for_room(room_name):
     global ink_file_path_list
     room_folder_path = os.path.join(scenario_language_code_folder_path, room_name)
     audio_folder_path = os.path.join(room_folder_path, hrsa_cct_constants.AUDIO_FOLDER_NAME)
-    print(audio_folder_path)
+    log.debug("Audio Folder Path: " + audio_folder_path)
     file_path = os.path.join(room_folder_path, hrsa_cct_constants.DIALOGUE_INK_FILE_NAME)
-    print(file_path)
+    log.info("Dialogue Ink File Path: " + file_path)
     parse_ink_script(audio_folder_path, file_path, room_name)
     ink_file_path_list.append(file_path)
 
@@ -311,8 +318,9 @@ def process_feedback_ink_file_for_room(feedback_room_type):
     feedback_folder_path = os.path.join(scenario_language_code_folder_path, hrsa_cct_constants.FEEDBACK_ROOM_NAME)
     room_folder_path = os.path.join(feedback_folder_path, feedback_room_type)
     audio_folder_path = os.path.join(room_folder_path, hrsa_cct_constants.AUDIO_FOLDER_NAME)
-    print(audio_folder_path)
+    log.debug("Audio Folder Path: " + audio_folder_path)
     file_path = os.path.join(room_folder_path, hrsa_cct_constants.FEEDBACK_INK_FILE_NAME)
+    log.info("Feedback Ink File Path: " + file_path)
     parse_ink_script(audio_folder_path, file_path, feedback_room_type)
     ink_file_path_list.append(file_path)
 
@@ -326,7 +334,7 @@ def parse_ink_script(audio_folder_path, file_path, room_name):
         for line in lines:
             line_number = line_number + 1
             # Log line number to Visual Logger - cutelog
-            log.debug(line_number)
+            log.trace(str(line_number), False)
             string_to_parse = line.strip()
             if not string_to_parse:
                 continue
@@ -355,11 +363,11 @@ def parse_ink_script(audio_folder_path, file_path, room_name):
                 else:
                     # TODO: Log Error Wrong formatting for Option text
                     # TODO: If it is a feedback room text then ignore
-                    log_text = str(line_number) + ' : ' + " Wrong formatting for Option text"
+                    log_text = "Line Number : " + str(line_number) + ' : ' + " Wrong formatting for Option text"
                     log.warning(log_text)
                 continue
             else:
-                print("string_to_parse: ", string_to_parse)
+                log.trace("string_to_parse: " + string_to_parse, False)
                 text_to_display = string_to_parse.split("#")[0].strip()
                 # TODO: Check the length of the dialogue text and display error to the user
                 if len(text_to_display) > hrsa_cct_constants.MAX_DIALOGUE_TEXT_CHARACTER_COUNT:
@@ -368,22 +376,22 @@ def parse_ink_script(audio_folder_path, file_path, room_name):
                     log.warning(log_text)
                     continue
                 string_without_name = string_to_parse.split(":", 1)
-                print("string_without_name: ", string_without_name)
+                log.trace("string_without_name: " + str(string_without_name), False)
                 # TODO: Error Check for all the string operations
                 split_1 = string_without_name[1].split("\"")
-                print("split_1: ", split_1)
+                log.trace("split_1: " + str(split_1), False)
                 dialogue_string = split_1[1].strip()
-                print("dialogue_string: ", dialogue_string)
+                log.trace("dialogue_string: " + dialogue_string, False)
                 split_3 = split_1[2].strip()
-                print("split_3: ", split_3)
+                log.trace("split_3: " + str(split_3), False)
                 split_4 = split_3.split("#")
-                print("split_4: ", split_4)
+                log.trace("split_4: " + str(split_4), False)
                 audio_file_name = split_4[1].strip()
                 audio_file_name_with_extension = audio_file_name + ".mp3"
-                print("Dialogue Text: ", dialogue_string)
-                print("Audio File Name: ", audio_file_name)
+                log.debug("Dialogue Text: " + str(dialogue_string), False)
+                log.debug("Audio File Name: " + str(audio_file_name), False)
                 audio_file_path = os.path.join(audio_folder_path, audio_file_name_with_extension)
-                print(audio_file_path)
+                log.debug("Audio File Path: " + str(audio_file_path), False)
                 character_type = split_4[2].strip()
                 # TODO: Create a Dict with audio file names as the key
                 # and contains a dictionary of text, character_type, audio_file_path
@@ -429,7 +437,7 @@ def generate_audio_gc_tts(dialogue_text, audio_file_path, language_code, in_gend
         audio_encoding=texttospeech.AudioEncoding.MP3
     )
 
-    print("Sending Google Cloud TTS Request....")
+    log.info("Sending Google Cloud TTS Request....")
     # Perform the text-to-speech request on the text input with the selected
     # voice parameters and audio file type
     response = client.synthesize_speech(
@@ -440,7 +448,5 @@ def generate_audio_gc_tts(dialogue_text, audio_file_path, language_code, in_gend
     with open(audio_file_path, "wb") as output_audio_file:
         # Write the response to the output file.
         output_audio_file.write(response.audio_content)
-        print("Audio File Written : ", audio_file_path)
         log_text = "Audio File Written : " + audio_file_path
-        print(log_text)
-        log.debug(log_text)
+        log.info(log_text)
