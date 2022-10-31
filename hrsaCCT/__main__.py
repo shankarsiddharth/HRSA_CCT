@@ -98,6 +98,9 @@ def create_scenario_folders(scenario_name, scenario_information_json_object) -> 
     open(file_path, 'a').close()
     log.info("New Scenario Created. Scenario Name: " + scenario_name)
 
+    hrsa_cct_globals.app_data = dict(file_path_name=scenario_path_root)
+    callback_on_scenario_destination_folder_selected(FILE_DIALOG_FOR_SCENARIO_FOLDER_DESTINATION, hrsa_cct_globals.app_data)
+
 
 def callback_on_data_folder_selected(sender, app_data):
     log.debug("Sender: " + str(sender), False)
@@ -160,6 +163,9 @@ def callback_on_copy_scenario_button_clicked():
                     ignore=shutil.ignore_patterns('*.mp3', '*.wav', 'scenario_information.json', 'feedback.json', 'dialogue.json'))
     log.info("Scenario Folder Copy Complete from: " + scenario_path_source + "\tto: " + scenario_path_destination)
     dpg.configure_item(COPY_SCENARIO_INFORMATION_BUTTON, show=True)
+
+    audio_generation.callback_on_scenario_folder_selected(audio_generation.FILE_DIALOG_FOR_SCENARIO_FOLDER, hrsa_cct_globals.app_data)
+    translate.callback_on_source_scenario_folder_selected(translate.FILE_DIALOG_FOR_SOURCE_SCENARIO_FOLDER, hrsa_cct_globals.app_data)
 
 
 def save_init():
