@@ -422,6 +422,7 @@ def _callback_update_family_health_history(sender, app_data, user_data):
 
 
 def init_ui():
+    global problem_tab, sdoh_problem_tab, medication_tab, allergy_tab
     with dpg.collapsing_header(label="Patient Info UI", default_open=False, parent=hrsa_cct_constants.HRSA_CCT_TOOL):
         # TODO: UI Creation
 
