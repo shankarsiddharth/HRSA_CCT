@@ -1,11 +1,6 @@
 import json
-import os
-
 import dearpygui.dearpygui as dpg
-
 import gui_tag_define as gui_tag
-
-import shutil
 
 # DearPyGUI's Viewport Constants
 VIEWPORT_WIDTH = 900
@@ -18,7 +13,6 @@ problem_num = 0
 sdoh_problem_num = 0
 medication_num = 0
 allergy_num = 0
-medication_num = 0
 family_health_history_num = 0
 patient_info = {}
 
@@ -71,8 +65,8 @@ def load_patient_info(key, sub_dict):
                 "sdoh_problems_health_concerns", "date_of_resolution", index + 1), item["date_of_resolution"])
             index += 1
         patient_info["problems"]["sdoh_problems_health_concerns"] = patient_info[
-            "problems"]["sdoh_problems_health_concerns"][
-            :sdoh_problem_num]
+                                                                        "problems"]["sdoh_problems_health_concerns"][
+                                                                    :sdoh_problem_num]
     elif key == "medications":
         num = len(sub_dict["medications"])
         while num > medication_num:
@@ -104,9 +98,9 @@ def load_patient_info(key, sub_dict):
                 "family_health_history", "", index + 1), item)
             index += 1
         patient_info["family_health_history"]["family_health_history"] = patient_info[
-            "family_health_history"][
-            "family_health_history"][
-            :family_health_history_num]
+                                                                             "family_health_history"][
+                                                                             "family_health_history"][
+                                                                         :family_health_history_num]
     elif key == "allergies_intolerances":
         num = len(sub_dict["substances"])
         while num > allergy_num:
@@ -126,7 +120,7 @@ def load_patient_info(key, sub_dict):
                 "allergies_intolerances", "substance_reaction", index + 1), item["reaction"])
             index += 1
         patient_info["allergies_intolerances"]["substances"] = patient_info["allergies_intolerances"]["substances"][
-            :allergy_num]
+                                                               :allergy_num]
     else:
         for sub_key in sub_dict:
             tag = gui_tag.generate_tag(key, sub_key)
@@ -182,7 +176,7 @@ def _callback_add_problem(sender, app_data, user_data):
     problem_num += 1
     # TODO
     # encapsulate into a struct
-    problem = {}
+    problem = dict()
     problem["problem"] = ""
     problem["date_of_diagnosis"] = ""
     problem["date_of_resolution"] = ""
@@ -220,7 +214,7 @@ def _callback_add_sdoh_problem(sender, app_data, user_data):
     sdoh_problem_num += 1
     # TODO
     # encapsulate into a struct
-    problem = {}
+    problem = dict()
     problem["problem"] = ""
     problem["date_of_diagnosis"] = ""
     problem["date_of_resolution"] = ""
@@ -315,7 +309,7 @@ def _callback_add_allergy(sender, app_data, user_data):
     dpg.add_input_text(tag="PIU_ALLERGY_{0}_SUBSTANCE_REACTION_INPUT_TEXT".format(allergy_num),
                        label="Reaction", default_value="", parent=user_data, indent=20,
                        callback=_callback_update_allergy)
-    allergy = {}
+    allergy = dict()
     allergy["substance_medication"] = ""
     allergy["substance_drug_class"] = ""
     allergy["reaction"] = ""
@@ -374,10 +368,12 @@ def _callback_update_social_health_history(sender, app_data, user_data):
         "_INPUT_TEXT", "").lower()
     patient_info["social_health_history"][key] = app_data
 
+
 def _callback_update_family_health_history(sender, app_data, user_data):
     index = int(sender.replace(
         "PIU_FAMILY_HEALTH_HISTORY_", "").replace("_INPUT_TEXT", "")) - 1
     patient_info["family_health_history"]["family_health_history"][index] = app_data
+
 
 def main() -> None:
     global patient_info
@@ -400,7 +396,8 @@ def main() -> None:
             with dpg.file_dialog(height=300, width=600, directory_selector=False, show=False, callback=_callback_save_patient_into_to_file, tag="PIU_SAVE_FILE_DIALOG", modal=True):
                 dpg.add_file_extension(".json", color=(255, 255, 0, 255))
 
-            with dpg.window(height=100, width=350, label="Warning", modal=True, show=False, tag="PIU_SAVE_FILE_CONFIRM_WINDOW", no_title_bar=True, pos=[VIEWPORT_WIDTH / 2 - 175, VIEWPORT_HEIGHT / 2 - 50], no_move=True):
+            with dpg.window(height=100, width=350, label="Warning", modal=True, show=False, tag="PIU_SAVE_FILE_CONFIRM_WINDOW", no_title_bar=True,
+                            pos=[int(VIEWPORT_WIDTH / 2 - 175), int(VIEWPORT_HEIGHT / 2 - 50)], no_move=True):
                 dpg.add_text(
                     "Current patient information has not be saved.\nDo you want to save it firstly?")
                 with dpg.group(horizontal=True):
@@ -416,7 +413,7 @@ def main() -> None:
                     label="Load Patient Information", callback=_callback_load_patient_info)
             # with dpg.collapsing_header(label="Create Patient Information", default_open=False):
 
-                # stupid code
+            # stupid code
 
             with dpg.collapsing_header(label="Patient Demographics", default_open=True, indent=20):
                 dpg.add_input_text(tag=gui_tag.PIU_PATIENT_FIRST_NAME_INPUT_TEXT, label="First Name",
@@ -472,7 +469,6 @@ def main() -> None:
                 dpg.add_input_text(tag=gui_tag.PIU_PATIENT_INSURANCE_INPUT_TEXT, label="Insurance",
                                    default_value="", indent=20, callback=_callback_update_patient_demographics)
 
-
                 # print(patient_info["problems"]["problems"])
 
             with dpg.collapsing_header(tag="PIU_PROBLEM_TAB", label="Problems", default_open=False, indent=20) as problem_tab:
@@ -519,8 +515,6 @@ def main() -> None:
                 dpg.configure_item(
                     button_delete_allergy, user_data=allergy_tab, callback=_callback_delete_allergy)
 
-
-
             with dpg.collapsing_header(label="Vital Signs", default_open=False, indent=20) as vital_sign_tab:
                 dpg.add_input_text(tag="PIU_SYSTOLIC_BLOOD_PRESSURE_INPUT_TEXT", label="Systolic Blood Pressure",
                                    default_value="", indent=20, callback=_callback_update_patient_vital_signs)
@@ -545,9 +539,8 @@ def main() -> None:
                 dpg.add_input_text(tag="PIU_WEIGHT_FOR_LENGTH_PERCENTILE_BIRTH_36_MONTHS_INPUT_TEXT",
                                    label="Weight for Length Percentile birth 36 months", default_value="", indent=20, callback=_callback_update_patient_vital_signs)
                 dpg.add_input_text(tag="PIU_HEAD_OCCIPITAL_FRONTAL_CIRCUMFERENCE_PERCENTILE_BIRTH_36_MONTHS_INPUT_TEXT",
-                                   label="Head Occipital frontal circumference percentile birth 36 months", default_value="", indent=20, callback=_callback_update_patient_vital_signs)
-
-
+                                   label="Head Occipital frontal circumference percentile birth 36 months", default_value="", indent=20,
+                                   callback=_callback_update_patient_vital_signs)
 
             with dpg.collapsing_header(label="Family Health History", default_open=False, indent=20) as family_health_history_tab:
                 with dpg.group(horizontal=True):
@@ -559,8 +552,6 @@ def main() -> None:
                                    user_data=family_health_history_tab, callback=_callback_add_family_health_history)
                 dpg.configure_item(button_delete_family_health_history,
                                    user_data=family_health_history_tab, callback=_callback_delete_family_health_history)
-
-
 
                 # social_health_history
             with dpg.collapsing_header(label="Social Health History", default_open=False, indent=20) as social_health_history:
