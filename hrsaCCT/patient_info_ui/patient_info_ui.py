@@ -1,12 +1,8 @@
 import json
+
 import dearpygui.dearpygui as dpg
 
-# DearPyGUI's Viewport Constants
-VIEWPORT_WIDTH = 900
-VIEWPORT_HEIGHT = 900  # 700
-
-# GUI Element Tags
-HRSA_CCT_TOOL: str = "HRSA_CCT_TOOL"
+import hrsa_cct_constants
 
 problem_num = 0
 sdoh_problem_num = 0
@@ -425,10 +421,11 @@ def _callback_update_family_health_history(sender, app_data, user_data):
     patient_info["family_health_history"]["family_health_history"][index] = app_data
 
 
-def _init_patient_info_ui():
-    global problem_tab
-    with dpg.collapsing_header(label="Patient Info UI", default_open=True):
+def init_ui():
+    with dpg.collapsing_header(label="Patient Info UI", default_open=False, parent=hrsa_cct_constants.HRSA_CCT_TOOL):
         # TODO: UI Creation
+
+        # dpg.add_text(tag=PIU_SCENARIO_DIRECTORY_PATH_TEXT)
 
         with dpg.file_dialog(height=300, width=600, directory_selector=False, show=False,
                              callback=_callback_load_patient_info_file, tag="PIU_OPEN_FILE_DIALOG", modal=True):
@@ -450,13 +447,11 @@ def _init_patient_info_ui():
         #                        callback=lambda: dpg.configure_item("PIU_SAVE_FILE_CONFIRM_WINDOW", show=False))
 
         with dpg.group(horizontal=True):
-            create_new_patient_info = dpg.add_button(
-                label="Create Patient Information", indent=20)
+            # create_new_patient_info = dpg.add_button(
+            #     label="Create Patient Information", indent=20)
             load_exist_patient_info = dpg.add_button(
                 label="Load Patient Information", callback=_callback_load_patient_info)
         # with dpg.collapsing_header(label="Create Patient Information", default_open=False):
-
-        # stupid code
 
         with dpg.collapsing_header(label="Patient Demographics", default_open=True, indent=20):
             dpg.add_input_text(tag=PIU_PATIENT_FIRST_NAME_INPUT_TEXT, label="First Name",
@@ -621,36 +616,5 @@ def _init_patient_info_ui():
         def _callback_export_patient_info(sender, app_data, user_data):
             dpg.show_item("PIU_SAVE_FILE_DIALOG")
 
-        dpg.add_button(label="Export", indent=20,
+        dpg.add_button(label="Save Patient Information", indent=20,
                        callback=_callback_export_patient_info)
-
-
-def main() -> None:
-    global patient_info
-    global problem_tab, sdoh_problem_tab, medication_tab, allergy_tab, family_health_history_tab
-    with open('patient_information_template.json') as patient_info_json:
-        patient_info = json.load(patient_info_json)
-
-    dpg.create_context()
-    dpg.configure_app(manual_callback_management=True)
-    dpg.create_viewport(title='HRSA Content Creation Tool',
-                        width=VIEWPORT_WIDTH, height=VIEWPORT_HEIGHT)
-
-    with dpg.window(label="HRSA CCT", tag=HRSA_CCT_TOOL, width=VIEWPORT_WIDTH, height=VIEWPORT_HEIGHT):
-        _init_patient_info_ui()
-
-    dpg.setup_dearpygui()
-    dpg.show_viewport()
-    dpg.set_primary_window(HRSA_CCT_TOOL, True)
-    # dpg.start_dearpygui()
-
-    while dpg.is_dearpygui_running():
-        jobs = dpg.get_callback_queue()  # retrieves and clears queue
-        dpg.run_callbacks(jobs)
-        dpg.render_dearpygui_frame()
-
-    dpg.destroy_context()
-
-
-if __name__ == "__main__":
-    main()
