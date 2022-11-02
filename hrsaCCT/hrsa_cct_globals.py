@@ -35,3 +35,6 @@ option_text_prefixes = [
 dialogue_regular_expression = r"\".*?\""
 option_regular_expression = r"[*](.*)\[(.*?(?=`))`(.*?(?=`))`(.*?(?=`))`(.*?(?=`|\]))(?:`(.*)])?"
 option_display_text_regular_expression = r"\s*[A-Za-z0-9]+\s*[\.](.*)"
+
+# Scenario Folder Cache
+app_data = dict()
