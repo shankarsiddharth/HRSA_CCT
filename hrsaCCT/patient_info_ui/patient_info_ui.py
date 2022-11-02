@@ -375,6 +375,203 @@ def _callback_update_family_health_history(sender, app_data, user_data):
     patient_info["family_health_history"]["family_health_history"][index] = app_data
 
 
+def _init_patient_info_ui():
+    with dpg.collapsing_header(label="Patient Info UI", default_open=True):
+        # TODO: UI Creation
+
+        with dpg.file_dialog(height=300, width=600, directory_selector=False, show=False,
+                             callback=_callback_load_patient_info_file, tag="PIU_OPEN_FILE_DIALOG", modal=True):
+            dpg.add_file_extension(".json", color=(255, 255, 0, 255))
+
+        with dpg.file_dialog(height=300, width=600, directory_selector=False, show=False,
+                             callback=_callback_save_patient_into_to_file, tag="PIU_SAVE_FILE_DIALOG", modal=True):
+            dpg.add_file_extension(".json", color=(255, 255, 0, 255))
+
+        with dpg.window(height=100, width=350, label="Warning", modal=True, show=False,
+                        tag="PIU_SAVE_FILE_CONFIRM_WINDOW", no_title_bar=True,
+                        pos=[int(VIEWPORT_WIDTH / 2 - 175), int(VIEWPORT_HEIGHT / 2 - 50)], no_move=True):
+            dpg.add_text(
+                "Current patient information has not be saved.\nDo you want to save it firstly?")
+            with dpg.group(horizontal=True):
+                dpg.add_button(label="OK", width=75, pos=[50, 50],
+                               callback=_callback_save_patient_info)
+                dpg.add_button(label="Cancel", width=75, pos=[350 - 50 - 75, 50],
+                               callback=lambda: dpg.configure_item("PIU_SAVE_FILE_CONFIRM_WINDOW", show=False))
+
+        with dpg.group(horizontal=True):
+            create_new_patient_info = dpg.add_button(
+                label="Create Patient Information", indent=20)
+            load_exist_patient_info = dpg.add_button(
+                label="Load Patient Information", callback=_callback_load_patient_info)
+        # with dpg.collapsing_header(label="Create Patient Information", default_open=False):
+
+        # stupid code
+
+        with dpg.collapsing_header(label="Patient Demographics", default_open=True, indent=20):
+            dpg.add_input_text(tag=gui_tag.PIU_PATIENT_FIRST_NAME_INPUT_TEXT, label="First Name",
+                               default_value="", indent=20, callback=_callback_update_patient_demographics)
+            dpg.add_input_text(tag=gui_tag.PIU_PATIENT_LAST_NAME_INPUT_TEXT, label="Last Name",
+                               default_value="", indent=20, callback=_callback_update_patient_demographics)
+            dpg.add_input_text(tag=gui_tag.PIU_PATIENT_MIDDLE_NAME_INPUT_TEXT, label="Middle Name",
+                               default_value="", indent=20, callback=_callback_update_patient_demographics)
+            dpg.add_input_text(tag=gui_tag.PIU_PATIENT_SUFFIX_INPUT_TEXT, label="Suffix",
+                               default_value="", indent=20, callback=_callback_update_patient_demographics)
+            dpg.add_input_text(tag=gui_tag.PIU_PATIENT_PREVIOUS_NAME_INPUT_TEXT, label="Previous Name",
+                               default_value="", indent=20, callback=_callback_update_patient_demographics)
+            dpg.add_input_text(tag=gui_tag.PIU_PATIENT_DATE_OF_BIRTH_INPUT_TEXT, label="Date of Birth",
+                               default_value="", indent=20, callback=_callback_update_patient_demographics)
+            dpg.add_input_text(tag=gui_tag.PIU_PATIENT_DATE_OF_DEATH_INPUT_TEXT, label="Date of Death",
+                               default_value="", indent=20, callback=_callback_update_patient_demographics)
+            dpg.add_input_text(tag=gui_tag.PIU_PATIENT_AGE_INPUT_TEXT, label="Age",
+                               default_value="", indent=20, callback=_callback_update_patient_demographics)
+            dpg.add_input_text(tag=gui_tag.PIU_PATIENT_RACE_INPUT_TEXT, label="Race",
+                               default_value="", indent=20, callback=_callback_update_patient_demographics)
+            dpg.add_input_text(tag=gui_tag.PIU_PATIENT_ETHNICITY_INPUT_TEXT, label="Ethnicity",
+                               default_value="", indent=20, callback=_callback_update_patient_demographics)
+            dpg.add_input_text(tag=gui_tag.PIU_PATIENT_TRIBAL_AFFILIATION_INPUT_TEXT, label="Tribal Affiliation",
+                               default_value="", indent=20, callback=_callback_update_patient_demographics)
+            dpg.add_input_text(tag=gui_tag.PIU_PATIENT_SEX_ASSIGNED_AT_BIRTH_INPUT_TEXT, label="Sex Assigned at Birth",
+                               default_value="", indent=20, callback=_callback_update_patient_demographics)
+            dpg.add_input_text(tag=gui_tag.PIU_PATIENT_SEXUAL_ORIENTATION_INPUT_TEXT, label="Sexual Orientation",
+                               default_value="", indent=20, callback=_callback_update_patient_demographics)
+            dpg.add_input_text(tag=gui_tag.PIU_PATIENT_GENDER_IDENTITY_INPUT_TEXT, label="Gender Identity",
+                               default_value="", indent=20, callback=_callback_update_patient_demographics)
+            dpg.add_input_text(tag=gui_tag.PIU_PATIENT_PREFERRED_LANGUAGE_INPUT_TEXT, label="Preferred Language",
+                               default_value="", indent=20, callback=_callback_update_patient_demographics)
+            dpg.add_input_text(tag=gui_tag.PIU_PATIENT_CURRENT_ADDRESS_INPUT_TEXT, label="Current Address",
+                               default_value="", indent=20, callback=_callback_update_patient_demographics)
+            dpg.add_input_text(tag=gui_tag.PIU_PATIENT_PREVIOUS_ADDRESS_INPUT_TEXT, label="Previous Address",
+                               default_value="", indent=20, callback=_callback_update_patient_demographics)
+            dpg.add_input_text(tag=gui_tag.PIU_PATIENT_PHONE_NUMBER_INPUT_TEXT, label="Phone Number",
+                               default_value="", indent=20, callback=_callback_update_patient_demographics)
+            dpg.add_input_text(tag=gui_tag.PIU_PATIENT_PHONE_NUMBER_TYPE_INPUT_TEXT, label="Phone Number Type",
+                               default_value="", indent=20, callback=_callback_update_patient_demographics)
+            dpg.add_input_text(tag=gui_tag.PIU_PATIENT_EMAIL_ADDRESS_INPUT_TEXT, label="Email Address",
+                               default_value="", indent=20, callback=_callback_update_patient_demographics)
+            dpg.add_input_text(tag=gui_tag.PIU_PATIENT_RELATED_PERSONS_NAME_INPUT_TEXT, label="Related Persons Name",
+                               default_value="", indent=20, callback=_callback_update_patient_demographics)
+            dpg.add_input_text(tag=gui_tag.PIU_PATIENT_RELATED_PERSONS_RELATIONSHIP_INPUT_TEXT,
+                               label="Related Persons Relationship",
+                               default_value="", indent=20, callback=_callback_update_patient_demographics)
+            dpg.add_input_text(tag=gui_tag.PIU_PATIENT_OCCUPATION_INPUT_TEXT, label="Occupation",
+                               default_value="", indent=20, callback=_callback_update_patient_demographics)
+            dpg.add_input_text(tag=gui_tag.PIU_PATIENT_OCCUPATION_HISTORY_INPUT_TEXT, label="Occupation History",
+                               default_value="", indent=20, callback=_callback_update_patient_demographics)
+            dpg.add_input_text(tag=gui_tag.PIU_PATIENT_CHIEF_COMPLAINT_INPUT_TEXT, label="Chief Complaint",
+                               default_value="", indent=20, callback=_callback_update_patient_demographics)
+            dpg.add_input_text(tag=gui_tag.PIU_PATIENT_INSURANCE_INPUT_TEXT, label="Insurance",
+                               default_value="", indent=20, callback=_callback_update_patient_demographics)
+
+            # print(patient_info["problems"]["problems"])
+
+        with dpg.collapsing_header(tag="PIU_PROBLEM_TAB", label="Problems", default_open=False,
+                                   indent=20) as problem_tab:
+            with dpg.group(horizontal=True):
+                button_add_problem = dpg.add_button(
+                    label="Add Problem", indent=20)
+                button_delete_problem = dpg.add_button(
+                    label="Delete Problem")
+            dpg.configure_item(
+                button_add_problem, user_data=problem_tab, callback=_callback_add_problem)
+            dpg.configure_item(
+                button_delete_problem, user_data=problem_tab, callback=_callback_delete_problem)
+
+        with dpg.collapsing_header(tag="PIU_SDOH_PROBLEMS_TAB", label="SDOH Problems Health Concerns",
+                                   default_open=False, indent=20) as sdoh_problem_tab:
+            with dpg.group(horizontal=True):
+                button_add_sdoh_problem = dpg.add_button(
+                    label="Add Problem", indent=20)
+                button_delete_sdoh_problem = dpg.add_button(
+                    label="Delete Problem")
+            dpg.configure_item(
+                button_add_sdoh_problem, user_data=sdoh_problem_tab, callback=_callback_add_sdoh_problem)
+            dpg.configure_item(
+                button_delete_sdoh_problem, user_data=sdoh_problem_tab, callback=_callback_delete_sdoh_problem)
+
+        with dpg.collapsing_header(label="Medications", default_open=False, indent=20) as medication_tab:
+            with dpg.group(horizontal=True):
+                button_add_medication = dpg.add_button(
+                    label="Add Medication", indent=20)
+                button_delete_medication = dpg.add_button(
+                    label="Delete Medication")
+            dpg.configure_item(
+                button_add_medication, user_data=medication_tab, callback=_callback_add_medication)
+            dpg.configure_item(
+                button_delete_medication, user_data=medication_tab, callback=_callback_delete_medication)
+
+        with dpg.collapsing_header(label="Allergies Intolerances", default_open=False, indent=20) as allergy_tab:
+            with dpg.group(horizontal=True):
+                button_add_allergy = dpg.add_button(
+                    label="Add Allergy", indent=20)
+                button_delete_allergy = dpg.add_button(
+                    label="Delete Allergy")
+            dpg.configure_item(
+                button_add_allergy, user_data=allergy_tab, callback=_callback_add_allergy)
+            dpg.configure_item(
+                button_delete_allergy, user_data=allergy_tab, callback=_callback_delete_allergy)
+
+        with dpg.collapsing_header(label="Vital Signs", default_open=False, indent=20) as vital_sign_tab:
+            dpg.add_input_text(tag="PIU_SYSTOLIC_BLOOD_PRESSURE_INPUT_TEXT", label="Systolic Blood Pressure",
+                               default_value="", indent=20, callback=_callback_update_patient_vital_signs)
+            dpg.add_input_text(tag="PIU_DIASTOLIC_BLOOD_PRESSURE_INPUT_TEXT", label="Diastolic Blood_pressure",
+                               default_value="", indent=20, callback=_callback_update_patient_vital_signs)
+            dpg.add_input_text(tag="PIU_HEART_RATE_INPUT_TEXT", label="Heart Rate",
+                               default_value="", indent=20, callback=_callback_update_patient_vital_signs)
+            dpg.add_input_text(tag="PIU_RESPIRATORY_RATE_INPUT_TEXT", label="Respiratory Rate",
+                               default_value="", indent=20, callback=_callback_update_patient_vital_signs)
+            dpg.add_input_text(tag="PIU_BODY_TEMPERATURE_INPUT_TEXT", label="Body Temperature",
+                               default_value="", indent=20, callback=_callback_update_patient_vital_signs)
+            dpg.add_input_text(tag="PIU_BODY_HEIGHT_INPUT_TEXT", label="Body Height",
+                               default_value="", indent=20, callback=_callback_update_patient_vital_signs)
+            dpg.add_input_text(tag="PIU_BODY_WEIGHT_INPUT_TEXT", label="Body Weight",
+                               default_value="", indent=20, callback=_callback_update_patient_vital_signs)
+            dpg.add_input_text(tag="PIU_PULSE_OXIMETRY_INPUT_TEXT", label="Pulse Oximetry",
+                               default_value="", indent=20, callback=_callback_update_patient_vital_signs)
+            dpg.add_input_text(tag="PIU_INHALED_OXYGEN_CONCENTRATION_INPUT_TEXT", label="Inhaled Oxygen Concentration",
+                               default_value="", indent=20, callback=_callback_update_patient_vital_signs)
+            dpg.add_input_text(tag="PIU_BMI_PERCENTILE_2_TO_20_YEARS_INPUT_TEXT", label="BMI Percentile 2 to 20 years",
+                               default_value="", indent=20, callback=_callback_update_patient_vital_signs)
+            dpg.add_input_text(tag="PIU_WEIGHT_FOR_LENGTH_PERCENTILE_BIRTH_36_MONTHS_INPUT_TEXT",
+                               label="Weight for Length Percentile birth 36 months", default_value="", indent=20,
+                               callback=_callback_update_patient_vital_signs)
+            dpg.add_input_text(tag="PIU_HEAD_OCCIPITAL_FRONTAL_CIRCUMFERENCE_PERCENTILE_BIRTH_36_MONTHS_INPUT_TEXT",
+                               label="Head Occipital frontal circumference percentile birth 36 months",
+                               default_value="", indent=20,
+                               callback=_callback_update_patient_vital_signs)
+
+        with dpg.collapsing_header(label="Family Health History", default_open=False,
+                                   indent=20) as family_health_history_tab:
+            with dpg.group(horizontal=True):
+                button_add_family_health_history = dpg.add_button(
+                    label="Add", indent=20)
+                button_delete_family_health_history = dpg.add_button(
+                    label="Delete")
+            dpg.configure_item(button_add_family_health_history,
+                               user_data=family_health_history_tab, callback=_callback_add_family_health_history)
+            dpg.configure_item(button_delete_family_health_history,
+                               user_data=family_health_history_tab, callback=_callback_delete_family_health_history)
+
+            # social_health_history
+        with dpg.collapsing_header(label="Social Health History", default_open=False,
+                                   indent=20) as social_health_history:
+            dpg.add_input_text(tag="PIU_SOCIAL_HISTORY_OBSERVATION_INPUT_TEXT", label="Social History Observation",
+                               default_value="", indent=20, callback=_callback_update_social_health_history)
+            dpg.add_input_text(tag="PIU_ALCOHOL_USE_INPUT_TEXT", label="Alcohol Use",
+                               default_value="", indent=20, callback=_callback_update_social_health_history)
+            dpg.add_input_text(tag="PIU_DRUG_USE_INPUT_TEXT",
+                               label="Drug Use", default_value="", indent=20)
+            dpg.add_input_text(tag="PIU_SEXUAL_ACTIVITY_INPUT_TEXT", label="Sexual Activity",
+                               default_value="", indent=20, callback=_callback_update_social_health_history)
+            dpg.add_input_text(tag="PIU_REFUGEE_STATUS_INPUT_TEXT", label="Refugee Status",
+                               default_value="", indent=20, callback=_callback_update_social_health_history)
+            dpg.add_input_text(tag="PIU_CONGREGATE_LIVING_INPUT_TEXT", label="Congregate Living",
+                               default_value="", indent=20, callback=_callback_update_social_health_history)
+
+        def _callback_export_patient_info(sender, app_data, user_data):
+            dpg.show_item("PIU_SAVE_FILE_DIALOG")
+
+        dpg.add_button(label="Export", indent=20,
+                       callback=_callback_export_patient_info)
 def main() -> None:
     global patient_info
     global problem_tab, sdoh_problem_tab, medication_tab, allergy_tab, family_health_history_tab
@@ -387,192 +584,7 @@ def main() -> None:
                         width=VIEWPORT_WIDTH, height=VIEWPORT_HEIGHT)
 
     with dpg.window(label="HRSA CCT", tag=HRSA_CCT_TOOL, width=VIEWPORT_WIDTH, height=VIEWPORT_HEIGHT):
-        with dpg.collapsing_header(label="Patient Info UI", default_open=True):
-            # TODO: UI Creation
-
-            with dpg.file_dialog(height=300, width=600, directory_selector=False, show=False, callback=_callback_load_patient_info_file, tag="PIU_OPEN_FILE_DIALOG", modal=True):
-                dpg.add_file_extension(".json", color=(255, 255, 0, 255))
-
-            with dpg.file_dialog(height=300, width=600, directory_selector=False, show=False, callback=_callback_save_patient_into_to_file, tag="PIU_SAVE_FILE_DIALOG", modal=True):
-                dpg.add_file_extension(".json", color=(255, 255, 0, 255))
-
-            with dpg.window(height=100, width=350, label="Warning", modal=True, show=False, tag="PIU_SAVE_FILE_CONFIRM_WINDOW", no_title_bar=True,
-                            pos=[int(VIEWPORT_WIDTH / 2 - 175), int(VIEWPORT_HEIGHT / 2 - 50)], no_move=True):
-                dpg.add_text(
-                    "Current patient information has not be saved.\nDo you want to save it firstly?")
-                with dpg.group(horizontal=True):
-                    dpg.add_button(label="OK", width=75, pos=[50, 50],
-                                   callback=_callback_save_patient_info)
-                    dpg.add_button(label="Cancel", width=75, pos=[350 - 50 - 75, 50],
-                                   callback=lambda: dpg.configure_item("PIU_SAVE_FILE_CONFIRM_WINDOW", show=False))
-
-            with dpg.group(horizontal=True):
-                create_new_patient_info = dpg.add_button(
-                    label="Create Patient Information", indent=20)
-                load_exist_patient_info = dpg.add_button(
-                    label="Load Patient Information", callback=_callback_load_patient_info)
-            # with dpg.collapsing_header(label="Create Patient Information", default_open=False):
-
-            # stupid code
-
-            with dpg.collapsing_header(label="Patient Demographics", default_open=True, indent=20):
-                dpg.add_input_text(tag=gui_tag.PIU_PATIENT_FIRST_NAME_INPUT_TEXT, label="First Name",
-                                   default_value="", indent=20, callback=_callback_update_patient_demographics)
-                dpg.add_input_text(tag=gui_tag.PIU_PATIENT_LAST_NAME_INPUT_TEXT, label="Last Name",
-                                   default_value="", indent=20, callback=_callback_update_patient_demographics)
-                dpg.add_input_text(tag=gui_tag.PIU_PATIENT_MIDDLE_NAME_INPUT_TEXT, label="Middle Name",
-                                   default_value="", indent=20, callback=_callback_update_patient_demographics)
-                dpg.add_input_text(tag=gui_tag.PIU_PATIENT_SUFFIX_INPUT_TEXT, label="Suffix",
-                                   default_value="", indent=20, callback=_callback_update_patient_demographics)
-                dpg.add_input_text(tag=gui_tag.PIU_PATIENT_PREVIOUS_NAME_INPUT_TEXT, label="Previous Name",
-                                   default_value="", indent=20, callback=_callback_update_patient_demographics)
-                dpg.add_input_text(tag=gui_tag.PIU_PATIENT_DATE_OF_BIRTH_INPUT_TEXT, label="Date of Birth",
-                                   default_value="", indent=20, callback=_callback_update_patient_demographics)
-                dpg.add_input_text(tag=gui_tag.PIU_PATIENT_DATE_OF_DEATH_INPUT_TEXT, label="Date of Death",
-                                   default_value="", indent=20, callback=_callback_update_patient_demographics)
-                dpg.add_input_text(tag=gui_tag.PIU_PATIENT_AGE_INPUT_TEXT, label="Age",
-                                   default_value="", indent=20, callback=_callback_update_patient_demographics)
-                dpg.add_input_text(tag=gui_tag.PIU_PATIENT_RACE_INPUT_TEXT, label="Race",
-                                   default_value="", indent=20, callback=_callback_update_patient_demographics)
-                dpg.add_input_text(tag=gui_tag.PIU_PATIENT_ETHNICITY_INPUT_TEXT, label="Ethnicity",
-                                   default_value="", indent=20, callback=_callback_update_patient_demographics)
-                dpg.add_input_text(tag=gui_tag.PIU_PATIENT_TRIBAL_AFFILIATION_INPUT_TEXT, label="Tribal Affiliation",
-                                   default_value="", indent=20, callback=_callback_update_patient_demographics)
-                dpg.add_input_text(tag=gui_tag.PIU_PATIENT_SEX_ASSIGNED_AT_BIRTH_INPUT_TEXT, label="Sex Assigned at Birth",
-                                   default_value="", indent=20, callback=_callback_update_patient_demographics)
-                dpg.add_input_text(tag=gui_tag.PIU_PATIENT_SEXUAL_ORIENTATION_INPUT_TEXT, label="Sexual Orientation",
-                                   default_value="", indent=20, callback=_callback_update_patient_demographics)
-                dpg.add_input_text(tag=gui_tag.PIU_PATIENT_GENDER_IDENTITY_INPUT_TEXT, label="Gender Identity",
-                                   default_value="", indent=20, callback=_callback_update_patient_demographics)
-                dpg.add_input_text(tag=gui_tag.PIU_PATIENT_PREFERRED_LANGUAGE_INPUT_TEXT, label="Preferred Language",
-                                   default_value="", indent=20, callback=_callback_update_patient_demographics)
-                dpg.add_input_text(tag=gui_tag.PIU_PATIENT_CURRENT_ADDRESS_INPUT_TEXT, label="Current Address",
-                                   default_value="", indent=20, callback=_callback_update_patient_demographics)
-                dpg.add_input_text(tag=gui_tag.PIU_PATIENT_PREVIOUS_ADDRESS_INPUT_TEXT, label="Previous Address",
-                                   default_value="", indent=20, callback=_callback_update_patient_demographics)
-                dpg.add_input_text(tag=gui_tag.PIU_PATIENT_PHONE_NUMBER_INPUT_TEXT, label="Phone Number",
-                                   default_value="", indent=20, callback=_callback_update_patient_demographics)
-                dpg.add_input_text(tag=gui_tag.PIU_PATIENT_PHONE_NUMBER_TYPE_INPUT_TEXT, label="Phone Number Type",
-                                   default_value="", indent=20, callback=_callback_update_patient_demographics)
-                dpg.add_input_text(tag=gui_tag.PIU_PATIENT_EMAIL_ADDRESS_INPUT_TEXT, label="Email Address",
-                                   default_value="", indent=20, callback=_callback_update_patient_demographics)
-                dpg.add_input_text(tag=gui_tag.PIU_PATIENT_RELATED_PERSONS_NAME_INPUT_TEXT, label="Related Persons Name",
-                                   default_value="", indent=20, callback=_callback_update_patient_demographics)
-                dpg.add_input_text(tag=gui_tag.PIU_PATIENT_RELATED_PERSONS_RELATIONSHIP_INPUT_TEXT, label="Related Persons Relationship",
-                                   default_value="", indent=20, callback=_callback_update_patient_demographics)
-                dpg.add_input_text(tag=gui_tag.PIU_PATIENT_OCCUPATION_INPUT_TEXT, label="Occupation",
-                                   default_value="", indent=20, callback=_callback_update_patient_demographics)
-                dpg.add_input_text(tag=gui_tag.PIU_PATIENT_OCCUPATION_HISTORY_INPUT_TEXT, label="Occupation History",
-                                   default_value="", indent=20, callback=_callback_update_patient_demographics)
-                dpg.add_input_text(tag=gui_tag.PIU_PATIENT_CHIEF_COMPLAINT_INPUT_TEXT, label="Chief Complaint",
-                                   default_value="", indent=20, callback=_callback_update_patient_demographics)
-                dpg.add_input_text(tag=gui_tag.PIU_PATIENT_INSURANCE_INPUT_TEXT, label="Insurance",
-                                   default_value="", indent=20, callback=_callback_update_patient_demographics)
-
-                # print(patient_info["problems"]["problems"])
-
-            with dpg.collapsing_header(tag="PIU_PROBLEM_TAB", label="Problems", default_open=False, indent=20) as problem_tab:
-                with dpg.group(horizontal=True):
-                    button_add_problem = dpg.add_button(
-                        label="Add Problem", indent=20)
-                    button_delete_problem = dpg.add_button(
-                        label="Delete Problem")
-                dpg.configure_item(
-                    button_add_problem, user_data=problem_tab, callback=_callback_add_problem)
-                dpg.configure_item(
-                    button_delete_problem, user_data=problem_tab, callback=_callback_delete_problem)
-
-            with dpg.collapsing_header(tag="PIU_SDOH_PROBLEMS_TAB", label="SDOH Problems Health Concerns", default_open=False, indent=20) as sdoh_problem_tab:
-                with dpg.group(horizontal=True):
-                    button_add_sdoh_problem = dpg.add_button(
-                        label="Add Problem", indent=20)
-                    button_delete_sdoh_problem = dpg.add_button(
-                        label="Delete Problem")
-                dpg.configure_item(
-                    button_add_sdoh_problem, user_data=sdoh_problem_tab, callback=_callback_add_sdoh_problem)
-                dpg.configure_item(
-                    button_delete_sdoh_problem, user_data=sdoh_problem_tab, callback=_callback_delete_sdoh_problem)
-
-            with dpg.collapsing_header(label="Medications", default_open=False, indent=20) as medication_tab:
-                with dpg.group(horizontal=True):
-                    button_add_medication = dpg.add_button(
-                        label="Add Medication", indent=20)
-                    button_delete_medication = dpg.add_button(
-                        label="Delete Medication")
-                dpg.configure_item(
-                    button_add_medication, user_data=medication_tab, callback=_callback_add_medication)
-                dpg.configure_item(
-                    button_delete_medication, user_data=medication_tab, callback=_callback_delete_medication)
-
-            with dpg.collapsing_header(label="Allergies Intolerances", default_open=False, indent=20) as allergy_tab:
-                with dpg.group(horizontal=True):
-                    button_add_allergy = dpg.add_button(
-                        label="Add Allergy", indent=20)
-                    button_delete_allergy = dpg.add_button(
-                        label="Delete Allergy")
-                dpg.configure_item(
-                    button_add_allergy, user_data=allergy_tab, callback=_callback_add_allergy)
-                dpg.configure_item(
-                    button_delete_allergy, user_data=allergy_tab, callback=_callback_delete_allergy)
-
-            with dpg.collapsing_header(label="Vital Signs", default_open=False, indent=20) as vital_sign_tab:
-                dpg.add_input_text(tag="PIU_SYSTOLIC_BLOOD_PRESSURE_INPUT_TEXT", label="Systolic Blood Pressure",
-                                   default_value="", indent=20, callback=_callback_update_patient_vital_signs)
-                dpg.add_input_text(tag="PIU_DIASTOLIC_BLOOD_PRESSURE_INPUT_TEXT", label="Diastolic Blood_pressure",
-                                   default_value="", indent=20, callback=_callback_update_patient_vital_signs)
-                dpg.add_input_text(tag="PIU_HEART_RATE_INPUT_TEXT", label="Heart Rate",
-                                   default_value="", indent=20, callback=_callback_update_patient_vital_signs)
-                dpg.add_input_text(tag="PIU_RESPIRATORY_RATE_INPUT_TEXT", label="Respiratory Rate",
-                                   default_value="", indent=20, callback=_callback_update_patient_vital_signs)
-                dpg.add_input_text(tag="PIU_BODY_TEMPERATURE_INPUT_TEXT", label="Body Temperature",
-                                   default_value="", indent=20, callback=_callback_update_patient_vital_signs)
-                dpg.add_input_text(tag="PIU_BODY_HEIGHT_INPUT_TEXT", label="Body Height",
-                                   default_value="", indent=20, callback=_callback_update_patient_vital_signs)
-                dpg.add_input_text(tag="PIU_BODY_WEIGHT_INPUT_TEXT", label="Body Weight",
-                                   default_value="", indent=20, callback=_callback_update_patient_vital_signs)
-                dpg.add_input_text(tag="PIU_PULSE_OXIMETRY_INPUT_TEXT", label="Pulse Oximetry",
-                                   default_value="", indent=20, callback=_callback_update_patient_vital_signs)
-                dpg.add_input_text(tag="PIU_INHALED_OXYGEN_CONCENTRATION_INPUT_TEXT", label="Inhaled Oxygen Concentration",
-                                   default_value="", indent=20, callback=_callback_update_patient_vital_signs)
-                dpg.add_input_text(tag="PIU_BMI_PERCENTILE_2_TO_20_YEARS_INPUT_TEXT", label="BMI Percentile 2 to 20 years",
-                                   default_value="", indent=20, callback=_callback_update_patient_vital_signs)
-                dpg.add_input_text(tag="PIU_WEIGHT_FOR_LENGTH_PERCENTILE_BIRTH_36_MONTHS_INPUT_TEXT",
-                                   label="Weight for Length Percentile birth 36 months", default_value="", indent=20, callback=_callback_update_patient_vital_signs)
-                dpg.add_input_text(tag="PIU_HEAD_OCCIPITAL_FRONTAL_CIRCUMFERENCE_PERCENTILE_BIRTH_36_MONTHS_INPUT_TEXT",
-                                   label="Head Occipital frontal circumference percentile birth 36 months", default_value="", indent=20,
-                                   callback=_callback_update_patient_vital_signs)
-
-            with dpg.collapsing_header(label="Family Health History", default_open=False, indent=20) as family_health_history_tab:
-                with dpg.group(horizontal=True):
-                    button_add_family_health_history = dpg.add_button(
-                        label="Add", indent=20)
-                    button_delete_family_health_history = dpg.add_button(
-                        label="Delete")
-                dpg.configure_item(button_add_family_health_history,
-                                   user_data=family_health_history_tab, callback=_callback_add_family_health_history)
-                dpg.configure_item(button_delete_family_health_history,
-                                   user_data=family_health_history_tab, callback=_callback_delete_family_health_history)
-
-                # social_health_history
-            with dpg.collapsing_header(label="Social Health History", default_open=False, indent=20) as social_health_history:
-                dpg.add_input_text(tag="PIU_SOCIAL_HISTORY_OBSERVATION_INPUT_TEXT", label="Social History Observation",
-                                   default_value="", indent=20, callback=_callback_update_social_health_history)
-                dpg.add_input_text(tag="PIU_ALCOHOL_USE_INPUT_TEXT", label="Alcohol Use",
-                                   default_value="", indent=20, callback=_callback_update_social_health_history)
-                dpg.add_input_text(tag="PIU_DRUG_USE_INPUT_TEXT",
-                                   label="Drug Use", default_value="", indent=20)
-                dpg.add_input_text(tag="PIU_SEXUAL_ACTIVITY_INPUT_TEXT", label="Sexual Activity",
-                                   default_value="", indent=20, callback=_callback_update_social_health_history)
-                dpg.add_input_text(tag="PIU_REFUGEE_STATUS_INPUT_TEXT", label="Refugee Status",
-                                   default_value="", indent=20, callback=_callback_update_social_health_history)
-                dpg.add_input_text(tag="PIU_CONGREGATE_LIVING_INPUT_TEXT", label="Congregate Living",
-                                   default_value="", indent=20, callback=_callback_update_social_health_history)
-
-            def _callback_export_patient_info(sender, app_data, user_data):
-                dpg.show_item("PIU_SAVE_FILE_DIALOG")
-
-            dpg.add_button(label="Export", indent=20,
-                           callback=_callback_export_patient_info)
+        _init_patient_info_ui()
 
     dpg.setup_dearpygui()
     dpg.show_viewport()
