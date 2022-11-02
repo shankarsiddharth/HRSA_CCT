@@ -203,12 +203,14 @@ def _callback_save_patient_info(sender, app_data, user_data):
 
 
 def _callback_update_patient_demographics(sender, app_data, user_data):
+    global patient_info
     key = sender.replace("PIU_PATIENT_", "").replace(
         "_INPUT_TEXT", "").lower()
     patient_info["patient_demographics"][key] = app_data
 
 
 def _call_update_problems(sender, app_data, user_data):
+    global patient_info
     index_key = sender.replace(
         "PIU_PROBLEM_", "").replace("_INPUT_TEXT", "")
     index = int(index_key.split("_")[0]) - 1
@@ -217,7 +219,7 @@ def _call_update_problems(sender, app_data, user_data):
 
 
 def _callback_add_problem(sender, app_data, user_data):
-    global problem_num
+    global problem_num, patient_info
     problem_num += 1
     # TODO
     # encapsulate into a struct
@@ -239,7 +241,7 @@ def _callback_add_problem(sender, app_data, user_data):
 
 
 def _callback_delete_problem(sender, app_data, user_data):
-    global problem_num
+    global problem_num, patient_info
     if problem_num <= 0:
         return
     dpg.delete_item(
@@ -255,7 +257,7 @@ def _callback_delete_problem(sender, app_data, user_data):
 
 
 def _callback_add_sdoh_problem(sender, app_data, user_data):
-    global sdoh_problem_num
+    global sdoh_problem_num, patient_info
     sdoh_problem_num += 1
     # TODO
     # encapsulate into a struct
@@ -281,7 +283,7 @@ def _callback_add_sdoh_problem(sender, app_data, user_data):
 
 
 def _callback_delete_sdoh_problem(sender, app_data, user_data):
-    global sdoh_problem_num
+    global sdoh_problem_num, patient_info
     if sdoh_problem_num <= 0:
         return
     dpg.delete_item(
@@ -299,6 +301,7 @@ def _callback_delete_sdoh_problem(sender, app_data, user_data):
 
 
 def _call_update_sdoh_problems(sender, app_data, user_data):
+    global patient_info
     index_key = sender.replace(
         "PIU_SDOH_PROBLEM_", "").replace("_INPUT_TEXT", "")
     index = int(index_key.split("_")[0]) - 1
@@ -307,7 +310,7 @@ def _call_update_sdoh_problems(sender, app_data, user_data):
 
 
 def _callback_add_medication(sender, app_data, user_data):
-    global medication_num
+    global medication_num, patient_info
     medication_num += 1
     dpg.add_input_text(tag="PIU_MEDICATION_{0}_NAME_INPUT_TEXT".format(medication_num),
                        label="Medication {0}".format(medication_num),
@@ -316,7 +319,7 @@ def _callback_add_medication(sender, app_data, user_data):
 
 
 def _callback_delete_medication(sender, app_data, user_data):
-    global medication_num
+    global medication_num, patient_info
     if medication_num <= 0:
         return
     dpg.delete_item(
@@ -326,12 +329,14 @@ def _callback_delete_medication(sender, app_data, user_data):
 
 
 def _callback_update_medications(sender, app_data, user_data):
+    global patient_info
     index = int(sender.replace("PIU_MEDICATION_", "").replace(
         "_NAME_INPUT_TEXT", "")) - 1
     patient_info["medications"]["medications"][index] = app_data
 
 
 def _callback_update_allergy(sender, app_data, user_data):
+    global patient_info
     index_key = sender.replace(
         "PIU_ALLERGY_", "").replace("_INPUT_TEXT", "")
     index = int(index_key.split("_")[0]) - 1
@@ -340,7 +345,7 @@ def _callback_update_allergy(sender, app_data, user_data):
 
 
 def _callback_add_allergy(sender, app_data, user_data):
-    global allergy_num
+    global allergy_num, patient_info
     allergy_num += 1
     dpg.add_text("Substance {0}: ".format(allergy_num),
                  tag="PIU_ALLERGY_{0}_LABEL_TEXT".format(
@@ -364,7 +369,7 @@ def _callback_add_allergy(sender, app_data, user_data):
 
 
 def _callback_delete_allergy(sender, app_data, user_data):
-    global allergy_num
+    global allergy_num, patient_info
     if allergy_num <= 0:
         return
     dpg.delete_item(
@@ -381,13 +386,14 @@ def _callback_delete_allergy(sender, app_data, user_data):
 
 
 def _callback_update_patient_vital_signs(sender, app_data, user_data):
+    global patient_info
     key = sender.replace("PIU_", "").replace(
         "_INPUT_TEXT", "").lower()
     patient_info["vital_signs"][key] = app_data
 
 
 def _callback_add_family_health_history(sender, app_data, user_data):
-    global family_health_history_num
+    global family_health_history_num, patient_info
     family_health_history_num += 1
     patient_info["family_health_history"]["family_health_history"].append(
         "")
@@ -419,6 +425,10 @@ def _callback_update_family_health_history(sender, app_data, user_data):
     index = int(sender.replace(
         "PIU_FAMILY_HEALTH_HISTORY_", "").replace("_INPUT_TEXT", "")) - 1
     patient_info["family_health_history"]["family_health_history"][index] = app_data
+
+
+def _callback_export_patient_info(sender, app_data, user_data):
+    dpg.show_item("PIU_SAVE_FILE_DIALOG")
 
 
 def init_ui():
@@ -613,9 +623,6 @@ def init_ui():
                                default_value="", indent=20, callback=_callback_update_social_health_history)
             dpg.add_input_text(tag="PIU_CONGREGATE_LIVING_INPUT_TEXT", label="Congregate Living",
                                default_value="", indent=20, callback=_callback_update_social_health_history)
-
-        def _callback_export_patient_info(sender, app_data, user_data):
-            dpg.show_item("PIU_SAVE_FILE_DIALOG")
 
         dpg.add_button(label="Save Patient Information", indent=20,
                        callback=_callback_export_patient_info)
