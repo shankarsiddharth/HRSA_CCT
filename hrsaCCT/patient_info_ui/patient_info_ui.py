@@ -1,6 +1,5 @@
 import json
 import dearpygui.dearpygui as dpg
-import gui_tag_define as gui_tag
 
 # DearPyGUI's Viewport Constants
 VIEWPORT_WIDTH = 900
@@ -24,8 +23,58 @@ medication_tab = None
 family_health_history_tab = None
 allergy_tab = None
 
+# GUI Element Tags
+PIU_PATIENT_FIRST_NAME_INPUT_TEXT: str = "PIU_PATIENT_FIRST_NAME_INPUT_TEXT"
+PIU_PATIENT_LAST_NAME_INPUT_TEXT: str = "PIU_PATIENT_LAST_NAME_INPUT_TEXT"
+PIU_PATIENT_MIDDLE_NAME_INPUT_TEXT: str = "PIU_PATIENT_MIDDLE_NAME_INPUT_TEXT"
+PIU_PATIENT_SUFFIX_INPUT_TEXT: str = "PIU_PATIENT_SUFFIX_INPUT_TEXT"
+PIU_PATIENT_PREVIOUS_NAME_INPUT_TEXT: str = "PIU_PATIENT_PREVIOUS_NAME_INPUT_TEXT"
+PIU_PATIENT_DATE_OF_BIRTH_INPUT_TEXT: str = "PIU_PATIENT_DATE_OF_BIRTH_INPUT_TEXT"
+PIU_PATIENT_DATE_OF_DEATH_INPUT_TEXT: str = "PIU_PATIENT_DATE_OF_DEATH_INPUT_TEXT"
+PIU_PATIENT_AGE_INPUT_TEXT: str = "PIU_PATIENT_AGE_INPUT_TEXT"
+PIU_PATIENT_RACE_INPUT_TEXT: str = "PIU_PATIENT_RACE_INPUT_TEXT"
+PIU_PATIENT_ETHNICITY_INPUT_TEXT: str = "PIU_PATIENT_ETHNICITY_INPUT_TEXT"
+PIU_PATIENT_TRIBAL_AFFILIATION_INPUT_TEXT: str = "PIU_PATIENT_TRIBAL_AFFILIATION_INPUT_TEXT"
+PIU_PATIENT_SEX_ASSIGNED_AT_BIRTH_INPUT_TEXT: str = "PIU_PATIENT_SEX_ASSIGNED_AT_BIRTH_INPUT_TEXT"
+PIU_PATIENT_SEXUAL_ORIENTATION_INPUT_TEXT: str = "PIU_PATIENT_SEXUAL_ORIENTATION_INPUT_TEXT"
+PIU_PATIENT_GENDER_IDENTITY_INPUT_TEXT: str = "PIU_PATIENT_GENDER_IDENTITY_INPUT_TEXT"
+PIU_PATIENT_PREFERRED_LANGUAGE_INPUT_TEXT: str = "PIU_PATIENT_PREFERRED_LANGUAGE_INPUT_TEXT"
+PIU_PATIENT_CURRENT_ADDRESS_INPUT_TEXT: str = "PIU_PATIENT_CURRENT_ADDRESS_INPUT_TEXT"
+PIU_PATIENT_PREVIOUS_ADDRESS_INPUT_TEXT: str = "PIU_PATIENT_PREVIOUS_ADDRESS_INPUT_TEXT"
+PIU_PATIENT_PHONE_NUMBER_INPUT_TEXT: str = "PIU_PATIENT_PHONE_NUMBER_INPUT_TEXT"
+PIU_PATIENT_PHONE_NUMBER_TYPE_INPUT_TEXT: str = "PIU_PATIENT_PHONE_NUMBER_TYPE_INPUT_TEXT"
+PIU_PATIENT_EMAIL_ADDRESS_INPUT_TEXT: str = "PIU_PATIENT_EMAIL_ADDRESS_INPUT_TEXT"
+PIU_PATIENT_RELATED_PERSONS_NAME_INPUT_TEXT: str = "PIU_PATIENT_RELATED_PERSONS_NAME_INPUT_TEXT"
+PIU_PATIENT_RELATED_PERSONS_RELATIONSHIP_INPUT_TEXT: str = "PIU_PATIENT_RELATED_PERSONS_RELATIONSHIP_INPUT_TEXT"
+PIU_PATIENT_OCCUPATION_INPUT_TEXT: str = "PIU_PATIENT_OCCUPATION_INPUT_TEXT"
+PIU_PATIENT_OCCUPATION_HISTORY_INPUT_TEXT: str = "PIU_PATIENT_OCCUPATION_HISTORY_INPUT_TEXT"
+PIU_PATIENT_CHIEF_COMPLAINT_INPUT_TEXT: str = "PIU_PATIENT_CHIEF_COMPLAINT_INPUT_TEXT"
+PIU_PATIENT_INSURANCE_INPUT_TEXT: str = "PIU_PATIENT_INSURANCE_INPUT_TEXT"
+
+
+def generate_tag(key, sub_key, index=0):
+    sub_key = sub_key.upper()
+    if key == "patient_demographics":
+        return "PIU_PATIENT_" + sub_key + "_INPUT_TEXT"
+    elif key == "vital_signs" or key == "social_health_history":
+        return "PIU_" + sub_key + "_INPUT_TEXT"
+    elif key == "problems":
+        return "PIU_PROBLEM_" + str(index) + "_" + sub_key + "_INPUT_TEXT"
+    elif key == "sdoh_problems_health_concerns":
+        return "PIU_SDOH_PROBLEM_" + str(index) + "_" + sub_key + "_INPUT_TEXT"
+    elif key == "medications":
+        return "PIU_MEDICATION_" + str(index) + "_NAME_INPUT_TEXT"
+    elif key == "family_health_history":
+        return "PIU_FAMILY_HEALTH_HISTORY_" + str(index) + "_INPUT_TEXT"
+    elif key == "allergies_intolerances":
+        return "PIU_ALLERGY_" + str(index) + "_" + sub_key + "_INPUT_TEXT"
+    return ""
+
 
 def load_patient_info(key, sub_dict):
+    global problem_tab, sdoh_problem_tab, medication_tab, family_health_history_tab
+    global patient_info
+    global sdoh_problem_num, problem_num, medication_num, family_health_history_num, allergy_num
     if key == "problems":
         num = len(sub_dict["problems"])
         while num > problem_num:
@@ -38,11 +87,11 @@ def load_patient_info(key, sub_dict):
         # print("sub_dict => ", sub_dict[key])
         while index < num:
             item = sub_dict[key][index]
-            dpg.set_value(gui_tag.generate_tag(
+            dpg.set_value(generate_tag(
                 "problems", "problem", index + 1), item["problem"])
-            dpg.set_value(gui_tag.generate_tag(
+            dpg.set_value(generate_tag(
                 "problems", "date_of_diagnosis", index + 1), item["date_of_diagnosis"])
-            dpg.set_value(gui_tag.generate_tag(
+            dpg.set_value(generate_tag(
                 "problems", "date_of_resolution", index + 1), item["date_of_resolution"])
             index += 1
         patient_info["problems"]["problems"] = patient_info["problems"]["problems"][:problem_num]
@@ -57,16 +106,16 @@ def load_patient_info(key, sub_dict):
         index = 0
         while index < num:
             item = sub_dict["sdoh_problems_health_concerns"][index]
-            dpg.set_value(gui_tag.generate_tag(
+            dpg.set_value(generate_tag(
                 "sdoh_problems_health_concerns", "problem", index + 1), item["problem"])
-            dpg.set_value(gui_tag.generate_tag(
+            dpg.set_value(generate_tag(
                 "sdoh_problems_health_concerns", "date_of_diagnosis", index + 1), item["date_of_diagnosis"])
-            dpg.set_value(gui_tag.generate_tag(
+            dpg.set_value(generate_tag(
                 "sdoh_problems_health_concerns", "date_of_resolution", index + 1), item["date_of_resolution"])
             index += 1
         patient_info["problems"]["sdoh_problems_health_concerns"] = patient_info[
-                                                                        "problems"]["sdoh_problems_health_concerns"][
-                                                                    :sdoh_problem_num]
+            "problems"]["sdoh_problems_health_concerns"][
+            :sdoh_problem_num]
     elif key == "medications":
         num = len(sub_dict["medications"])
         while num > medication_num:
@@ -78,7 +127,7 @@ def load_patient_info(key, sub_dict):
         index = 0
         while index < num:
             item = sub_dict["medications"][index]
-            dpg.set_value(gui_tag.generate_tag(
+            dpg.set_value(generate_tag(
                 "medications", "", index + 1), item)
             index += 1
         patient_info["medications"]["medications"] = patient_info["medications"]["medications"][:medication_num]
@@ -94,13 +143,13 @@ def load_patient_info(key, sub_dict):
         while index < num:
             # print(sub_dict["family_health_history"])
             item = sub_dict["family_health_history"][index]
-            dpg.set_value(gui_tag.generate_tag(
+            dpg.set_value(generate_tag(
                 "family_health_history", "", index + 1), item)
             index += 1
         patient_info["family_health_history"]["family_health_history"] = patient_info[
-                                                                             "family_health_history"][
-                                                                             "family_health_history"][
-                                                                         :family_health_history_num]
+            "family_health_history"][
+            "family_health_history"][
+            :family_health_history_num]
     elif key == "allergies_intolerances":
         num = len(sub_dict["substances"])
         while num > allergy_num:
@@ -112,18 +161,18 @@ def load_patient_info(key, sub_dict):
         while index < num:
             item = sub_dict["substances"][index]
             # print(item)
-            dpg.set_value(gui_tag.generate_tag(
+            dpg.set_value(generate_tag(
                 "allergies_intolerances", "substance_medication", index + 1), item["substance_medication"])
-            dpg.set_value(gui_tag.generate_tag(
+            dpg.set_value(generate_tag(
                 "allergies_intolerances", "substance_drug_class", index + 1), item["substance_drug_class"])
-            dpg.set_value(gui_tag.generate_tag(
+            dpg.set_value(generate_tag(
                 "allergies_intolerances", "substance_reaction", index + 1), item["reaction"])
             index += 1
         patient_info["allergies_intolerances"]["substances"] = patient_info["allergies_intolerances"]["substances"][
-                                                               :allergy_num]
+            :allergy_num]
     else:
         for sub_key in sub_dict:
-            tag = gui_tag.generate_tag(key, sub_key)
+            tag = generate_tag(key, sub_key)
             # print(tag)
             if tag != "":
                 dpg.set_value(tag, sub_dict[sub_key])
@@ -220,7 +269,8 @@ def _callback_add_sdoh_problem(sender, app_data, user_data):
     problem["date_of_resolution"] = ""
 
     dpg.add_text("Problem {0}: ".format(sdoh_problem_num),
-                 tag="PIU_SDOH_PROBLEM_{0}_LABEL_TEXT".format(sdoh_problem_num),
+                 tag="PIU_SDOH_PROBLEM_{0}_LABEL_TEXT".format(
+                     sdoh_problem_num),
                  parent=user_data, indent=20)
     dpg.add_input_text(tag="PIU_SDOH_PROBLEM_{0}_PROBLEM_INPUT_TEXT".format(sdoh_problem_num), label="Problem",
                        default_value="", parent=user_data, indent=20, callback=_call_update_sdoh_problems)
@@ -248,8 +298,8 @@ def _callback_delete_sdoh_problem(sender, app_data, user_data):
         "PIU_SDOH_PROBLEM_{0}_DATE_OF_RESOLUTION_INPUT_TEXT".format(sdoh_problem_num))
     sdoh_problem_num -= 1
     patient_info["problems"]["sdoh_problems_health_concerns"] = patient_info[
-                                                                    "problems"]["sdoh_problems_health_concerns"][
-                                                                :sdoh_problem_num]
+        "problems"]["sdoh_problems_health_concerns"][
+        :sdoh_problem_num]
 
 
 def _call_update_sdoh_problems(sender, app_data, user_data):
@@ -331,7 +381,7 @@ def _callback_delete_allergy(sender, app_data, user_data):
         "PIU_ALLERGY_{0}_SUBSTANCE_REACTION_INPUT_TEXT".format(allergy_num))
     allergy_num -= 1
     patient_info["allergies_intolerances"]["substances"] = patient_info["allergies_intolerances"]["substances"][
-                                                           :allergy_num]
+        :allergy_num]
 
 
 def _callback_update_patient_vital_signs(sender, app_data, user_data):
@@ -358,9 +408,9 @@ def _callback_delete_family_health_history(sender, app_data, user_data):
         family_health_history_num))
     family_health_history_num -= 1
     patient_info["family_health_history"]["family_health_history"] = patient_info[
-                                                                         "family_health_history"][
-                                                                         "family_health_history"][
-                                                                     :family_health_history_num]
+        "family_health_history"][
+        "family_health_history"][
+        :family_health_history_num]
 
 
 def _callback_update_social_health_history(sender, app_data, user_data):
@@ -376,6 +426,7 @@ def _callback_update_family_health_history(sender, app_data, user_data):
 
 
 def _init_patient_info_ui():
+    global problem_tab
     with dpg.collapsing_header(label="Patient Info UI", default_open=True):
         # TODO: UI Creation
 
@@ -387,16 +438,16 @@ def _init_patient_info_ui():
                              callback=_callback_save_patient_into_to_file, tag="PIU_SAVE_FILE_DIALOG", modal=True):
             dpg.add_file_extension(".json", color=(255, 255, 0, 255))
 
-        with dpg.window(height=100, width=350, label="Warning", modal=True, show=False,
-                        tag="PIU_SAVE_FILE_CONFIRM_WINDOW", no_title_bar=True,
-                        pos=[int(VIEWPORT_WIDTH / 2 - 175), int(VIEWPORT_HEIGHT / 2 - 50)], no_move=True):
-            dpg.add_text(
-                "Current patient information has not be saved.\nDo you want to save it firstly?")
-            with dpg.group(horizontal=True):
-                dpg.add_button(label="OK", width=75, pos=[50, 50],
-                               callback=_callback_save_patient_info)
-                dpg.add_button(label="Cancel", width=75, pos=[350 - 50 - 75, 50],
-                               callback=lambda: dpg.configure_item("PIU_SAVE_FILE_CONFIRM_WINDOW", show=False))
+        # with dpg.window(height=100, width=350, label="Warning", modal=True, show=False,
+        #                 tag="PIU_SAVE_FILE_CONFIRM_WINDOW", no_title_bar=True,
+        #                 pos=[int(VIEWPORT_WIDTH / 2 - 175), int(VIEWPORT_HEIGHT / 2 - 50)], no_move=True):
+        #     dpg.add_text(
+        #         "Current patient information has not be saved.\nDo you want to save it firstly?")
+        #     with dpg.group(horizontal=True):
+        #         dpg.add_button(label="OK", width=75, pos=[50, 50],
+        #                        callback=_callback_save_patient_info)
+        #         dpg.add_button(label="Cancel", width=75, pos=[350 - 50 - 75, 50],
+        #                        callback=lambda: dpg.configure_item("PIU_SAVE_FILE_CONFIRM_WINDOW", show=False))
 
         with dpg.group(horizontal=True):
             create_new_patient_info = dpg.add_button(
@@ -408,58 +459,58 @@ def _init_patient_info_ui():
         # stupid code
 
         with dpg.collapsing_header(label="Patient Demographics", default_open=True, indent=20):
-            dpg.add_input_text(tag=gui_tag.PIU_PATIENT_FIRST_NAME_INPUT_TEXT, label="First Name",
+            dpg.add_input_text(tag=PIU_PATIENT_FIRST_NAME_INPUT_TEXT, label="First Name",
                                default_value="", indent=20, callback=_callback_update_patient_demographics)
-            dpg.add_input_text(tag=gui_tag.PIU_PATIENT_LAST_NAME_INPUT_TEXT, label="Last Name",
+            dpg.add_input_text(tag=PIU_PATIENT_LAST_NAME_INPUT_TEXT, label="Last Name",
                                default_value="", indent=20, callback=_callback_update_patient_demographics)
-            dpg.add_input_text(tag=gui_tag.PIU_PATIENT_MIDDLE_NAME_INPUT_TEXT, label="Middle Name",
+            dpg.add_input_text(tag=PIU_PATIENT_MIDDLE_NAME_INPUT_TEXT, label="Middle Name",
                                default_value="", indent=20, callback=_callback_update_patient_demographics)
-            dpg.add_input_text(tag=gui_tag.PIU_PATIENT_SUFFIX_INPUT_TEXT, label="Suffix",
+            dpg.add_input_text(tag=PIU_PATIENT_SUFFIX_INPUT_TEXT, label="Suffix",
                                default_value="", indent=20, callback=_callback_update_patient_demographics)
-            dpg.add_input_text(tag=gui_tag.PIU_PATIENT_PREVIOUS_NAME_INPUT_TEXT, label="Previous Name",
+            dpg.add_input_text(tag=PIU_PATIENT_PREVIOUS_NAME_INPUT_TEXT, label="Previous Name",
                                default_value="", indent=20, callback=_callback_update_patient_demographics)
-            dpg.add_input_text(tag=gui_tag.PIU_PATIENT_DATE_OF_BIRTH_INPUT_TEXT, label="Date of Birth",
+            dpg.add_input_text(tag=PIU_PATIENT_DATE_OF_BIRTH_INPUT_TEXT, label="Date of Birth",
                                default_value="", indent=20, callback=_callback_update_patient_demographics)
-            dpg.add_input_text(tag=gui_tag.PIU_PATIENT_DATE_OF_DEATH_INPUT_TEXT, label="Date of Death",
+            dpg.add_input_text(tag=PIU_PATIENT_DATE_OF_DEATH_INPUT_TEXT, label="Date of Death",
                                default_value="", indent=20, callback=_callback_update_patient_demographics)
-            dpg.add_input_text(tag=gui_tag.PIU_PATIENT_AGE_INPUT_TEXT, label="Age",
+            dpg.add_input_text(tag=PIU_PATIENT_AGE_INPUT_TEXT, label="Age",
                                default_value="", indent=20, callback=_callback_update_patient_demographics)
-            dpg.add_input_text(tag=gui_tag.PIU_PATIENT_RACE_INPUT_TEXT, label="Race",
+            dpg.add_input_text(tag=PIU_PATIENT_RACE_INPUT_TEXT, label="Race",
                                default_value="", indent=20, callback=_callback_update_patient_demographics)
-            dpg.add_input_text(tag=gui_tag.PIU_PATIENT_ETHNICITY_INPUT_TEXT, label="Ethnicity",
+            dpg.add_input_text(tag=PIU_PATIENT_ETHNICITY_INPUT_TEXT, label="Ethnicity",
                                default_value="", indent=20, callback=_callback_update_patient_demographics)
-            dpg.add_input_text(tag=gui_tag.PIU_PATIENT_TRIBAL_AFFILIATION_INPUT_TEXT, label="Tribal Affiliation",
+            dpg.add_input_text(tag=PIU_PATIENT_TRIBAL_AFFILIATION_INPUT_TEXT, label="Tribal Affiliation",
                                default_value="", indent=20, callback=_callback_update_patient_demographics)
-            dpg.add_input_text(tag=gui_tag.PIU_PATIENT_SEX_ASSIGNED_AT_BIRTH_INPUT_TEXT, label="Sex Assigned at Birth",
+            dpg.add_input_text(tag=PIU_PATIENT_SEX_ASSIGNED_AT_BIRTH_INPUT_TEXT, label="Sex Assigned at Birth",
                                default_value="", indent=20, callback=_callback_update_patient_demographics)
-            dpg.add_input_text(tag=gui_tag.PIU_PATIENT_SEXUAL_ORIENTATION_INPUT_TEXT, label="Sexual Orientation",
+            dpg.add_input_text(tag=PIU_PATIENT_SEXUAL_ORIENTATION_INPUT_TEXT, label="Sexual Orientation",
                                default_value="", indent=20, callback=_callback_update_patient_demographics)
-            dpg.add_input_text(tag=gui_tag.PIU_PATIENT_GENDER_IDENTITY_INPUT_TEXT, label="Gender Identity",
+            dpg.add_input_text(tag=PIU_PATIENT_GENDER_IDENTITY_INPUT_TEXT, label="Gender Identity",
                                default_value="", indent=20, callback=_callback_update_patient_demographics)
-            dpg.add_input_text(tag=gui_tag.PIU_PATIENT_PREFERRED_LANGUAGE_INPUT_TEXT, label="Preferred Language",
+            dpg.add_input_text(tag=PIU_PATIENT_PREFERRED_LANGUAGE_INPUT_TEXT, label="Preferred Language",
                                default_value="", indent=20, callback=_callback_update_patient_demographics)
-            dpg.add_input_text(tag=gui_tag.PIU_PATIENT_CURRENT_ADDRESS_INPUT_TEXT, label="Current Address",
+            dpg.add_input_text(tag=PIU_PATIENT_CURRENT_ADDRESS_INPUT_TEXT, label="Current Address",
                                default_value="", indent=20, callback=_callback_update_patient_demographics)
-            dpg.add_input_text(tag=gui_tag.PIU_PATIENT_PREVIOUS_ADDRESS_INPUT_TEXT, label="Previous Address",
+            dpg.add_input_text(tag=PIU_PATIENT_PREVIOUS_ADDRESS_INPUT_TEXT, label="Previous Address",
                                default_value="", indent=20, callback=_callback_update_patient_demographics)
-            dpg.add_input_text(tag=gui_tag.PIU_PATIENT_PHONE_NUMBER_INPUT_TEXT, label="Phone Number",
+            dpg.add_input_text(tag=PIU_PATIENT_PHONE_NUMBER_INPUT_TEXT, label="Phone Number",
                                default_value="", indent=20, callback=_callback_update_patient_demographics)
-            dpg.add_input_text(tag=gui_tag.PIU_PATIENT_PHONE_NUMBER_TYPE_INPUT_TEXT, label="Phone Number Type",
+            dpg.add_input_text(tag=PIU_PATIENT_PHONE_NUMBER_TYPE_INPUT_TEXT, label="Phone Number Type",
                                default_value="", indent=20, callback=_callback_update_patient_demographics)
-            dpg.add_input_text(tag=gui_tag.PIU_PATIENT_EMAIL_ADDRESS_INPUT_TEXT, label="Email Address",
+            dpg.add_input_text(tag=PIU_PATIENT_EMAIL_ADDRESS_INPUT_TEXT, label="Email Address",
                                default_value="", indent=20, callback=_callback_update_patient_demographics)
-            dpg.add_input_text(tag=gui_tag.PIU_PATIENT_RELATED_PERSONS_NAME_INPUT_TEXT, label="Related Persons Name",
+            dpg.add_input_text(tag=PIU_PATIENT_RELATED_PERSONS_NAME_INPUT_TEXT, label="Related Persons Name",
                                default_value="", indent=20, callback=_callback_update_patient_demographics)
-            dpg.add_input_text(tag=gui_tag.PIU_PATIENT_RELATED_PERSONS_RELATIONSHIP_INPUT_TEXT,
+            dpg.add_input_text(tag=PIU_PATIENT_RELATED_PERSONS_RELATIONSHIP_INPUT_TEXT,
                                label="Related Persons Relationship",
                                default_value="", indent=20, callback=_callback_update_patient_demographics)
-            dpg.add_input_text(tag=gui_tag.PIU_PATIENT_OCCUPATION_INPUT_TEXT, label="Occupation",
+            dpg.add_input_text(tag=PIU_PATIENT_OCCUPATION_INPUT_TEXT, label="Occupation",
                                default_value="", indent=20, callback=_callback_update_patient_demographics)
-            dpg.add_input_text(tag=gui_tag.PIU_PATIENT_OCCUPATION_HISTORY_INPUT_TEXT, label="Occupation History",
+            dpg.add_input_text(tag=PIU_PATIENT_OCCUPATION_HISTORY_INPUT_TEXT, label="Occupation History",
                                default_value="", indent=20, callback=_callback_update_patient_demographics)
-            dpg.add_input_text(tag=gui_tag.PIU_PATIENT_CHIEF_COMPLAINT_INPUT_TEXT, label="Chief Complaint",
+            dpg.add_input_text(tag=PIU_PATIENT_CHIEF_COMPLAINT_INPUT_TEXT, label="Chief Complaint",
                                default_value="", indent=20, callback=_callback_update_patient_demographics)
-            dpg.add_input_text(tag=gui_tag.PIU_PATIENT_INSURANCE_INPUT_TEXT, label="Insurance",
+            dpg.add_input_text(tag=PIU_PATIENT_INSURANCE_INPUT_TEXT, label="Insurance",
                                default_value="", indent=20, callback=_callback_update_patient_demographics)
 
             # print(patient_info["problems"]["problems"])
@@ -572,6 +623,8 @@ def _init_patient_info_ui():
 
         dpg.add_button(label="Export", indent=20,
                        callback=_callback_export_patient_info)
+
+
 def main() -> None:
     global patient_info
     global problem_tab, sdoh_problem_tab, medication_tab, allergy_tab, family_health_history_tab
