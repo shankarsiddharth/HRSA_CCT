@@ -1,17 +1,17 @@
-import json
 import os
+import shutil
+import json
 
 import dearpygui.dearpygui as dpg
-
-import audio_generation
-import hrsa_cct_constants
-import translate
-import shutil
+from dearpygui_ext import themes
 
 import hrsa_cct_globals
 from hrsa_cct_globals import log
 
-from dearpygui_ext import themes
+import audio_generation
+import hrsa_cct_constants
+import translate
+from patient_info_ui import patient_info_ui
 
 # logger = dpg_logger.mvLogger()
 # logger.log("mv Logger Started")
@@ -210,6 +210,9 @@ def main() -> None:
             dpg.add_text(tag=SCENARIO_DIRECTORY_PATH_TEXT_DESTINATION)
             dpg.add_button(tag=COPY_SCENARIO_INFORMATION_BUTTON, label="Copy Scenario Folder", callback=callback_on_copy_scenario_button_clicked)
             dpg.add_separator()
+
+        # Patient Info UI - Initialize
+        patient_info_ui.init_ui()
 
         with dpg.collapsing_header(label="Choose the Scenario Folder for Audio Generation", default_open=True):
             dpg.add_file_dialog(tag=audio_generation.FILE_DIALOG_FOR_SCENARIO_FOLDER, height=300, width=450, directory_selector=True, show=False,

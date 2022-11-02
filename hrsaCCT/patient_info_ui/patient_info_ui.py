@@ -4,21 +4,6 @@ import dearpygui.dearpygui as dpg
 
 import hrsa_cct_constants
 
-problem_num = 0
-sdoh_problem_num = 0
-medication_num = 0
-allergy_num = 0
-family_health_history_num = 0
-patient_info = {}
-
-patient_info_saved = False
-
-problem_tab = None
-sdoh_problem_tab = None
-medication_tab = None
-family_health_history_tab = None
-allergy_tab = None
-
 # GUI Element Tags
 PIU_PATIENT_FIRST_NAME_INPUT_TEXT: str = "PIU_PATIENT_FIRST_NAME_INPUT_TEXT"
 PIU_PATIENT_LAST_NAME_INPUT_TEXT: str = "PIU_PATIENT_LAST_NAME_INPUT_TEXT"
@@ -46,6 +31,21 @@ PIU_PATIENT_OCCUPATION_INPUT_TEXT: str = "PIU_PATIENT_OCCUPATION_INPUT_TEXT"
 PIU_PATIENT_OCCUPATION_HISTORY_INPUT_TEXT: str = "PIU_PATIENT_OCCUPATION_HISTORY_INPUT_TEXT"
 PIU_PATIENT_CHIEF_COMPLAINT_INPUT_TEXT: str = "PIU_PATIENT_CHIEF_COMPLAINT_INPUT_TEXT"
 PIU_PATIENT_INSURANCE_INPUT_TEXT: str = "PIU_PATIENT_INSURANCE_INPUT_TEXT"
+
+# Module Variables
+problem_num = 0
+sdoh_problem_num = 0
+medication_num = 0
+allergy_num = 0
+family_health_history_num = 0
+patient_info = dict()
+patient_info_saved = False
+
+problem_tab = None
+sdoh_problem_tab = None
+medication_tab = None
+family_health_history_tab = None
+allergy_tab = None
 
 
 def generate_tag(key, sub_key, index=0):
@@ -110,8 +110,8 @@ def load_patient_info(key, sub_dict):
                 "sdoh_problems_health_concerns", "date_of_resolution", index + 1), item["date_of_resolution"])
             index += 1
         patient_info["problems"]["sdoh_problems_health_concerns"] = patient_info[
-            "problems"]["sdoh_problems_health_concerns"][
-            :sdoh_problem_num]
+                                                                        "problems"]["sdoh_problems_health_concerns"][
+                                                                    :sdoh_problem_num]
     elif key == "medications":
         num = len(sub_dict["medications"])
         while num > medication_num:
@@ -143,9 +143,9 @@ def load_patient_info(key, sub_dict):
                 "family_health_history", "", index + 1), item)
             index += 1
         patient_info["family_health_history"]["family_health_history"] = patient_info[
-            "family_health_history"][
-            "family_health_history"][
-            :family_health_history_num]
+                                                                             "family_health_history"][
+                                                                             "family_health_history"][
+                                                                         :family_health_history_num]
     elif key == "allergies_intolerances":
         num = len(sub_dict["substances"])
         while num > allergy_num:
@@ -165,7 +165,7 @@ def load_patient_info(key, sub_dict):
                 "allergies_intolerances", "substance_reaction", index + 1), item["reaction"])
             index += 1
         patient_info["allergies_intolerances"]["substances"] = patient_info["allergies_intolerances"]["substances"][
-            :allergy_num]
+                                                               :allergy_num]
     else:
         for sub_key in sub_dict:
             tag = generate_tag(key, sub_key)
@@ -294,8 +294,8 @@ def _callback_delete_sdoh_problem(sender, app_data, user_data):
         "PIU_SDOH_PROBLEM_{0}_DATE_OF_RESOLUTION_INPUT_TEXT".format(sdoh_problem_num))
     sdoh_problem_num -= 1
     patient_info["problems"]["sdoh_problems_health_concerns"] = patient_info[
-        "problems"]["sdoh_problems_health_concerns"][
-        :sdoh_problem_num]
+                                                                    "problems"]["sdoh_problems_health_concerns"][
+                                                                :sdoh_problem_num]
 
 
 def _call_update_sdoh_problems(sender, app_data, user_data):
@@ -377,7 +377,7 @@ def _callback_delete_allergy(sender, app_data, user_data):
         "PIU_ALLERGY_{0}_SUBSTANCE_REACTION_INPUT_TEXT".format(allergy_num))
     allergy_num -= 1
     patient_info["allergies_intolerances"]["substances"] = patient_info["allergies_intolerances"]["substances"][
-        :allergy_num]
+                                                           :allergy_num]
 
 
 def _callback_update_patient_vital_signs(sender, app_data, user_data):
@@ -404,9 +404,9 @@ def _callback_delete_family_health_history(sender, app_data, user_data):
         family_health_history_num))
     family_health_history_num -= 1
     patient_info["family_health_history"]["family_health_history"] = patient_info[
-        "family_health_history"][
-        "family_health_history"][
-        :family_health_history_num]
+                                                                         "family_health_history"][
+                                                                         "family_health_history"][
+                                                                     :family_health_history_num]
 
 
 def _callback_update_social_health_history(sender, app_data, user_data):
@@ -439,7 +439,7 @@ def init_ui():
         #                 tag="PIU_SAVE_FILE_CONFIRM_WINDOW", no_title_bar=True,
         #                 pos=[int(VIEWPORT_WIDTH / 2 - 175), int(VIEWPORT_HEIGHT / 2 - 50)], no_move=True):
         #     dpg.add_text(
-        #         "Current patient information has not be saved.\nDo you want to save it firstly?")
+        #         "Current patient information has not been saved.\nDo you want to save it firstly?")
         #     with dpg.group(horizontal=True):
         #         dpg.add_button(label="OK", width=75, pos=[50, 50],
         #                        callback=_callback_save_patient_info)
