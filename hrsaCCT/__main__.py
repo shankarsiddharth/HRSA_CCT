@@ -12,6 +12,7 @@ import audio_generation
 import hrsa_cct_constants
 import translate
 from patient_info_ui import patient_info_ui
+from dialogue_ui_config import dialogue_ui_config
 
 # logger = dpg_logger.mvLogger()
 # logger.log("mv Logger Started")
@@ -166,6 +167,7 @@ def callback_on_copy_scenario_button_clicked():
 
     audio_generation.callback_on_scenario_folder_selected(audio_generation.FILE_DIALOG_FOR_SCENARIO_FOLDER, hrsa_cct_globals.app_data)
     translate.callback_on_source_scenario_folder_selected(translate.FILE_DIALOG_FOR_SOURCE_SCENARIO_FOLDER, hrsa_cct_globals.app_data)
+    patient_info_ui.set_scenario_path(scenario_path_destination)
 
 
 def save_init():
@@ -214,7 +216,10 @@ def main() -> None:
         # Patient Info UI - Initialize
         patient_info_ui.init_ui()
 
-        with dpg.collapsing_header(label="Choose the Scenario Folder for Audio Generation", default_open=True):
+        # Dialogue UI Config- Initialize
+        dialogue_ui_config.init_ui()
+
+        with dpg.collapsing_header(label="Choose the Scenario Folder for Audio Generation", default_open=False):
             dpg.add_file_dialog(tag=audio_generation.FILE_DIALOG_FOR_SCENARIO_FOLDER, height=300, width=450, directory_selector=True, show=False,
                                 callback=audio_generation.callback_on_scenario_folder_selected)
             dpg.add_button(tag=audio_generation.SHOW_FILE_DIALOG_BUTTON_SCENARIO_FOLDER, label="Select Scenario Folder",
@@ -253,7 +258,7 @@ def main() -> None:
             dpg.add_button(tag=translate.TRANSLATE_TEXT_BUTTON, label="Translate Data", show=False, callback=translate.callback_on_translate_text_clicked)
             dpg.add_separator()
 
-    log.init_ui_logger()
+    log.init_ui()
 
     dpg.setup_dearpygui()
     dpg.show_viewport()

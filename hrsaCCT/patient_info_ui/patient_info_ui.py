@@ -1,4 +1,5 @@
 import json
+import os.path
 
 import dearpygui.dearpygui as dpg
 
@@ -31,6 +32,7 @@ PIU_PATIENT_OCCUPATION_INPUT_TEXT: str = "PIU_PATIENT_OCCUPATION_INPUT_TEXT"
 PIU_PATIENT_OCCUPATION_HISTORY_INPUT_TEXT: str = "PIU_PATIENT_OCCUPATION_HISTORY_INPUT_TEXT"
 PIU_PATIENT_CHIEF_COMPLAINT_INPUT_TEXT: str = "PIU_PATIENT_CHIEF_COMPLAINT_INPUT_TEXT"
 PIU_PATIENT_INSURANCE_INPUT_TEXT: str = "PIU_PATIENT_INSURANCE_INPUT_TEXT"
+PIU_SCENARIO_PATIENT_INFO_JSON_PATH_TEXT: str = "PIU_SCENARIO_DIRECTORY_PATH_TEXT"
 
 # Module Variables
 problem_num = 0
@@ -40,12 +42,20 @@ allergy_num = 0
 family_health_history_num = 0
 patient_info = dict()
 patient_info_saved = False
+piu_scenario_path = ""
 
 problem_tab = None
 sdoh_problem_tab = None
 medication_tab = None
 family_health_history_tab = None
 allergy_tab = None
+
+
+def set_scenario_path(scenario_path):
+    global piu_scenario_path
+    piu_scenario_path = scenario_path
+    patient_information_json_file_path = os.path.join(piu_scenario_path, hrsa_cct_constants.PATIENT_INFORMATION_JSON_FILE_NAME)
+    dpg.configure_item(PIU_SCENARIO_PATIENT_INFO_JSON_PATH_TEXT, default_value=patient_information_json_file_path)
 
 
 def generate_tag(key, sub_key, index=0):
@@ -175,8 +185,9 @@ def load_patient_info(key, sub_dict):
 
 
 def _callback_load_patient_info_file(sender, app_data):
-    global patient_info
-    with open(app_data["file_path_name"]) as patient_info_json:
+    global patient_info, piu_scenario_path
+    patient_info_json_file_path = app_data["file_path_name"]
+    with open(patient_info_json_file_path, "r", encoding="UTF-8") as patient_info_json:
         patient_info = json.load(patient_info_json)
 
         for key in patient_info:
@@ -188,7 +199,7 @@ def _callback_save_patient_into_to_file(sender, app_data):
     global patient_info
     patient_info_json = json.dumps(patient_info, indent=4)
 
-    with open(app_data["file_path_name"], "w") as outfile:
+    with open(app_data["file_path_name"], "w", encoding="UTF-8") as outfile:
         outfile.write(patient_info_json)
 
 
@@ -440,11 +451,11 @@ def init_ui():
     with dpg.collapsing_header(label="Patient Info UI", default_open=False, parent=hrsa_cct_constants.HRSA_CCT_TOOL):
         # TODO: UI Creation
 
-        # dpg.add_text(tag=PIU_SCENARIO_DIRECTORY_PATH_TEXT)
+        dpg.add_text(tag=PIU_SCENARIO_PATIENT_INFO_JSON_PATH_TEXT)
 
-        with dpg.file_dialog(height=300, width=600, directory_selector=False, show=False,
-                             callback=_callback_load_patient_info_file, tag="PIU_OPEN_FILE_DIALOG", modal=True):
-            dpg.add_file_extension(".json", color=(255, 255, 0, 255))
+        dpg.file_dialog(height=300, width=600, directory_selector=True, show=False,
+                        callback=_callback_load_patient_info_file, tag="PIU_OPEN_FILE_DIALOG", modal=True)
+        # dpg.add_file_extension(".json", color=(255, 255, 0, 255))
 
         with dpg.file_dialog(height=300, width=600, directory_selector=False, show=False,
                              callback=_callback_save_patient_into_to_file, tag="PIU_SAVE_FILE_DIALOG", modal=True):
@@ -465,7 +476,7 @@ def init_ui():
             # create_new_patient_info = dpg.add_button(
             #     label="Create Patient Information", indent=20)
             load_exist_patient_info = dpg.add_button(
-                label="Load Patient Information", callback=_callback_load_patient_info)
+                label="Select Scenario", callback=_callback_load_patient_info)
         # with dpg.collapsing_header(label="Create Patient Information", default_open=False):
 
         with dpg.collapsing_header(label="Patient Demographics", default_open=True, indent=20):

@@ -58,7 +58,7 @@ class HRSALogger:
         self.count = 0
         # self.flush_count = 10000
 
-    def init_ui_logger(self, parent=hrsa_cct_constants.HRSA_CCT_TOOL):
+    def init_ui(self, parent=hrsa_cct_constants.HRSA_CCT_TOOL):
         self.ui_logger = hrsa_ui_logger.HRSAUILogger(parent=parent)
         self.ui_logger.trace("HRSA CCT UI Logger Started")
         self.ui_logger.log_debug('Test Debug')

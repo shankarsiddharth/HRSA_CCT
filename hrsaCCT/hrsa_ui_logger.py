@@ -14,10 +14,10 @@ class HRSAUILogger:
         self.filter_id = None
         if parent:
             # self.window_id = parent
-            self.window_id = dpg.add_collapsing_header(label="Logger", tag="Logger", default_open=True, parent=parent)
+            self.window_id = dpg.add_collapsing_header(label="Logger", tag="Logger", default_open=False, parent=parent)
         else:
             # self.window_id = dpg.add_window(label="Logger", pos=(200, 200), width=500, height=500)
-            self.window_id = dpg.add_collapsing_header(label="Logger", tag="Logger", default_open=True)
+            self.window_id = dpg.add_collapsing_header(label="Logger", tag="Logger", default_open=False)
         self.count = 0
         self.flush_count = 10000
 
