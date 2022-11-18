@@ -1,5 +1,6 @@
 import json
 
+
 class SubtitleConfig(object):
     def __init__(self, text_color):
         self.text_color = text_color
@@ -32,4 +33,4 @@ class HRSAConfig(object):
         self.trainer = CharacterConfig(**trainer)
 
     def toJson(self):
-        return {"player": self.player.toJson(), "medicalstudent": self.medicalstudent.toJson(), "patient": self.patient.toJson(), "trainer": self.trainer.toJson() }
+        return {"player": self.player.toJson(), "medicalstudent": self.medicalstudent.toJson(), "patient": self.patient.toJson(), "trainer": self.trainer.toJson()}
