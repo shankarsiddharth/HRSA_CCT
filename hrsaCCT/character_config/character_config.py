@@ -3,6 +3,7 @@ import hrsa_cct_constants
 import json
 
 from configuration import character_model_data
+from configuration import hrsa_config
 
 model_data_list = []
 
@@ -20,6 +21,8 @@ student_model_window = None
 trainer_model_window = None
 
 loaded_texture = []
+
+app_config = None
 
 
 def _get_characters_of_type(conditions):
@@ -54,7 +57,6 @@ def _load_character_config():
         for data in row_config['ModelDataList']:
             item = character_model_data.CharacterModelData(**data)
             model_data_list.append(item)
-
         # print(_get_characters_of_type({'CharacterType': 'kMedicalStudent'}))
 
 
@@ -62,6 +64,19 @@ def _log(sender, app_data, user_data):
     print(f"sender: {sender}, \t app_data: {app_data}, \t user_data: {user_data}")
     print(dpg.get_value(sender))
     # sender: 130, 	 app_data: White, 	 user_data: None
+
+def _update_model_config(sender, app_data, user_data):
+    uid = sender.replace('uid_', '')
+    print(f"sender: {uid}, \t app_data: {app_data}, \t user_data: {user_data}")
+    global app_config
+    if app_config is None:
+        return
+    if user_data == 'Patient':
+        app_config.patient.model_config.uid = uid
+    elif user_data == 'MedicalStudent':
+        app_config.medicalstudent.model_config.uid = uid
+    elif user_data == 'Trainer':
+        app_config.trainer.model_config.uid = uid
 
 
 def _load_character_model_image(image_name):
@@ -107,14 +122,27 @@ def _callback_update_filter(sender, app_data, user_data):
             if patient.uid not in loaded_texture:
                 # print('texture not loaded')
                 _load_character_model_image(patient.uid)
-            dpg.add_image_button(patient.uid, callback=_log, tag='uid_' + patient.uid)
+            dpg.add_image_button(patient.uid, callback=_update_model_config, tag='uid_' + patient.uid, user_data=user_data, background_color=[0])
             # dpg.add_text(patient.uid, parent=target_window)
 
+def _load_character_config_for_current_scenario():
+    file_path = "character_config/test_app_config.json"
+    global app_config
+    with open(file_path, "r", encoding="UTF-8") as app_config_file:
+        row_data = app_config_file.read()
+        row_config = json.loads(row_data)
+        app_config = hrsa_config.HRSAConfig(**row_config)
+    print(app_config.toJson())
 
-def load_character_config_for_current_scenario():
-    file_path = "test_app_config.json"
-    pass
 
+def _update_character_config_for_current_scenario():
+    file_path = "character_config/test_app_config.json"
+    global app_config
+    if app_config is None:
+        return
+    app_config_json = json.dumps(app_config.toJson(), indent=4)
+    with open(file_path, "w", encoding="UTF-8") as outfile:
+        outfile.write(app_config_json)
 
 def init_ui():
     _load_character_config()
@@ -123,6 +151,10 @@ def init_ui():
 
     with dpg.collapsing_header(label="Character Config", default_open=True, parent=hrsa_cct_constants.HRSA_CCT_TOOL):
         # TODO: UI Creation
+
+        dpg.add_button(label="Load Setting", callback=_load_character_config_for_current_scenario)
+        dpg.add_button(label="Save Setting", callback=_update_character_config_for_current_scenario)
+
         dpg.add_text('Patient', indent=20)
         with dpg.group(horizontal=True, indent=20):
             global patient_gender_combo, patient_ethnicity_combo
@@ -153,3 +185,7 @@ def init_ui():
 
         global trainer_model_window
         trainer_model_window = dpg.add_child_window(autosize_x=True, height=250, menubar=True)
+
+        _callback_update_filter(None, None, 'Patient')
+        _callback_update_filter(None, None, 'MedicalStudent')
+        _callback_update_filter(None, None, 'Trainer')
