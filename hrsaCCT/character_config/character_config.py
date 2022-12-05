@@ -21,6 +21,7 @@ trainer_model_window = None
 
 loaded_texture = []
 
+
 def _get_characters_of_type(conditions):
     print('search conditions ', conditions)
     data_of_type = []
@@ -87,7 +88,7 @@ def _callback_update_filter(sender, app_data, user_data):
         gender = dpg.get_value(trainer_gender_combo)
         ethnicity = dpg.get_value(trainer_ethnicity_combo)
 
-    conditions = {}
+    conditions = dict()
 
     conditions['CharacterType'] = 'k' + user_data
     if not gender == 'None':
@@ -109,6 +110,12 @@ def _callback_update_filter(sender, app_data, user_data):
             dpg.add_image_button(patient.uid, callback=_log, tag='uid_' + patient.uid)
             # dpg.add_text(patient.uid, parent=target_window)
 
+
+def load_character_config_for_current_scenario():
+    file_path = "test_app_config.json"
+    pass
+
+
 def init_ui():
     _load_character_config()
 
@@ -120,7 +127,8 @@ def init_ui():
         with dpg.group(horizontal=True, indent=20):
             global patient_gender_combo, patient_ethnicity_combo
             patient_gender_combo = dpg.add_combo(('None', 'Male', 'Female'), label='Gender', default_value='None', callback=_callback_update_filter, width=200, user_data='Patient')
-            patient_ethnicity_combo = dpg.add_combo(('None', 'White', 'Black', 'Hispanic'), label='Ethnicity', default_value='None', callback=_callback_update_filter, width=200, user_data='Patient')
+            patient_ethnicity_combo = dpg.add_combo(('None', 'White', 'Black', 'Hispanic'), label='Ethnicity', default_value='None', callback=_callback_update_filter, width=200,
+                                                    user_data='Patient')
 
         global patient_model_window
         patient_model_window = dpg.add_child_window(autosize_x=True, height=250, menubar=True)
@@ -128,8 +136,10 @@ def init_ui():
         dpg.add_text('Medical Student', indent=20)
         with dpg.group(horizontal=True, indent=20):
             global student_gender_combo, student_ethnicity_combo
-            student_gender_combo = dpg.add_combo(('None', 'Male', 'Female'), label='Gender', default_value='None', callback=_callback_update_filter, width=200, user_data='MedicalStudent')
-            student_ethnicity_combo = dpg.add_combo(('None', 'White', 'Black', 'Hispanic'), label='Ethnicity', default_value='None', callback=_callback_update_filter, width=200, user_data='MedicalStudent')
+            student_gender_combo = dpg.add_combo(('None', 'Male', 'Female'), label='Gender', default_value='None', callback=_callback_update_filter, width=200,
+                                                 user_data='MedicalStudent')
+            student_ethnicity_combo = dpg.add_combo(('None', 'White', 'Black', 'Hispanic'), label='Ethnicity', default_value='None', callback=_callback_update_filter, width=200,
+                                                    user_data='MedicalStudent')
 
         global student_model_window
         student_model_window = dpg.add_child_window(autosize_x=True, height=250, menubar=True)
@@ -138,7 +148,8 @@ def init_ui():
         with dpg.group(horizontal=True, indent=20):
             global trainer_gender_combo, trainer_ethnicity_combo
             trainer_gender_combo = dpg.add_combo(('None', 'Male', 'Female'), label='Gender', default_value='None', callback=_callback_update_filter, width=200, user_data='Trainer')
-            trainer_ethnicity_combo = dpg.add_combo(('None', 'White', 'Black', 'Hispanic'), label='Ethnicity', default_value='None', callback=_callback_update_filter, width=200, user_data='Trainer')
+            trainer_ethnicity_combo = dpg.add_combo(('None', 'White', 'Black', 'Hispanic'), label='Ethnicity', default_value='None', callback=_callback_update_filter, width=200,
+                                                    user_data='Trainer')
 
         global trainer_model_window
         trainer_model_window = dpg.add_child_window(autosize_x=True, height=250, menubar=True)
