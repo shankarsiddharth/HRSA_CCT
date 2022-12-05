@@ -38,8 +38,5 @@
 		"model_config" : {
 			"uid" : "Trainer1"
 		}
-    },
-    "conversation_config": {
-        "question_timer_in_seconds" : 90
     }
 }
