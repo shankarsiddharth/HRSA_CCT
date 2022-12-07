@@ -17,8 +17,13 @@ trainer_gender_combo = None
 trainer_ethnicity_combo = None
 
 patient_model_window = None
+patient_model_detail_window = None
+
 student_model_window = None
+student_model_detail_window = None
+
 trainer_model_window = None
+trainer_model_detail_window = None
 
 loaded_texture = []
 
@@ -61,22 +66,48 @@ def _load_character_config():
 
 
 def _log(sender, app_data, user_data):
-    print(f"sender: {sender}, \t app_data: {app_data}, \t user_data: {user_data}")
-    print(dpg.get_value(sender))
+    # print(f"sender: {sender}, \t app_data: {app_data}, \t user_data: {user_data}")
+    # print(dpg.get_value(sender))
+    pass
     # sender: 130, 	 app_data: White, 	 user_data: None
+
+def _mouse_click_callback(sender, app_data, user_data):
+    print(f"mouse click sender: {sender}, \t app_data: {app_data}, \t user_data: {user_data}")
+    if dpg.is_item_clicked('uid_MedStudent1'):
+        print('True')
+        global loaded_texture
+        if 'MedStudent1_0' not in loaded_texture:
+            # print('texture not loaded')
+            _load_character_model_image('MedStudent1_0')
+        dpg.set_value('uid_MedStudent1', 'MedStudent1_0')
 
 def _update_model_config(sender, app_data, user_data):
     uid = sender.replace('uid_', '')
-    print(f"sender: {uid}, \t app_data: {app_data}, \t user_data: {user_data}")
+    print(f"sender: {sender}, \t app_data: {app_data}, \t user_data: {user_data}")
+
+    global loaded_texture
+    detail_texture = uid + '_0'
+    if detail_texture not in loaded_texture:
+        print('texture not loaded ', detail_texture)
+        _load_character_model_image(detail_texture)
+
+    global patient_model_detail_window, student_model_detail_window, trainer_model_detail_window
     global app_config
-    if app_config is None:
-        return
     if user_data == 'Patient':
-        app_config.patient.model_config.uid = uid
+        if app_config is not None:
+            app_config.patient.model_config.uid = uid
+        dpg.delete_item(patient_model_detail_window, children_only=True)
+        dpg.add_image(detail_texture, tag='detail_' + uid, parent=patient_model_detail_window)
     elif user_data == 'MedicalStudent':
-        app_config.medicalstudent.model_config.uid = uid
+        if app_config is not None:
+            app_config.medicalstudent.model_config.uid = uid
+        dpg.delete_item(student_model_detail_window, children_only=True)
+        dpg.add_image(detail_texture, tag='detail_' + uid, parent=student_model_detail_window)
     elif user_data == 'Trainer':
-        app_config.trainer.model_config.uid = uid
+        if app_config is not None:
+            app_config.trainer.model_config.uid = uid
+        dpg.delete_item(trainer_model_detail_window, children_only=True)
+        dpg.add_image(detail_texture, tag='detail_' + uid, parent=trainer_model_detail_window)
 
 
 def _load_character_model_image(image_name):
@@ -93,7 +124,10 @@ def _callback_update_filter(sender, app_data, user_data):
     ethnicity = dpg.get_value(patient_ethnicity_combo)
 
     global patient_model_window, student_model_window, trainer_model_window
+    global patient_model_detail_window, student_model_detail_window, trainer_model_detail_window
+
     target_window = patient_model_window
+    target_detail_window = patient_model_detail_window
     if user_data == 'MedicalStudent':
         target_window = student_model_window
         gender = dpg.get_value(student_gender_combo)
@@ -115,6 +149,8 @@ def _callback_update_filter(sender, app_data, user_data):
     patients_data = _get_characters_of_type(conditions)
 
     dpg.delete_item(target_window, children_only=True)
+    dpg.delete_item(target_detail_window, children_only=True)
+
     global loaded_texture
     with dpg.group(horizontal=True, indent=20, parent=target_window):
         for patient in patients_data:
@@ -149,6 +185,10 @@ def init_ui():
 
     dpg.add_texture_registry(label="Demo Texture Container", tag="static_texture_container")
 
+    # with dpg.handler_registry():
+    #     dpg.add_mouse_move_handler(callback=_log)
+    #     dpg.add_mouse_click_handler(callback=_mouse_click_callback)
+
     with dpg.collapsing_header(label="Character Config", default_open=True, parent=hrsa_cct_constants.HRSA_CCT_TOOL):
         # TODO: UI Creation
 
@@ -162,8 +202,10 @@ def init_ui():
             patient_ethnicity_combo = dpg.add_combo(('None', 'White', 'Black', 'Hispanic'), label='Ethnicity', default_value='None', callback=_callback_update_filter, width=200,
                                                     user_data='Patient')
 
-        global patient_model_window
-        patient_model_window = dpg.add_child_window(autosize_x=True, height=250, menubar=True)
+        global patient_model_window, patient_model_detail_window
+        with dpg.group(horizontal=True):
+            patient_model_window = dpg.add_child_window(width=500, height=225)
+            patient_model_detail_window = dpg.add_child_window(width=225, height=225)
 
         dpg.add_text('Medical Student', indent=20)
         with dpg.group(horizontal=True, indent=20):
@@ -173,8 +215,10 @@ def init_ui():
             student_ethnicity_combo = dpg.add_combo(('None', 'White', 'Black', 'Hispanic'), label='Ethnicity', default_value='None', callback=_callback_update_filter, width=200,
                                                     user_data='MedicalStudent')
 
-        global student_model_window
-        student_model_window = dpg.add_child_window(autosize_x=True, height=250, menubar=True)
+        global student_model_window, student_model_detail_window
+        with dpg.group(horizontal=True):
+            student_model_window = dpg.add_child_window(width=500, height=225)
+            student_model_detail_window = dpg.add_child_window(width=225, height=225)
 
         dpg.add_text('Trainer', indent=20)
         with dpg.group(horizontal=True, indent=20):
@@ -183,8 +227,10 @@ def init_ui():
             trainer_ethnicity_combo = dpg.add_combo(('None', 'White', 'Black', 'Hispanic'), label='Ethnicity', default_value='None', callback=_callback_update_filter, width=200,
                                                     user_data='Trainer')
 
-        global trainer_model_window
-        trainer_model_window = dpg.add_child_window(autosize_x=True, height=250, menubar=True)
+        global trainer_model_window, trainer_model_detail_window
+        with dpg.group(horizontal=True):
+            trainer_model_window = dpg.add_child_window(width=500, height=225)
+            trainer_model_detail_window = dpg.add_child_window(width=225, height=225)
 
         _callback_update_filter(None, None, 'Patient')
         _callback_update_filter(None, None, 'MedicalStudent')
