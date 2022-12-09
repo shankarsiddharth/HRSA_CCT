@@ -31,7 +31,7 @@ class CharacterConfig(object):
         self.model_config = ModelConfig(**model_config)
 
     def toJson(self):
-        return {"ui": self.ui.toJson(), "model_config": self.model_config}
+        return {"ui": self.ui.toJson(), "model_config": self.model_config.toJson()}
 
 
 class HRSAConfig(object):
