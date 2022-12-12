@@ -16,7 +16,7 @@ from dialogue_ui_config import dialogue_ui_config
 from character_config import character_config
 
 # debug build parameters
-is_debug = False
+is_debug = True
 
 # logger = dpg_logger.mvLogger()
 # logger.log("mv Logger Started")
