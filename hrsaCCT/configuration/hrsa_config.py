@@ -17,12 +17,21 @@ class UIConfig(object):
         return {"subtitle": self.subtitle.toJson()}
 
 
-class CharacterConfig(object):
-    def __init__(self, ui):
-        self.ui = UIConfig(**ui)
+class ModelConfig(object):
+    def __init__(self, uid):
+        self.uid = uid
 
     def toJson(self):
-        return {"ui": self.ui.toJson()}
+        return {"uid": self.uid}
+
+
+class CharacterConfig(object):
+    def __init__(self, ui, model_config):
+        self.ui = UIConfig(**ui)
+        self.model_config = ModelConfig(**model_config)
+
+    def toJson(self):
+        return {"ui": self.ui.toJson(), "model_config": self.model_config.toJson()}
 
 
 class HRSAConfig(object):
