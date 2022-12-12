@@ -15,12 +15,15 @@ from patient_info_ui import patient_info_ui
 from dialogue_ui_config import dialogue_ui_config
 from character_config import character_config
 
+# debug build parameters
+is_debug = False
+
 # logger = dpg_logger.mvLogger()
 # logger.log("mv Logger Started")
 # TODO: Split into modules and change the global data variable to function return values
 
 # DearPyGUI's Viewport Constants
-VIEWPORT_WIDTH = 900
+VIEWPORT_WIDTH = 1200
 VIEWPORT_HEIGHT = 900  # 700
 
 # GUI Element Tags
@@ -162,7 +165,7 @@ def callback_on_copy_scenario_button_clicked():
     dpg.configure_item(COPY_SCENARIO_INFORMATION_BUTTON, show=False)
     global scenario_path_source, scenario_path_destination
     shutil.copytree(scenario_path_source, scenario_path_destination, dirs_exist_ok=True,
-                    ignore=shutil.ignore_patterns('*.mp3', '*.wav', 'scenario_information.json', 'feedback.json', 'dialogue.json'))
+                    ignore=shutil.ignore_patterns('*.mp3', '*.wav', 'scenario_information.json', 'feedback.json', 'dialogue.json', 'es-US'))
     log.info("Scenario Folder Copy Complete from: " + scenario_path_source + "\tto: " + scenario_path_destination)
     dpg.configure_item(COPY_SCENARIO_INFORMATION_BUTTON, show=True)
 
@@ -180,12 +183,17 @@ def main() -> None:
     # light_theme_id = themes.create_theme_imgui_light()
     # dark_theme_id = themes.create_theme_imgui_dark()
     # dpg.bind_theme(dark_theme_id)
-    # dpg.configure_app(manual_callback_management=False, docking=True, docking_space=True, init_file="dpg.ini")
-    dpg.configure_app(manual_callback_management=True, docking=True, docking_space=True, init_file="dpg.ini")
+
+    if not is_debug:
+        dpg.configure_app(manual_callback_management=False, docking=True, docking_space=True, init_file="dpg.ini")
+    else:
+        dpg.configure_app(manual_callback_management=True, docking=True, docking_space=True, init_file="dpg.ini")
+
     dpg.create_viewport(title='HRSA Content Creation Tool', width=VIEWPORT_WIDTH, height=VIEWPORT_HEIGHT)
 
     with dpg.window(label="HRSA CCT", tag=hrsa_cct_constants.HRSA_CCT_TOOL, width=VIEWPORT_WIDTH, height=VIEWPORT_HEIGHT, no_title_bar=True, no_close=True):
-        dpg.add_button(label="Save Init", callback=lambda: save_init)
+        if is_debug:
+            dpg.add_button(label="Save Init", callback=lambda: save_init)
         with dpg.collapsing_header(label="Choose a location to create the Data Folder", default_open=True):
             dpg.add_file_dialog(tag=FILE_DIALOG_FOR_DATA_FOLDER, height=300, width=450, directory_selector=True, show=False, callback=callback_on_data_folder_selected)
             dpg.add_button(tag=SHOW_FILE_DIALOG_BUTTON_DATA_FOLDER, label="Select Data Folder",
@@ -218,10 +226,10 @@ def main() -> None:
         patient_info_ui.init_ui()
 
         # Dialogue UI Config - Initialize
-        dialogue_ui_config.init_ui()
+        # dialogue_ui_config.init_ui()
 
         # Character Config - Initialize
-        character_config.init_ui()
+        # character_config.init_ui()
 
         with dpg.collapsing_header(label="Choose the Scenario Folder for Audio Generation", default_open=False):
             dpg.add_file_dialog(tag=audio_generation.FILE_DIALOG_FOR_SCENARIO_FOLDER, height=300, width=450, directory_selector=True, show=False,
@@ -262,19 +270,20 @@ def main() -> None:
             dpg.add_button(tag=translate.TRANSLATE_TEXT_BUTTON, label="Translate Data", show=False, callback=translate.callback_on_translate_text_clicked)
             dpg.add_separator()
 
-    log.init_ui()
+    log.init_ui(is_debug=is_debug)
 
     dpg.setup_dearpygui()
     dpg.show_viewport()
 
     # dpg.set_primary_window(hrsa_cct_constants.HRSA_CCT_TOOL, True)
 
-    # dpg.start_dearpygui()
-
-    while dpg.is_dearpygui_running():
-        jobs = dpg.get_callback_queue()  # retrieves and clears queue
-        dpg.run_callbacks(jobs)
-        dpg.render_dearpygui_frame()
+    if not is_debug:
+        dpg.start_dearpygui()
+    else:
+        while dpg.is_dearpygui_running():
+            jobs = dpg.get_callback_queue()  # retrieves and clears queue
+            dpg.run_callbacks(jobs)
+            dpg.render_dearpygui_frame()
 
     dpg.destroy_context()
 

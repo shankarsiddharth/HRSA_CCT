@@ -4,7 +4,7 @@ import logging
 
 class HRSAUILogger:
 
-    def __init__(self, parent):
+    def __init__(self, parent, is_open=True):
 
         self.log_level = 0
         self._auto_scroll = True
@@ -14,10 +14,10 @@ class HRSAUILogger:
         self.filter_id = None
         if parent:
             # self.window_id = parent
-            self.window_id = dpg.add_collapsing_header(label="Logger", tag="Logger", default_open=False, parent=parent)
+            self.window_id = dpg.add_collapsing_header(label="Logger", tag="Logger", default_open=is_open, parent=parent)
         else:
             # self.window_id = dpg.add_window(label="Logger", pos=(200, 200), width=500, height=500)
-            self.window_id = dpg.add_collapsing_header(label="Logger", tag="Logger", default_open=False)
+            self.window_id = dpg.add_collapsing_header(label="Logger", tag="Logger", default_open=is_open)
         self.count = 0
         self.flush_count = 10000
 
