@@ -16,12 +16,12 @@ To Create the exe using pyinstaller:
 OneFile / single .exe:
 ----------------------
 
-pyinstaller --onefile --windowed main.py
+`pyinstaller --onefile --windowed __main__.py`
 
 OneDirectory / single .exe:
 ---------------------------
 
-pyinstaller --onedir --windowed main.py
+`pyinstaller --onedir --windowed __main__.py`
 
 Inno Setup Compiler:
 --------------------
