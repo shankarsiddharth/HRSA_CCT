@@ -155,7 +155,7 @@ def callback_on_translate_text_clicked():
                 ink_files_list.append(path_to_add)
                 log.trace("path_to_add: " + path_to_add, False)
     # translate ink files
-    dialogue_text_list = []
+    dialogue_text_list = list()
     for new_file_path in ink_files_list:
         file_ink = open(new_file_path, 'r+')
         lines = file_ink.readlines()
