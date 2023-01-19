@@ -1,0 +1,65 @@
+{
+    "patient_demographics": {
+        "first_name": "",
+        "last_name": "",
+        "middle_name": "",
+        "suffix": "",
+        "previous_name": "",
+        "date_of_birth": "",
+        "date_of_death": "",
+        "age": "",
+        "race": "",
+        "ethnicity": "",
+        "tribal_affiliation": "",
+        "sex_assigned_at_birth": "",
+        "sexual_orientation": "",
+        "gender_identity": "",
+        "preferred_language": "",
+        "current_address": "",
+        "previous_address": "",
+        "phone_number": "",
+        "phone_number_type": "",
+        "email_address": "",
+        "related_persons_name": "",
+        "related_persons_relationship": "",
+        "occupation": "",
+        "occupation_history": "",
+        "chief_complaint": "",
+        "insurance": ""
+    },
+    "problems": {
+        "problems": [],
+        "sdoh_problems_health_concerns": []
+    },
+    "medications": {
+        "medications": []
+    },
+    "allergies_intolerances": {
+        "substances": []
+    },
+    "vital_signs": {
+        "systolic_blood_pressure": "",
+        "diastolic_blood_pressure": "",
+        "heart_rate": "",
+        "respiratory_rate": "",
+        "body_temperature": "",
+        "body_height": "",
+        "body_weight": "",
+        "pulse_oximetry": "",
+        "inhaled_oxygen_concentration": "",
+        "bmi_percentile_2_to_20_years": "",
+        "weight_for_length_percentile_birth_36_months": "",
+        "head_occipital_frontal_circumference_percentile_birth_36_months": ""
+    },
+    "family_health_history": {
+        "family_health_history": []
+    },
+    "social_health_history": {
+        "social_history_observation": "",
+        "alcohol_use": "",
+        "drug_use": "",
+        "sexual_activity": "",
+        "refugee_status": "",
+        "congregate_living": ""
+    }
+}

@@ -1,0 +1,7 @@
+Inky version: 0.12.0
+
+ink version: 1.0
+
+inkjs version: 1.10.2
+
+Reference Link: https://github.com/inkle/inky/releases/tag/0.12.0

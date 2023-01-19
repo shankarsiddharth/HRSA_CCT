@@ -1,0 +1,3 @@
+v1.0.0
+
+Reference Link: https://github.com/inkle/ink/releases/tag/v1.0.0

@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/.idea/hrsaCCT.iml" filepath="$PROJECT_DIR$/.idea/hrsaCCT.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/hrsa_cct.iml" filepath="$PROJECT_DIR$/.idea/hrsa_cct.iml" />
     </modules>
   </component>
 </project>
