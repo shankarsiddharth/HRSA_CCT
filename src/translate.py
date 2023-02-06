@@ -13,7 +13,7 @@ import hrsa_cct_constants
 import hrsa_cct_globals
 from hrsa_cct_globals import log
 
-credentials = service_account.Credentials.from_service_account_file("./decent-lambda-354120-0d9c66891965.json")
+credentials = service_account.Credentials.from_service_account_file(hrsa_cct_constants.GOOGLE_CLOUD_SERVICE_ACCOUNT_FILE_PATH)
 clientTranslate = translate.TranslationServiceClient(credentials=credentials)
 
 new_data_path = ""

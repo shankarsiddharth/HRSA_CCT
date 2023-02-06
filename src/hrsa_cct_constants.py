@@ -16,3 +16,5 @@ SCENARIO_INFORMATION_JSON_FILE_NAME = "scenario_information.json"
 CHARACTER_VOICE_CONFIG_JSON_FILE_NAME = "character_voice_config.json"
 PATIENT_INFORMATION_JSON_FILE_NAME = "patient_information.json"
 MAX_DIALOGUE_TEXT_CHARACTER_COUNT = 275  # 300 / 250
+
+GOOGLE_CLOUD_SERVICE_ACCOUNT_FILE_PATH = "../config/defaults/decent-lambda-354120-0d9c66891965.json"    # Path to Google Cloud Service Account JSON file

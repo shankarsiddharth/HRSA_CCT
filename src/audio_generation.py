@@ -12,7 +12,7 @@ from hrsa_cct_globals import log
 
 # Google Cloud Configuration Data
 # Get Credentials from JSON file
-credentials = service_account.Credentials.from_service_account_file("./decent-lambda-354120-0d9c66891965.json")
+credentials = service_account.Credentials.from_service_account_file(hrsa_cct_constants.GOOGLE_CLOUD_SERVICE_ACCOUNT_FILE_PATH)
 # Instantiates a client
 client = texttospeech.TextToSpeechClient(credentials=credentials)
 

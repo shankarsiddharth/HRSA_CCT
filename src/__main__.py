@@ -1,6 +1,7 @@
 import os
 import shutil
 import json
+import sys
 
 import dearpygui.dearpygui as dpg
 from dearpygui_ext import themes
@@ -17,6 +18,8 @@ from character_config import character_config
 
 # debug build parameters
 is_debug = True
+
+print("sys.flags.dev_mode", sys.flags.dev_mode)
 
 # logger = dpg_logger.mvLogger()
 # logger.log("mv Logger Started")
