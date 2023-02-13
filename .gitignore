@@ -1,18 +1,18 @@
 # ======================================================================================================================
 # Project HRSA CCT
-HRSAData/
 
 bin/inklecate/Win64/*
 !bin/inklecate/Win64/README.md
+!bin/inklecate/inklecate_version.txt
 
 bin/Inky/Win64/*
 !bin/Inky/Win64/README.md
+!bin/Inky/inky_version.txt
 
-config/*
-!config/defaults/
 # Ignore Service Account JSON files
-config/defaults/*.json
-# data/
+config/*.json
+
+HRSAData/
 
 # ======================================================================================================================
 
