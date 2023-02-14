@@ -1,4 +1,4 @@
-import hrsa_logger
+import app_logger
 
 log = hrsa_logger.HRSALogger()
 

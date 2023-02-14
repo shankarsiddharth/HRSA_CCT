@@ -105,22 +105,22 @@ class AppFileSystem(object):
             os.remove(dpg_ini_file_path)
         shutil.copy(default_dpg_ini_file_path, dpg_ini_file_path)
 
-    def get_open_sans_folder_path(self):
+    def get_default_font_folder_path(self):
         root_folder = self.get_root_folder()
         asset_folder = os.path.join(root_folder, self.afsc.ASSETS_FOLDER_NAME)
         font_folder = os.path.join(asset_folder, self.afsc.FONTS_FOLDER_NAME)
-        opensans_font_folder = os.path.join(font_folder, self.afsc.OPEN_SANS_FOLDER_NAME)
+        opensans_font_folder = os.path.join(font_folder, self.afsc.DEFAULT_FONT_FOLDER_NAME)
         return opensans_font_folder
 
     def get_default_font_file_path(self):
-        default_font_file_path = os.path.join(self.get_open_sans_folder_path(), self.afsc.DEFAULT_FONT_NAME)
+        default_font_file_path = os.path.join(self.get_default_font_folder_path(), self.afsc.DEFAULT_FONT_NAME)
         return default_font_file_path
 
     def get_default_font_size(self):
         return self.afsc.DEFAULT_FONT_SIZE
 
     def get_default_bold_font_file_path(self):
-        default_font_file_path = os.path.join(self.get_open_sans_folder_path(), self.afsc.DEFAULT_BOLD_FONT_NAME)
+        default_font_file_path = os.path.join(self.get_default_font_folder_path(), self.afsc.DEFAULT_BOLD_FONT_NAME)
         return default_font_file_path
 
     def get_bold_default_font_size(self):

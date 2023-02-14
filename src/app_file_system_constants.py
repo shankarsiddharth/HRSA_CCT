@@ -49,7 +49,7 @@ class AppFileSystemConstants(object):
 
         # ========================== START Application Fonts Constants ===================================
 
-        self.OPEN_SANS_FOLDER_NAME = "opensans"
+        self.DEFAULT_FONT_FOLDER_NAME = "opensans"
         self.DEFAULT_FONT_NAME = "OpenSans-Regular.ttf"
         self.DEFAULT_FONT_SIZE = 18
         self.DEFAULT_BOLD_FONT_NAME = "OpenSans-Bold.ttf"
