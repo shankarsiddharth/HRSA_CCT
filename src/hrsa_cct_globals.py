@@ -1,6 +1,6 @@
 import app_logger
 
-log = hrsa_logger.HRSALogger()
+log = app_logger.AppLogger()
 
 # Global Variables
 default_language_code = "en-US"

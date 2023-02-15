@@ -273,7 +273,7 @@ def main() -> None:
             dpg.add_button(tag=translate.TRANSLATE_TEXT_BUTTON, label="Translate Data", show=False, callback=translate.callback_on_translate_text_clicked)
             dpg.add_separator()
 
-    log.init_ui(is_debug=is_debug)
+    log.init_ui()
 
     dpg.setup_dearpygui()
     dpg.show_viewport()
