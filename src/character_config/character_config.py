@@ -5,6 +5,8 @@ import json
 from configuration import character_model_data
 from configuration import hrsa_config
 
+from adbutils import adb
+
 model_data_list = []
 
 patient_gender_combo = None
@@ -18,6 +20,7 @@ trainer_ethnicity_combo = None
 
 patient_model_window = None
 patient_model_detail_window = None
+patient_model_info_window = None
 
 student_model_window = None
 student_model_detail_window = None
@@ -28,6 +31,29 @@ trainer_model_detail_window = None
 loaded_texture = []
 
 app_config = None
+
+selected_patient_model_info_name = None
+selected_patient_model_info_gender = None
+selected_patient_model_info_ethnicity = None
+
+selected_student_model_info_name = None
+selected_student_model_info_gender = None
+selected_student_model_info_ethnicity = None
+
+selected_trainer_model_info_name = None
+selected_trainer_model_info_gender = None
+selected_trainer_model_info_ethnicity = None
+
+question_timer_checkbox = None
+
+target_devices = []
+
+
+def _get_character_by_uid(uid):
+    for data in model_data_list:
+        if data.uid == uid:
+            return data
+    return None
 
 
 def _get_characters_of_type(conditions):
@@ -71,6 +97,7 @@ def _log(sender, app_data, user_data):
     pass
     # sender: 130, 	 app_data: White, 	 user_data: None
 
+
 def _mouse_click_callback(sender, app_data, user_data):
     print(f"mouse click sender: {sender}, \t app_data: {app_data}, \t user_data: {user_data}")
     if dpg.is_item_clicked('uid_MedStudent1'):
@@ -81,15 +108,14 @@ def _mouse_click_callback(sender, app_data, user_data):
             _load_character_model_image('MedStudent1_0')
         dpg.set_value('uid_MedStudent1', 'MedStudent1_0')
 
+
 def _update_model_config(sender, app_data, user_data):
     uid = sender.replace('uid_', '')
     print(f"sender: {sender}, \t app_data: {app_data}, \t user_data: {user_data}")
 
     global loaded_texture
     detail_texture = uid + '_0'
-    if detail_texture not in loaded_texture:
-        print('texture not loaded ', detail_texture)
-        _load_character_model_image(detail_texture)
+    detail_texture = _load_character_model_image(detail_texture)
 
     global patient_model_detail_window, student_model_detail_window, trainer_model_detail_window
     global app_config
@@ -109,12 +135,45 @@ def _update_model_config(sender, app_data, user_data):
         dpg.delete_item(trainer_model_detail_window, children_only=True)
         dpg.add_image(detail_texture, tag='detail_' + uid, parent=trainer_model_detail_window)
 
+    _update_selected_model_info(user_data, uid)
+
+
+def _update_selected_model_info(category, uid):
+    model_info = _get_character_by_uid(uid)
+    if model_info is not None:
+        if category == 'Patient':
+            global selected_patient_model_info_name, selected_patient_model_info_gender, selected_patient_model_info_ethnicity
+            dpg.set_value(selected_patient_model_info_name, 'Name: ' + model_info.uid)
+            dpg.set_value(selected_patient_model_info_gender, 'Gender: ' + model_info.metaData.GenderType)
+            dpg.set_value(selected_patient_model_info_ethnicity, 'Ethnicity: ' + model_info.metaData.EthnicityType)
+        elif category == 'MedicalStudent':
+            global selected_student_model_info_name, selected_student_model_info_gender, selected_student_model_info_ethnicity
+            dpg.set_value(selected_student_model_info_name, 'Name: ' + model_info.uid)
+            dpg.set_value(selected_student_model_info_gender, 'Gender: ' + model_info.metaData.GenderType)
+            dpg.set_value(selected_student_model_info_ethnicity, 'Ethnicity: ' + model_info.metaData.EthnicityType)
+        elif category == 'Trainer':
+            global selected_trainer_model_info_name, selected_trainer_model_info_gender, selected_trainer_model_info_ethnicity
+            dpg.set_value(selected_trainer_model_info_name, 'Name: ' + model_info.uid)
+            dpg.set_value(selected_trainer_model_info_gender, 'Gender: ' + model_info.metaData.GenderType)
+            dpg.set_value(selected_trainer_model_info_ethnicity, 'Ethnicity: ' + model_info.metaData.EthnicityType)
+
 
 def _load_character_model_image(image_name):
-    width, height, channels, data = dpg.load_image('assets/avatar/' + image_name + '.png')
-    dpg.add_static_texture(width=width, height=height, default_value=data, tag=image_name, parent='static_texture_container')
     global loaded_texture
+
+    if image_name in loaded_texture:
+        return image_name
+    image_data = dpg.load_image('assets/avatar/' + image_name + '.png')
+
+    if image_data is None and "default_avatar" not in loaded_texture:
+        image_data = dpg.load_image('assets/avatar/error.png')
+        image_name = 'default_avatar'
+
+    width, height, channels, data = image_data
+    dpg.add_static_texture(width=width, height=height, default_value=data, tag=image_name, parent='static_texture_container')
+
     loaded_texture.insert(0, image_name)
+    return image_name
 
 
 def _callback_update_filter(sender, app_data, user_data):
@@ -145,7 +204,7 @@ def _callback_update_filter(sender, app_data, user_data):
     if not ethnicity == 'None':
         conditions['EthnicityType'] = 'k' + ethnicity
 
-    # print(conditions)
+    print('conditions => ', conditions)
     patients_data = _get_characters_of_type(conditions)
 
     dpg.delete_item(target_window, children_only=True)
@@ -155,11 +214,11 @@ def _callback_update_filter(sender, app_data, user_data):
     with dpg.group(horizontal=True, indent=20, parent=target_window):
         for patient in patients_data:
             print(patient.uid)
-            if patient.uid not in loaded_texture:
-                # print('texture not loaded')
-                _load_character_model_image(patient.uid)
-            dpg.add_image_button(patient.uid, callback=_update_model_config, tag='uid_' + patient.uid, user_data=user_data, background_color=[0])
+            image_id = _load_character_model_image(patient.uid)
+            dpg.add_image_button(image_id, callback=_update_model_config, tag='uid_' + patient.uid,
+                                 user_data=user_data, background_color=[0])
             # dpg.add_text(patient.uid, parent=target_window)
+
 
 def _load_character_config_for_current_scenario():
     file_path = "character_config/test_app_config.json"
@@ -168,17 +227,102 @@ def _load_character_config_for_current_scenario():
         row_data = app_config_file.read()
         row_config = json.loads(row_data)
         app_config = hrsa_config.HRSAConfig(**row_config)
-    print(app_config.toJson())
+
+    _update_model_config(app_config.patient.model_config.uid, None, 'Patient')
+    _update_model_config(app_config.trainer.model_config.uid, None, 'Trainer')
+    _update_model_config(app_config.medicalstudent.model_config.uid, None, 'MedicalStudent')
 
 
 def _update_character_config_for_current_scenario():
     file_path = "character_config/test_app_config.json"
     global app_config
     if app_config is None:
+        print("Character config for current scenario is none!")
         return
+
     app_config_json = json.dumps(app_config.toJson(), indent=4)
-    with open(file_path, "w", encoding="UTF-8") as outfile:
-        outfile.write(app_config_json)
+    print(app_config_json)
+    # with open(file_path, "w", encoding="UTF-8") as outfile:
+    #     outfile.write(app_config_json)
+
+
+def _filter_clear(sender, app_data, user_data):
+    print(sender, app_data, user_data)
+    if user_data == 'Patient':
+        global patient_gender_combo, patient_ethnicity_combo
+        dpg.set_value(patient_gender_combo, 'None')
+        dpg.set_value(patient_ethnicity_combo, 'None')
+        global selected_patient_model_info_name, selected_patient_model_info_gender, selected_patient_model_info_ethnicity
+        dpg.set_value(selected_patient_model_info_name, '')
+        dpg.set_value(selected_patient_model_info_gender, '')
+        dpg.set_value(selected_patient_model_info_ethnicity, '')
+    elif user_data == 'MedicalStudent':
+        global student_gender_combo, student_ethnicity_combo
+        dpg.set_value(student_gender_combo, 'None')
+        dpg.set_value(student_ethnicity_combo, 'None')
+        global selected_student_model_info_name, selected_student_model_info_gender, selected_student_model_info_ethnicity
+        dpg.set_value(selected_student_model_info_name, '')
+        dpg.set_value(selected_student_model_info_gender, '')
+        dpg.set_value(selected_student_model_info_ethnicity, '')
+    elif user_data == 'Trainer':
+        global trainer_gender_combo, trainer_ethnicity_combo
+        dpg.set_value(trainer_gender_combo, 'None')
+        dpg.set_value(trainer_ethnicity_combo, 'None')
+        global selected_trainer_model_info_name, selected_trainer_model_info_gender, selected_trainer_model_info_ethnicity
+        dpg.set_value(selected_trainer_model_info_name, '')
+        dpg.set_value(selected_trainer_model_info_gender, '')
+        dpg.set_value(selected_trainer_model_info_ethnicity, '')
+
+    # _callback_update_filter(sender, app_data, user_data)
+    _update_model_config('0', app_data, user_data)
+
+
+def _toggle_question_timer(sender, app_data, user_data):
+    global app_config
+    if app_config is None:
+        print('Test process, should load the configuration file firstly.')
+
+    # app_config
+
+
+def _select_target_device(sender, app_data, user_data):
+    print(sender, app_data)
+    global target_devices
+    if user_data not in target_devices:
+        target_devices.append(user_data)
+
+
+def _toggle_media_transfer(sender, app_data, user_data):
+    global target_devices
+    if len(target_devices) <= 0:
+        print("No target devices selected!")
+    for info in target_devices:
+        try:
+            device = adb.device(serial=info.serial)
+            if user_data:
+                device.shell("svc usb setFunctions mtp")
+                device = adb.device(serial=info.serial)  # need reconnect
+                device.shell("svc usb setScreenUnlockedFunctions mtp")
+            else:
+                device.shell("svc usb setScreenUnlockedFunctions")
+                device = adb.device(serial=info.serial)  # need reconnect
+                device.shell("svc usb setFunctions")
+        except RuntimeError as e:
+            print(e)
+
+
+def _install_package_callback(messages):
+    print('Install package message ', messages)
+
+
+def _install_latest_package(sender, app_data, user_data):
+    global target_devices
+    if len(target_devices) <= 0:
+        print("No target devices selected!")
+    for info in target_devices:
+        device = adb.device(serial=info.serial)
+        device.install('/home/uoubyy/Downloads/Netease.apk', silent=True, callback=_install_package_callback)
+
 
 def init_ui():
     _load_character_config()
@@ -201,11 +345,18 @@ def init_ui():
             patient_gender_combo = dpg.add_combo(('None', 'Male', 'Female'), label='Gender', default_value='None', callback=_callback_update_filter, width=200, user_data='Patient')
             patient_ethnicity_combo = dpg.add_combo(('None', 'White', 'Black', 'Hispanic'), label='Ethnicity', default_value='None', callback=_callback_update_filter, width=200,
                                                     user_data='Patient')
+            dpg.add_button(label='Reset', callback=_filter_clear, user_data='Patient')
 
-        global patient_model_window, patient_model_detail_window
+        global patient_model_window, patient_model_detail_window, patient_model_info_window
         with dpg.group(horizontal=True):
             patient_model_window = dpg.add_child_window(width=500, height=225)
             patient_model_detail_window = dpg.add_child_window(width=225, height=225)
+            patient_model_info_window = dpg.add_child_window(width=225, height=225)
+
+        global selected_patient_model_info_name, selected_patient_model_info_gender, selected_patient_model_info_ethnicity
+        selected_patient_model_info_name = dpg.add_text('Name', parent=patient_model_info_window)
+        selected_patient_model_info_gender = dpg.add_text('Gender', parent=patient_model_info_window)
+        selected_patient_model_info_ethnicity = dpg.add_text('Ethnicity', parent=patient_model_info_window)
 
         dpg.add_text('Medical Student', indent=20)
         with dpg.group(horizontal=True, indent=20):
@@ -214,11 +365,18 @@ def init_ui():
                                                  user_data='MedicalStudent')
             student_ethnicity_combo = dpg.add_combo(('None', 'White', 'Black', 'Hispanic'), label='Ethnicity', default_value='None', callback=_callback_update_filter, width=200,
                                                     user_data='MedicalStudent')
+            dpg.add_button(label='Reset', callback=_filter_clear, user_data='MedicalStudent')
 
         global student_model_window, student_model_detail_window
         with dpg.group(horizontal=True):
             student_model_window = dpg.add_child_window(width=500, height=225)
             student_model_detail_window = dpg.add_child_window(width=225, height=225)
+            student_model_info_window = dpg.add_child_window(width=225, height=225)
+
+        global selected_student_model_info_name, selected_student_model_info_gender, selected_student_model_info_ethnicity
+        selected_student_model_info_name = dpg.add_text('Name', parent=student_model_info_window)
+        selected_student_model_info_gender = dpg.add_text('Gender', parent=student_model_info_window)
+        selected_student_model_info_ethnicity = dpg.add_text('Ethnicity', parent=student_model_info_window)
 
         dpg.add_text('Trainer', indent=20)
         with dpg.group(horizontal=True, indent=20):
@@ -226,12 +384,33 @@ def init_ui():
             trainer_gender_combo = dpg.add_combo(('None', 'Male', 'Female'), label='Gender', default_value='None', callback=_callback_update_filter, width=200, user_data='Trainer')
             trainer_ethnicity_combo = dpg.add_combo(('None', 'White', 'Black', 'Hispanic'), label='Ethnicity', default_value='None', callback=_callback_update_filter, width=200,
                                                     user_data='Trainer')
+            dpg.add_button(label='Reset', callback=_filter_clear, user_data='Trainer')
 
         global trainer_model_window, trainer_model_detail_window
         with dpg.group(horizontal=True):
             trainer_model_window = dpg.add_child_window(width=500, height=225)
             trainer_model_detail_window = dpg.add_child_window(width=225, height=225)
+            trainer_model_info_window = dpg.add_child_window(width=225, height=225)
+
+        global selected_trainer_model_info_name, selected_trainer_model_info_gender, selected_trainer_model_info_ethnicity
+        selected_trainer_model_info_name = dpg.add_text('Name', parent=trainer_model_info_window)
+        selected_trainer_model_info_gender = dpg.add_text('Gender', parent=trainer_model_info_window)
+        selected_trainer_model_info_ethnicity = dpg.add_text('Ethnicity', parent=trainer_model_info_window)
+
+        global question_timer_checkbox
+        question_timer_checkbox = dpg.add_checkbox(label="Unlimited Timer", source="bool_value", callback=_toggle_question_timer)
 
         _callback_update_filter(None, None, 'Patient')
         _callback_update_filter(None, None, 'MedicalStudent')
         _callback_update_filter(None, None, 'Trainer')
+
+        dpg.add_text('Devices', indent=20)
+        connected_devices = adb.device_list()
+        for device in connected_devices:
+            print(device.serial, device.prop.model)
+            dpg.add_checkbox(label=device.serial, source="bool_value", callback=_select_target_device, user_data=device.serial)
+        if len(connected_devices) == 0:
+            dpg.add_text('No Device Connected!', indent=40)
+
+        dpg.add_button(label='Install Latest Package', callback=_install_latest_package, user_data=True)
+        dpg.add_button(label='Enable Media Transfer', callback=_toggle_media_transfer, user_data=True)
