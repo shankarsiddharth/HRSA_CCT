@@ -16,6 +16,6 @@ class AppFontRegistry(object):
 
     def on_render(self):
         with dpg.font_registry():
-            # first argument ids the path to the .ttf or .otf file
+            # first argument is the path to the .ttf or .otf file
             self.default_font = dpg.add_font(afs.get_default_font_file_path(), afs.get_default_font_size())
             self.default_font_bold = dpg.add_font(afs.get_default_bold_font_file_path(), afs.get_default_font_size())

@@ -2,11 +2,10 @@ import sys
 import threading
 
 import dearpygui.dearpygui as dpg
-from dearpygui_ext import themes
 
 import app_version as av
-from app_dpg_theme import AppTheme
 from app_dpg_font_registry import AppFontRegistry
+from app_dpg_theme import AppTheme
 from app_globals import afs
 from app_globals import log
 
@@ -69,7 +68,11 @@ class AppPrimaryViewportUI(threading.Thread):
         self.controller.is_window_close_button_clicked = True
 
     def button_callback(self):
-        log.info("User clicked on the Button 1.")
+        if dpg.get_item_configuration("Window 2")['show']:
+            dpg.hide_item("Window 2")
+        else:
+            dpg.show_item("Window 2")
+        log.info("User clicked on the Button.")
 
     def __render_ui__(self):
 
@@ -98,6 +101,9 @@ class AppPrimaryViewportUI(threading.Thread):
         # TODO: Add Windows
         with dpg.window(label="Window 1", width=300, height=300, no_resize=False, no_move=False, no_close=True, no_collapse=True):
             dpg.add_button(label="Button 1", callback=self.button_callback)
+
+            with dpg.child_window(tag="Window 2", width=150, height=150, show=False):
+                dpg.add_button(tag="Button 2", callback=self.button_callback)
 
         dpg.setup_dearpygui()
         dpg.maximize_viewport()
