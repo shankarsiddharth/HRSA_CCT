@@ -1,13 +1,14 @@
 import sys
 import threading
+import time
 
 import dearpygui.dearpygui as dpg
 
 import app_version as av
 from app_dpg_font_registry import AppFontRegistry
 from app_dpg_theme import AppTheme
-from app_globals import afs
-from app_globals import log
+from app_globals import afs, log, file_dialog
+from app_queue import AppQueue
 
 
 class AppPrimaryViewportController(object):
@@ -27,6 +28,7 @@ class AppPrimaryViewportUI(threading.Thread):
         super().__init__()
 
         self.controller: AppPrimaryViewportController = controller
+        self.application_queue: AppQueue = AppQueue()
 
         self.exception = None
         self.exception_message = ''
@@ -56,6 +58,8 @@ class AppPrimaryViewportUI(threading.Thread):
             self.__render_ui__()
         except BaseException as e:
             self.exception = e
+            application_queue: AppQueue = AppQueue()
+            application_queue.put_app_instruction(application_queue.APP_EXCEPTION)
 
     def join(self, **kwargs):
         threading.Thread.join(self, **kwargs)
@@ -65,6 +69,8 @@ class AppPrimaryViewportUI(threading.Thread):
 
     def __exit_callback__(self):
         log.info("User clicked on the Close Window button.")
+        application_queue: AppQueue = AppQueue()
+        application_queue.put_app_instruction(application_queue.APP_EXIT)
         self.controller.is_window_close_button_clicked = True
 
     def button_callback(self):
@@ -73,6 +79,8 @@ class AppPrimaryViewportUI(threading.Thread):
         else:
             dpg.show_item("Window 2")
         log.info("User clicked on the Button.")
+        if not file_dialog.is_active():
+            file_dialog.request_tinker_file_dialog()
 
     def __render_ui__(self):
 
@@ -99,14 +107,14 @@ class AppPrimaryViewportUI(threading.Thread):
         # TODO: Add Menu Bar
 
         # TODO: Add Windows
-        with dpg.window(label="Window 1", width=300, height=300, no_resize=False, no_move=False, no_close=True, no_collapse=True):
-            dpg.add_button(label="Button 1", callback=self.button_callback)
+        with dpg.window(label="Window 1", tag="Window 1", width=300, height=300, no_resize=False, no_move=False, no_close=True, no_collapse=True):
+            dpg.add_button(label="Button 1", tag="Button 1", callback=self.button_callback)
 
-            with dpg.child_window(tag="Window 2", width=150, height=150, show=False):
-                dpg.add_button(tag="Button 2", callback=self.button_callback)
+            with dpg.child_window(tag="Window 2", label="Window 2", width=150, height=150, show=False):
+                dpg.add_button(tag="Button 2", label="Button 2", callback=self.button_callback)
 
         dpg.setup_dearpygui()
-        dpg.maximize_viewport()
+        # dpg.maximize_viewport()
         dpg.show_viewport()
 
         # below replaces, start_dearpygui()
@@ -115,6 +123,11 @@ class AppPrimaryViewportUI(threading.Thread):
             if sys.flags.dev_mode:
                 jobs = dpg.get_callback_queue()  # retrieves and clears queue
                 dpg.run_callbacks(jobs)
+
+            if file_dialog.is_active():
+                file_path = self.application_queue.get_file_path()
+                print("Received File Path: ", file_path)
+                dpg.focus_item("Window 1")
 
             # global is_load_default_layout_clicked
             if self.controller.is_load_default_layout_clicked or self.controller.is_window_close_button_clicked:
@@ -137,6 +150,9 @@ class AppPrimaryViewport(object):
         while not self.controller.is_window_close_button_clicked:
             self.ui = AppPrimaryViewportUI(self.controller)
             self.ui.start()
+
+            self.__process_queue__()
+
             try:
                 self.ui.join()
             except BaseException as e:
@@ -147,9 +163,30 @@ class AppPrimaryViewport(object):
                     self.controller.is_load_default_layout_clicked = False
                     continue
 
+    def __process_queue__(self):
+        while True:
+            try:
+                file_dialog_instruction = self.application_queue.get_file_dialog_instruction(block=False)
+                if file_dialog_instruction is not None:
+                    if file_dialog_instruction == self.application_queue.FILE_DIALOG_INSTRUCTION_SHOW:
+                        file_dialog.show_file_dialog()
+            except BaseException as e:
+                time.sleep(0.0001)
+            try:
+                app_instruction = self.application_queue.get_app_instruction(block=False)
+                if app_instruction is not None:
+                    if app_instruction == self.application_queue.APP_EXCEPTION \
+                            or app_instruction == self.application_queue.APP_EXIT:
+                        break
+            except BaseException as e:
+                time.sleep(0.0001)
+                continue
+
     def __init__(self):
         self.controller = AppPrimaryViewportController()
         self.ui = None
+
+        self.application_queue: AppQueue = AppQueue()
 
         self.init_and_render_ui()
 
