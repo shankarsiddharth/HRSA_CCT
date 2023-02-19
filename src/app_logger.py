@@ -21,9 +21,10 @@ class AppLogger(object):
         if cls._instance is None:
             with cls._lock:
                 if cls._instance is None:
-                    print('Creating the Logger object')
                     cls._instance = super(AppLogger, cls).__new__(cls)
                     cls._instance.__initialize__()
+                    if sys.flags.dev_mode:
+                        print("AppLogger.__new__()")
         return cls._instance
 
     def __initialize__(self):
