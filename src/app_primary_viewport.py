@@ -9,6 +9,7 @@ from app_dpg_font_registry import AppFontRegistry
 from app_dpg_theme import AppTheme
 from app_globals import afs, log, file_dialog
 from app_queue import AppQueue
+from app_primary_window import AppPrimaryWindow
 
 
 class AppPrimaryViewportController(object):
@@ -29,6 +30,7 @@ class AppPrimaryViewportUI(threading.Thread):
 
         self.controller: AppPrimaryViewportController = controller
         self.application_queue: AppQueue = AppQueue()
+        self.primary_window: AppPrimaryWindow = AppPrimaryWindow()
 
         self.exception = None
         self.exception_message = ''
@@ -43,7 +45,9 @@ class AppPrimaryViewportUI(threading.Thread):
         self.viewport_title = "HRSA CCT " + " - " + av.APP_VERSION_STRING
         self.user_close_ui = False
 
-        self.dpg_ini_file_path = afs.get_dpg_ini_file_path()
+        # TODO: Replace the below call to with a call to afs.get_dpg_ini_file_path()
+        # self.dpg_ini_file_path = afs.get_dpg_ini_file_path()
+        self.dpg_ini_file_path = "dpg.ini"
 
         # Initialize the DearPyGUI Related Objects
         self.app_theme = AppTheme()
@@ -93,25 +97,32 @@ class AppPrimaryViewportUI(threading.Thread):
         self.font_registry.on_render()
         dpg.bind_font(self.font_registry.default_font)
 
-        # TODO: Change this to use load_init_file instead of init_file
-        # dpg.configure_app(manual_callback_management=sys.flags.dev_mode, docking=True, docking_space=True,
-        #                   load_init_file=self.dpg_ini_file_path, auto_device=True)
-
+        # TODO: Change this to use load_init_file instead of init_file and replace the path with self.dpg_ini_file_path
         dpg.configure_app(manual_callback_management=sys.flags.dev_mode, docking=True, docking_space=True,
-                          init_file=self.dpg_ini_file_path, auto_device=True)
+                          load_init_file=self.dpg_ini_file_path, auto_device=True)
+
+        # dpg.configure_app(manual_callback_management=sys.flags.dev_mode, docking=True, docking_space=True,
+        #                   init_file=self.dpg_ini_file_path, auto_device=True)
 
         dpg.create_viewport(title=self.viewport_title, width=self.VIEWPORT_WIDTH, height=self.VIEWPORT_HEIGHT)
 
         dpg.set_exit_callback(callback=self.__exit_callback__)
 
-        # TODO: Add Menu Bar
+        # TODO: Remove the code below and Add Proper Menu Bar
+        # Menu Bar
+        with dpg.viewport_menu_bar():
+            with dpg.menu(label="UI", tag="UI"):
+                dpg.add_menu_item(label="Save ini", tag="Save ini",
+                                  callback=lambda: dpg.save_init_file(self.dpg_ini_file_path))
 
         # TODO: Add Windows
-        with dpg.window(label="Window 1", tag="Window 1", width=300, height=300, no_resize=False, no_move=False, no_close=True, no_collapse=True):
-            dpg.add_button(label="Button 1", tag="Button 1", callback=self.button_callback)
+        self.primary_window.on_render_ui()
 
-            with dpg.child_window(tag="Window 2", label="Window 2", width=150, height=150, show=False):
-                dpg.add_button(tag="Button 2", label="Button 2", callback=self.button_callback)
+        # with dpg.window(label="Window 1", tag="Window 1", width=300, height=300, no_resize=False, no_move=False, no_close=True, no_collapse=True):
+        #     dpg.add_button(label="Button 1", tag="Button 1", callback=self.button_callback)
+        #
+        #     with dpg.child_window(tag="Window 2", label="Window 2", width=150, height=150, show=False):
+        #         dpg.add_button(tag="Button 2", label="Button 2", callback=self.button_callback)
 
         dpg.setup_dearpygui()
         # dpg.maximize_viewport()
@@ -184,7 +195,7 @@ class AppPrimaryViewport(object):
 
     def __init__(self):
         self.controller = AppPrimaryViewportController()
-        self.ui = None
+        self.ui = None  # Initialized in init_and_render_ui()
 
         self.application_queue: AppQueue = AppQueue()
 
