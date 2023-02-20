@@ -5,7 +5,7 @@ from scenario.file_version.data_file_version import DataFileVersion
 
 
 @dataclass
-class HRSAConfigVersion(DataFileVersion):
+class ScenarioConfigVersion(DataFileVersion):
 
     def __post_init__(self):
         super().__init__(self)
@@ -14,11 +14,11 @@ class HRSAConfigVersion(DataFileVersion):
         self.patch = 0
 
     @staticmethod
-    def from_dict(obj: Any) -> 'HRSAConfigVersion':
+    def from_dict(obj: Any) -> 'ScenarioConfigVersion':
         _major = int(obj.get("major"))
         _minor = int(obj.get("minor"))
         _patch = int(obj.get("patch"))
-        return HRSAConfigVersion(
+        return ScenarioConfigVersion(
             _major,
             _minor,
             _patch

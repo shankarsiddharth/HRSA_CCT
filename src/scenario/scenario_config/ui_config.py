@@ -1,7 +1,7 @@
 from dataclasses import dataclass, field
 from typing import Any
 
-from scenario.hrsa_config.subtitle_config import SubtitleConfig
+from scenario.scenario_config.subtitle_config import SubtitleConfig
 
 
 @dataclass
