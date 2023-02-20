@@ -1,8 +1,7 @@
 import os
-import sys
-import configparser
 import pathlib
 import shutil
+import sys
 import threading
 
 from app_file_system_constants import AppFileSystemConstants
@@ -83,20 +82,6 @@ class AppFileSystem(object):
         if default_dpg_ini_file.exists():
             return default_dpg_ini_file_path
         return ''
-
-    def get_dpg_ini_file_path_from_config(self):
-        user_app_config = self.get_user_app_config_data()
-        if user_app_config is None:
-            return ''
-        dpg_ini_file_path = user_app_config[self.afsc.APP_CONFIG_SECTION][self.afsc.KEY_DPG_INI_FILE_PATH]
-        return dpg_ini_file_path
-
-    def get_default_dpg_ini_file_path_from_config(self):
-        user_app_config = self.get_user_app_config_data()
-        if user_app_config is None:
-            return ''
-        default_dpg_ini_file_path = user_app_config[self.afsc.APP_CONFIG_SECTION][self.afsc.KEY_DEFAULT_DPG_INI_FILE_PATH]
-        return default_dpg_ini_file_path
 
     def reset_to_default_layout(self):
         dpg_ini_file_path = self.get_dpg_ini_file_path()
