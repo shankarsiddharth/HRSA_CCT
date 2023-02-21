@@ -12,10 +12,12 @@ bin/Inky/Win64/*
 # Ignore Service Account JSON files
 config/*.json
 
-HRSAData/
+[Hh][Rr][Ss][Aa][Dd][Aa][Tt][Aa]*/
 
 # Ignore the misc src folder
-src/__misc/
+src/**/__misc/**
+# Ignore the temporary test folder
+src/**/__tests/**
 
 # ======================================================================================================================
 
