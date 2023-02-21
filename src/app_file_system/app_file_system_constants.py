@@ -21,6 +21,9 @@ class AppFileSystemConstants(object):
 
         # Constants
 
+        # Default File Encoding
+        self.DEFAULT_FILE_ENCODING = "utf-8"
+
         # ========================== START Application Constants ===================================
         # Application Folder Constants
         self.ASSETS_FOLDER_NAME = "assets"

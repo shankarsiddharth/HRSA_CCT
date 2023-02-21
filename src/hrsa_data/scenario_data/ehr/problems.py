@@ -1,7 +1,7 @@
 from dataclasses import dataclass, field
 from typing import Any
 
-from hrsa_data.scenario_data.ehr.problem import Problem
+from .problem import Problem
 
 
 @dataclass

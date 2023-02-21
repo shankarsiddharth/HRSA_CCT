@@ -21,11 +21,8 @@ class HRSADataFileSystemConstants(object):
 
     def __initialize__(self):
 
-        # Constants
-        self.DEFAULT_FILE_ENCODING = "utf-8"
-
         self.HRSA_CCT_WORKSPACE_FOLDER_NAME = "HRSA_CCT_Workspace"
-
+        
         # ========================== START HRSAData Folder Constants ===================================
         # HRSAData Folder Constants
         self.BREAK_ROOM_NAME = "BreakRoom"

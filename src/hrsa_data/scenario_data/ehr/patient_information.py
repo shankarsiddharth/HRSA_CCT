@@ -1,14 +1,19 @@
+import json
 from dataclasses import dataclass, field
 from typing import Any
 
-from hrsa_data.scenario_data.ehr.allergies_intolerances import AllergiesIntolerances
-from hrsa_data.scenario_data.ehr.family_health_history import FamilyHealthHistory
-from hrsa_data.scenario_data.ehr.medications import Medications
-from hrsa_data.scenario_data.ehr.patient_demographics import PatientDemographics
-from hrsa_data.scenario_data.ehr.patient_information_version import PatientInformationVersion
-from hrsa_data.scenario_data.ehr.problems import Problems
-from hrsa_data.scenario_data.ehr.social_health_history import SocialHealthHistory
-from hrsa_data.scenario_data.ehr.vital_signs import VitalSigns
+from app_file_system.app_file_system_constants import AppFileSystemConstants
+from .allergies_intolerances import AllergiesIntolerances
+from .family_health_history import FamilyHealthHistory
+from .medications import Medications
+from .patient_demographics import PatientDemographics
+from .patient_information_version import PatientInformationVersion
+from .problems import Problems
+from .social_health_history import SocialHealthHistory
+from .vital_signs import VitalSigns
+
+# Module Level Constants
+__afsc__: AppFileSystemConstants = AppFileSystemConstants()
 
 
 @dataclass
@@ -42,3 +47,8 @@ class PatientInformation:
             _family_health_history,
             _social_health_history
         )
+
+    @classmethod
+    def load_from_json_file(cls, json_file_path) -> 'PatientInformation':
+        with open(json_file_path, 'r', encoding=__afsc__.DEFAULT_FILE_ENCODING) as json_file:
+            return PatientInformation.from_dict(json.load(json_file))

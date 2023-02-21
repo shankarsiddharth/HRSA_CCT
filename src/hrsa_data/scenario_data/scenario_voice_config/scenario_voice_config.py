@@ -1,8 +1,13 @@
+import json
 from dataclasses import dataclass, field
 from typing import Any
 
+from app_file_system.app_file_system_constants import AppFileSystemConstants
 from hrsa_data.scenario_data.scenario_voice_config.charater_voice_config import CharacterVoiceConfig
 from hrsa_data.scenario_data.scenario_voice_config.scenario_voice_config_version import ScenarioVoiceConfigVersion
+
+# Module Level Constants
+__afsc__: AppFileSystemConstants = AppFileSystemConstants()
 
 
 @dataclass
@@ -27,3 +32,8 @@ class ScenarioVoiceConfig:
             _patient,
             _trainer
         )
+
+    @classmethod
+    def load_from_json_file(cls, json_file_path) -> 'ScenarioVoiceConfig':
+        with open(json_file_path, 'r', encoding=__afsc__.DEFAULT_FILE_ENCODING) as json_file:
+            return ScenarioVoiceConfig.from_dict(json.load(json_file))

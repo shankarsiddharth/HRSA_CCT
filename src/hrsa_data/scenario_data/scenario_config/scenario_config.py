@@ -1,9 +1,14 @@
+import json
 from dataclasses import dataclass, field
 from typing import Any
 
-from hrsa_data.scenario_data.scenario_config.character_config import CharacterConfig
-from hrsa_data.scenario_data.scenario_config.conversation_config import ConversationConfig
-from hrsa_data.scenario_data.scenario_config.scenario_config_version import ScenarioConfigVersion
+from app_file_system.app_file_system_constants import AppFileSystemConstants
+from .character_config import CharacterConfig
+from .conversation_config import ConversationConfig
+from .scenario_config_version import ScenarioConfigVersion
+
+# Module Level Constants
+__afsc__: AppFileSystemConstants = AppFileSystemConstants()
 
 
 @dataclass
@@ -31,3 +36,8 @@ class ScenarioConfig:
             _trainer_config,
             _conversation_config
         )
+
+    @classmethod
+    def load_from_json_file(cls, json_file_path) -> 'ScenarioConfig':
+        with open(json_file_path, 'r', encoding=__afsc__.DEFAULT_FILE_ENCODING) as json_file:
+            return ScenarioConfig.from_dict(json.load(json_file))

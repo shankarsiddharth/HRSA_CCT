@@ -5,15 +5,16 @@ import threading
 from dataclasses import asdict
 
 from app_file_system.app_file_system import AppFileSystem
+from app_file_system.app_file_system_constants import AppFileSystemConstants
 from app_logger.app_logger import AppLogger
-from hrsa_data.file_system.hrsa_data_workspace_folder_path_data import HRSADataWorkspaceFolderPathData
-from hrsa_data.file_system.scenario_folder_path_data import ScenarioFolderPathData
-from hrsa_data.file_system.scenario_language_folder_path_data import ScenarioLanguageFolderPathData
 from hrsa_data.scenario_data.ehr.patient_information import PatientInformation
 from hrsa_data.scenario_data.scenario_config.scenario_config import ScenarioConfig
 from hrsa_data.scenario_data.scenario_information.scenario_information import ScenarioInformation
 from hrsa_data.scenario_data.scenario_voice_config.scenario_voice_config import ScenarioVoiceConfig
 from .hrsa_data_file_system_constants import HRSADataFileSystemConstants
+from .hrsa_data_workspace_folder_data import HRSADataWorkspaceFolderData
+from .scenario_folder_data import ScenarioFolderData
+from .scenario_language_folder_data import ScenarioLanguageFolderData
 
 
 class HRSADataFileSystem(object):
@@ -33,6 +34,7 @@ class HRSADataFileSystem(object):
 
     def __initialize__(self):
         self.hdfsc: HRSADataFileSystemConstants = HRSADataFileSystemConstants()
+        self.afsc: AppFileSystemConstants = AppFileSystemConstants()
         self.afs: AppFileSystem = AppFileSystem()
         self.log: AppLogger = AppLogger()
         # TODO: Get the Workspace folder path data while starting the application
@@ -40,34 +42,38 @@ class HRSADataFileSystem(object):
         #   then, populate the self.hrsa_data_workspace_folder_path_data object with the workspace folder data
         #   this will useful while creating new scenarios to check if the scenario name already exists
         #   Currently, this is not implemented and will be empty
-        self.hrsa_data_workspace_folder_path_data: HRSADataWorkspaceFolderPathData = HRSADataWorkspaceFolderPathData()
-        self.current_scenario_language_folder_path_data: ScenarioLanguageFolderPathData = ScenarioLanguageFolderPathData()
+        self.hrsa_data_workspace_root_folder_path = self.afs.get_user_hrsa_data_workspace_path()
+        self.hrsa_data_workspace_folder_data: HRSADataWorkspaceFolderData = HRSADataWorkspaceFolderData(
+            hrsa_data_workspace_folder_root_path=self.hrsa_data_workspace_root_folder_path
+        )
 
-    def get_workspace_root_folder_path(self):
-        return self.afs.get_user_hrsa_data_workspace_path()
+        # Initialize the workspace folder data from the workspace directory
+        self.hrsa_data_workspace_folder_data.initialize_workspace_folder_data()
+        print("\n" + json.dumps(asdict(self.hrsa_data_workspace_folder_data), indent=4) + "\n")
+        self.__initialize_workspace_folder_data__()
+
+    def __initialize_workspace_folder_data__(self):
+        pass
 
     def validate_scenario_name(self, scenario_name: str):
-        workspace_root_folder_path = self.get_workspace_root_folder_path()
         # TODO: Check if scenario_name is valid (no special characters, etc.)
         # TODO: Check if scenario_name already exists
         # TODO: Check if the workspace folder has write permissions for the user
         return True
 
-    def create_new_scenario_folders_for_default_language(self, scenario_name: str):
+    def create_new_scenario_folder_for_default_language(self, scenario_name: str):
         if not self.validate_scenario_name(scenario_name):
             return False
-        # Workspace Folder
-        workspace_root_folder_path = self.get_workspace_root_folder_path()
 
         # Scenario Folder
-        scenario_folder_path_root = os.path.join(workspace_root_folder_path, scenario_name)
+        scenario_folder_path_root = os.path.join(self.hrsa_data_workspace_root_folder_path, scenario_name)
         self.log.info("scenario_path_root: " + scenario_folder_path_root)
         os.mkdir(scenario_folder_path_root)
 
         # Create a new Scenario Folder Path Data object
-        new_scenario_folder_path_data = ScenarioFolderPathData(scenario_name=scenario_name, scenario_folder_root_path=scenario_folder_path_root)
+        new_scenario_folder_path_data = ScenarioFolderData(scenario_name=scenario_name, scenario_folder_root_path=scenario_folder_path_root)
         # New Scenario Default Language Folder Path Data called as 'nsdlfd' for brevity
-        nsdlfd: ScenarioLanguageFolderPathData = new_scenario_folder_path_data.get_default_scenario_language_folder_path_data()
+        nsdlfd: ScenarioLanguageFolderData = new_scenario_folder_path_data.get_default_scenario_language_folder_data()
 
         if nsdlfd is None:
             self.log.error("nsdlfd is None")
@@ -154,28 +160,28 @@ class HRSADataFileSystem(object):
         file_path = os.path.join(scenario_default_language_folder, self.hdfsc.SCENARIO_INFORMATION_JSON_FILE_NAME)
         scenario_information = ScenarioInformation()
         scenario_information.scenario_name = scenario_name
-        with open(file_path, 'w', encoding=self.hdfsc.DEFAULT_FILE_ENCODING) as json_file:
+        with open(file_path, 'w', encoding=self.afsc.DEFAULT_FILE_ENCODING) as json_file:
             json.dump(asdict(scenario_information), json_file, indent=4)
         nsdlfd.scenario_information_json_file_path = file_path
 
         # Scenario Config File
         file_path = os.path.join(scenario_default_language_folder, self.hdfsc.SCENARIO_CONFIG_JSON_FILE_NAME)
         scenario_config = ScenarioConfig()
-        with open(file_path, 'w', encoding=self.hdfsc.DEFAULT_FILE_ENCODING) as json_file:
+        with open(file_path, 'w', encoding=self.afsc.DEFAULT_FILE_ENCODING) as json_file:
             json.dump(asdict(scenario_config), json_file, indent=4)
         nsdlfd.scenario_config_json_file_path = file_path
 
         # Scenario Voice Config File
         file_path = os.path.join(scenario_default_language_folder, self.hdfsc.SCENARIO_VOICE_CONFIG_JSON_FILE_NAME)
         scenario_voice_config = ScenarioVoiceConfig()
-        with open(file_path, 'w', encoding=self.hdfsc.DEFAULT_FILE_ENCODING) as json_file:
+        with open(file_path, 'w', encoding=self.afsc.DEFAULT_FILE_ENCODING) as json_file:
             json.dump(asdict(scenario_voice_config), json_file, indent=4)
         nsdlfd.scenario_voice_config_json_file_path = file_path
 
         # Patient Information File
         file_path = os.path.join(scenario_default_language_folder, self.hdfsc.PATIENT_INFORMATION_JSON_FILE_NAME)
         patient_information = PatientInformation()
-        with open(file_path, 'w', encoding=self.hdfsc.DEFAULT_FILE_ENCODING) as json_file:
+        with open(file_path, 'w', encoding=self.afsc.DEFAULT_FILE_ENCODING) as json_file:
             json.dump(asdict(patient_information), json_file, indent=4)
         nsdlfd.patient_information_json_file_path = file_path
 
@@ -185,7 +191,7 @@ class HRSADataFileSystem(object):
         nsdlfd.scenario_thumbnail_image_file_path = file_path
 
         # Add new scenario folder path data to the workspace folder path data
-        self.hrsa_data_workspace_folder_path_data.add_new_scenario_folder_path_data(new_scenario_folder_path_data)
+        self.hrsa_data_workspace_folder_data.add_new_scenario_folder_path_data(new_scenario_folder_path_data)
         # print(json.dumps(asdict(self.hrsa_data_workspace_folder_path_data), indent=4))
 
         return True

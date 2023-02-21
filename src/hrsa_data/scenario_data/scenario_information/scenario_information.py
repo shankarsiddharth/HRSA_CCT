@@ -1,7 +1,12 @@
+import json
 from dataclasses import dataclass, field
 from typing import Any
 
-from hrsa_data.scenario_data.scenario_information.scenario_information_version import ScenarioInformationVersion
+from app_file_system.app_file_system_constants import AppFileSystemConstants
+from .scenario_information_version import ScenarioInformationVersion
+
+# Module level constants
+__afsc__: AppFileSystemConstants = AppFileSystemConstants()
 
 
 @dataclass
@@ -23,3 +28,8 @@ class ScenarioInformation:
             _localized_name,
             _description
         )
+
+    @classmethod
+    def load_from_json_file(cls, json_file_path) -> 'ScenarioInformation':
+        with open(json_file_path, 'r', encoding=__afsc__.DEFAULT_FILE_ENCODING) as json_file:
+            return ScenarioInformation.from_dict(json.load(json_file))

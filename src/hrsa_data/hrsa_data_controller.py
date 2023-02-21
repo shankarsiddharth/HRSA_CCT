@@ -7,6 +7,6 @@ class HRSADataController(object):
         pass
 
     def create_new_scenario_data(self, scenario_name: str):
-        if not self.hdfs.create_new_scenario_folders_for_default_language(scenario_name):
+        if not self.hdfs.create_new_scenario_folder_for_default_language(scenario_name):
             return False
         return True
