@@ -7,9 +7,9 @@ import dearpygui.dearpygui as dpg
 import app_version as av
 from app_dpg_font_registry import AppFontRegistry
 from app_dpg_theme import AppTheme
-from app_globals import afs, log, file_dialog
-from app_queue import AppQueue
+from app_globals import log, file_dialog
 from app_primary_window import AppPrimaryWindow
+from app_queue import AppQueue
 
 
 class AppPrimaryViewportController(object):
@@ -106,17 +106,22 @@ class AppPrimaryViewportUI(threading.Thread):
 
         dpg.create_viewport(title=self.viewport_title, width=self.VIEWPORT_WIDTH, height=self.VIEWPORT_HEIGHT)
 
+        if sys.flags.dev_mode:
+            dpg.configure_viewport(item=self.viewport_title, always_on_top=True)
+
         dpg.set_exit_callback(callback=self.__exit_callback__)
 
         # TODO: Remove the code below and Add Proper Menu Bar
         # Menu Bar
         with dpg.viewport_menu_bar():
             with dpg.menu(label="UI", tag="UI"):
-                dpg.add_menu_item(label="Save ini", tag="Save ini",
+                dpg.add_menu_item(label="Save Current UI Layout", tag="Save ini",
                                   callback=lambda: dpg.save_init_file(self.dpg_ini_file_path))
 
         # TODO: Add Windows
         self.primary_window.on_render_ui()
+
+        log.on_init_and_render_ui()
 
         # with dpg.window(label="Window 1", tag="Window 1", width=300, height=300, no_resize=False, no_move=False, no_close=True, no_collapse=True):
         #     dpg.add_button(label="Button 1", tag="Button 1", callback=self.button_callback)

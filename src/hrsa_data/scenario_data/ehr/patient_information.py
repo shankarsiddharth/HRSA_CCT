@@ -1,14 +1,14 @@
 from dataclasses import dataclass, field
 from typing import Any
 
-from scenario.ehr.allergies_intolerances import AllergiesIntolerances
-from scenario.ehr.family_health_history import FamilyHealthHistory
-from scenario.ehr.medications import Medications
-from scenario.ehr.patient_demographics import PatientDemographics
-from scenario.ehr.patient_information_version import PatientInformationVersion
-from scenario.ehr.problems import Problems
-from scenario.ehr.social_health_history import SocialHealthHistory
-from scenario.ehr.vital_signs import VitalSigns
+from hrsa_data.scenario_data.ehr.allergies_intolerances import AllergiesIntolerances
+from hrsa_data.scenario_data.ehr.family_health_history import FamilyHealthHistory
+from hrsa_data.scenario_data.ehr.medications import Medications
+from hrsa_data.scenario_data.ehr.patient_demographics import PatientDemographics
+from hrsa_data.scenario_data.ehr.patient_information_version import PatientInformationVersion
+from hrsa_data.scenario_data.ehr.problems import Problems
+from hrsa_data.scenario_data.ehr.social_health_history import SocialHealthHistory
+from hrsa_data.scenario_data.ehr.vital_signs import VitalSigns
 
 
 @dataclass

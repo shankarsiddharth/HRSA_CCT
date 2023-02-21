@@ -23,7 +23,7 @@ class AppFileSystem(object):
         return cls._instance
 
     def __initialize__(self):
-        self.afsc = AppFileSystemConstants()
+        self.afsc: AppFileSystemConstants = AppFileSystemConstants()
         self.__EXECUTABLE_PATH__ = None
 
     def get_root_folder(self):
@@ -50,6 +50,12 @@ class AppFileSystem(object):
         data_folder_path = os.path.join(root_folder, self.afsc.DATA_FOLDER_NAME)
         return data_folder_path
 
+    # TODO: Replace the following with proper path using the user config settings functionality after it is implemented
+    def get_user_hrsa_data_workspace_path(self):
+        root_folder = self.get_root_folder()
+        user_hrsa_data_workspace_path = os.path.join(root_folder, 'HRSAData')
+        return user_hrsa_data_workspace_path
+
     def reset_user_data(self):
         # Delete DPG ini file
         root_folder = self.get_root_folder()
@@ -59,6 +65,8 @@ class AppFileSystem(object):
             dpg_ini_file = pathlib.Path(dpg_ini_file_path)
             if dpg_ini_file.exists():
                 os.remove(dpg_ini_file_path)
+
+    # ===================== START UI Layout Config methods =====================
 
     def get_dpg_ini_file_path(self):
         root_folder = self.get_root_folder()
@@ -91,6 +99,9 @@ class AppFileSystem(object):
             os.remove(dpg_ini_file_path)
         shutil.copy(default_dpg_ini_file_path, dpg_ini_file_path)
 
+    # ===================== END UI Layout Config methods =====================
+
+    # ===================== START Font related methods =====================
     def get_default_font_folder_path(self):
         root_folder = self.get_root_folder()
         asset_folder = os.path.join(root_folder, self.afsc.ASSETS_FOLDER_NAME)
@@ -111,3 +122,5 @@ class AppFileSystem(object):
 
     def get_bold_default_font_size(self):
         return self.afsc.DEFAULT_BOLD_FONT_SIZE
+
+    # ===================== END Font related methods =====================

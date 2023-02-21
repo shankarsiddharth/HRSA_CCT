@@ -1,7 +1,7 @@
 from dataclasses import dataclass, field
 from typing import Any
 
-from scenario.scenario_information.scenario_information_version import ScenarioInformationVersion
+from hrsa_data.scenario_data.scenario_information.scenario_information_version import ScenarioInformationVersion
 
 
 @dataclass

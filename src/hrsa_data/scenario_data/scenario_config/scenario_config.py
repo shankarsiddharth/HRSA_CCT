@@ -1,9 +1,9 @@
 from dataclasses import dataclass, field
 from typing import Any
 
-from scenario.scenario_config.character_config import CharacterConfig
-from scenario.scenario_config.conversation_config import ConversationConfig
-from scenario.scenario_config.scenario_config_version import ScenarioConfigVersion
+from hrsa_data.scenario_data.scenario_config.character_config import CharacterConfig
+from hrsa_data.scenario_data.scenario_config.conversation_config import ConversationConfig
+from hrsa_data.scenario_data.scenario_config.scenario_config_version import ScenarioConfigVersion
 
 
 @dataclass

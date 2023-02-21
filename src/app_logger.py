@@ -111,7 +111,7 @@ class AppLogger(object):
         self.count = 0
         # self.flush_count = 10000
 
-    def init_ui(self, parent=None):
+    def on_init_and_render_ui(self, parent=None):
         self.ui_logger: AppUILogger = AppUILogger(parent=parent)
         self.ui_logger.trace("HRSA CCT UI Logger Started")
         if sys.flags.dev_mode:

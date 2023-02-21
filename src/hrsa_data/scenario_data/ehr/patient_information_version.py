@@ -1,11 +1,11 @@
 from dataclasses import dataclass
 from typing import Any
 
-from scenario.file_version.data_file_version import DataFileVersion
+from hrsa_data.scenario_data.file_version.data_file_version import DataFileVersion
 
 
 @dataclass
-class ScenarioConfigVersion(DataFileVersion):
+class PatientInformationVersion(DataFileVersion):
 
     def __post_init__(self):
         super().__init__(self)
@@ -14,11 +14,11 @@ class ScenarioConfigVersion(DataFileVersion):
         self.patch = 0
 
     @staticmethod
-    def from_dict(obj: Any) -> 'ScenarioConfigVersion':
+    def from_dict(obj: Any) -> 'PatientInformationVersion':
         _major = int(obj.get("major"))
         _minor = int(obj.get("minor"))
         _patch = int(obj.get("patch"))
-        return ScenarioConfigVersion(
+        return PatientInformationVersion(
             _major,
             _minor,
             _patch

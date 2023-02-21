@@ -1,8 +1,8 @@
 from dataclasses import dataclass, field
 from typing import Any
 
-from scenario.scenario_config.character_model_config import CharacterModelConfig
-from scenario.scenario_config.ui_config import UIConfig
+from hrsa_data.scenario_data.scenario_config.character_model_config import CharacterModelConfig
+from hrsa_data.scenario_data.scenario_config.ui_config import UIConfig
 
 
 @dataclass

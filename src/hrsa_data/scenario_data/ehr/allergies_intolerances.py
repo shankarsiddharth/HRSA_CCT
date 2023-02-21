@@ -1,7 +1,7 @@
 from dataclasses import dataclass, field
 from typing import Any
 
-from scenario.ehr.substance_information import SubstanceInformation
+from hrsa_data.scenario_data.ehr.substance_information import SubstanceInformation
 
 
 @dataclass

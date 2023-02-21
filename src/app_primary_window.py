@@ -25,3 +25,6 @@ class AppPrimaryWindow(object):
 
     def on_render_ui(self):
         self.ui.on_render_ui()
+
+    def get_window_title(self):
+        return self.ui.window_title

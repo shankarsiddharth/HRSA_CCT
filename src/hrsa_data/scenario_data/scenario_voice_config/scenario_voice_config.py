@@ -1,8 +1,8 @@
 from dataclasses import dataclass, field
 from typing import Any
 
-from scenario.scenario_voice_config.charater_voice_config import CharacterVoiceConfig
-from scenario.scenario_voice_config.scenario_voice_config_version import ScenarioVoiceConfigVersion
+from hrsa_data.scenario_data.scenario_voice_config.charater_voice_config import CharacterVoiceConfig
+from hrsa_data.scenario_data.scenario_voice_config.scenario_voice_config_version import ScenarioVoiceConfigVersion
 
 
 @dataclass
