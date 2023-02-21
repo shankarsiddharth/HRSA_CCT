@@ -5,8 +5,8 @@ import time
 import dearpygui.dearpygui as dpg
 
 import app_version as av
-from app_dpg_font_registry import AppFontRegistry
-from app_dpg_theme import AppTheme
+from app_font_registry.app_dpg_font_registry import AppFontRegistry
+from app_theme.app_dpg_theme import AppTheme
 from app_globals import log, file_dialog
 from app_primary_window import AppPrimaryWindow
 from app_queue import AppQueue

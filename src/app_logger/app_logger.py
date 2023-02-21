@@ -6,10 +6,10 @@ import threading
 import traceback
 from logging.handlers import SocketHandler
 
-import app_logging_custom as alc
-from app_file_system_constants import AppFileSystemConstants
-from app_file_system import AppFileSystem
-from app_logger_ui import AppUILogger
+from app_file_system.app_file_system import AppFileSystem
+from app_file_system.app_file_system_constants import AppFileSystemConstants
+from . import app_logging_custom as alc
+from .app_logger_ui import AppUILogger
 
 
 class AppLogger(object):

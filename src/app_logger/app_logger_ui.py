@@ -1,9 +1,9 @@
-import sys
 import logging
+import sys
 
 import dearpygui.dearpygui as dpg
 
-import app_logging_custom as alc
+from . import app_logging_custom as alc
 
 
 class AppUILogger:

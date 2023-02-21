@@ -39,7 +39,7 @@ class AppFileSystemConstants(object):
 
         # DearPyGUI INI File Constants
         self.DEFAULT_DPG_INI_FILE_NAME = "dpg.default.ini"
-        self.DPG_INI_FILE_NAME = "dpg.ini"
+        self.DPG_INI_FILE_NAME = "../dpg.ini"
 
         # Application Config File Constants
         self.DEFAULT_APP_CONFIG_INI_FILE_NAME = "app.config.default.ini"

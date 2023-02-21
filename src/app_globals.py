@@ -1,8 +1,8 @@
 import sys
 
-from app_file_system import AppFileSystem
-from app_file_system_constants import AppFileSystemConstants
-from app_logger import AppLogger
+from app_file_system.app_file_system import AppFileSystem
+from app_file_system.app_file_system_constants import AppFileSystemConstants
+from app_logger.app_logger import AppLogger
 from app_file_dialog import AppFileDialog
 
 afsc: AppFileSystemConstants = AppFileSystemConstants()

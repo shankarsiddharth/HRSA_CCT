@@ -4,7 +4,7 @@ import shutil
 import sys
 import threading
 
-from app_file_system_constants import AppFileSystemConstants
+from .app_file_system_constants import AppFileSystemConstants
 
 
 class AppFileSystem(object):
@@ -32,7 +32,8 @@ class AppFileSystem(object):
             self.__EXECUTABLE_PATH__ = os.path.realpath(sys.executable)
             application_path = os.path.dirname(sys.executable)
         elif __file__:
-            application_path = os.path.dirname(__file__)
+            current_file_dir_path = os.path.dirname(__file__)
+            application_path = os.path.dirname(current_file_dir_path)
         bin_src_folder = application_path
         root_folder_path = os.path.dirname(bin_src_folder)
         return root_folder_path

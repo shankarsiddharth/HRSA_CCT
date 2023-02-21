@@ -4,8 +4,8 @@ import sys
 import threading
 from dataclasses import asdict
 
-from app_file_system import AppFileSystem
-from app_logger import AppLogger
+from app_file_system.app_file_system import AppFileSystem
+from app_logger.app_logger import AppLogger
 from hrsa_data.file_system.hrsa_data_workspace_folder_path_data import HRSADataWorkspaceFolderPathData
 from hrsa_data.file_system.scenario_folder_path_data import ScenarioFolderPathData
 from hrsa_data.file_system.scenario_language_folder_path_data import ScenarioLanguageFolderPathData
