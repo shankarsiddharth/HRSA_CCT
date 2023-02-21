@@ -1,6 +1,8 @@
 import os
+import pathlib
 from dataclasses import dataclass, field
 
+from .file_system_result_data import FileSystemResultData
 from .hrsa_data_file_system_constants import HRSADataFileSystemConstants
 from .room_feedback_folder_data import RoomFeedbackFolderData
 
@@ -36,3 +38,19 @@ class FeedbackRoomFolderData:
                         # TODO: Log error / warning - Patient Room Feedback Folder Content Error
                         pass
         return True
+
+    def create_new_feedback_room_folder(self) -> FileSystemResultData:
+        feedback_room_folder_root_path = pathlib.Path(self.feedback_room_folder_root_path)
+        if feedback_room_folder_root_path.exists():
+            return FileSystemResultData(is_success=False, error_message='Feedback Room Folder Already Exists')
+        feedback_room_folder_root_path.mkdir()
+
+        self.break_room_feedback_folder_data.room_feedback_folder_root_path = os.path.join(self.feedback_room_folder_root_path, __hdfsc__.FEEDBACK_TYPE_BREAK_ROOM_NAME)
+        file_system_result_data: FileSystemResultData = self.break_room_feedback_folder_data.create_new_room_feedback_folder()
+        if not file_system_result_data.is_success:
+            return file_system_result_data
+        self.patient_room_feedback_folder_data.room_feedback_folder_root_path = os.path.join(self.feedback_room_folder_root_path, __hdfsc__.FEEDBACK_TYPE_PATIENT_ROOM_NAME)
+        file_system_result_data: FileSystemResultData = self.patient_room_feedback_folder_data.create_new_room_feedback_folder()
+        if not file_system_result_data.is_success:
+            return file_system_result_data
+        return FileSystemResultData(is_success=True)

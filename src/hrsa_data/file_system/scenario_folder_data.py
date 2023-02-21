@@ -1,6 +1,8 @@
 import os
+import pathlib
 from dataclasses import dataclass, field
 
+from .file_system_result_data import FileSystemResultData
 from .hrsa_data_file_system_constants import HRSADataFileSystemConstants
 from .scenario_language_folder_data import ScenarioLanguageFolderData
 
@@ -20,7 +22,7 @@ class ScenarioFolderData:
     #     if len(self.scenario_language_folder_data_list) == 0:
     #         self.scenario_language_folder_data_list = [ScenarioLanguageFolderData()]
 
-    def is_scenario_language_folder_data_valid(self, language_code: str) -> bool:
+    def is_scenario_language_folder_data_present(self, language_code: str) -> bool:
         for scenario_language_folder_data_item in self.scenario_language_folder_data_list:
             if scenario_language_folder_data_item.language_code == language_code:
                 return True
@@ -29,7 +31,7 @@ class ScenarioFolderData:
     def get_scenario_language_folder_data(self, language_code: str) -> ScenarioLanguageFolderData | None:
         """
         Get the scenario language folder path data for the given language code.\n
-        Use **is_scenario_language_folder_path_data_valid()** first to check if the language code is valid.
+        Use **is_scenario_language_folder_data_present()** first to check if the language code is valid.
         :param language_code:
         :return:
         """
@@ -59,3 +61,23 @@ class ScenarioFolderData:
                     # TODO - Log Error / Warning - Scenario Folder Path Data is not valid - Empty Folder
                     pass
         return True
+
+    def create_new_scenario_folder_for_language(self, language_code) -> FileSystemResultData:
+        new_scenario_path = pathlib.Path(self.scenario_folder_root_path)
+
+        if new_scenario_path.exists():
+            # TODO: Folder already exists, handle this
+            return FileSystemResultData(is_success=False, error_message='Scenario Folder Already Exists')
+
+        if self.is_scenario_language_folder_data_present(language_code):
+            file_system_result_data: FileSystemResultData = FileSystemResultData(is_success=False, error_message='Language Code is already exists')
+            return file_system_result_data
+        new_scenario_path.mkdir()
+        scenario_language_folder_data: ScenarioLanguageFolderData = ScenarioLanguageFolderData()
+        scenario_language_folder_data.language_code = language_code
+        scenario_language_folder_data.scenario_language_folder_root_path = os.path.join(self.scenario_folder_root_path, language_code)
+        file_system_result_data: FileSystemResultData = scenario_language_folder_data.create_new_scenario_language_folder()
+        if not file_system_result_data.is_success:
+            return file_system_result_data
+        self.scenario_language_folder_data_list.append(scenario_language_folder_data)
+        return FileSystemResultData(is_success=True)

@@ -1,5 +1,5 @@
 import json
-from dataclasses import dataclass, field
+from dataclasses import dataclass, field, asdict
 from typing import Any
 
 from app_file_system.app_file_system_constants import AppFileSystemConstants
@@ -41,3 +41,10 @@ class ScenarioConfig:
     def load_from_json_file(cls, json_file_path) -> 'ScenarioConfig':
         with open(json_file_path, 'r', encoding=__afsc__.DEFAULT_FILE_ENCODING) as json_file:
             return ScenarioConfig.from_dict(json.load(json_file))
+
+    @staticmethod
+    def save_to_json_file(obj: 'ScenarioConfig', json_file_path: str) -> bool:
+        # TODO: Add error handling - save scenario config to json file
+        with open(json_file_path, 'w', encoding=__afsc__.DEFAULT_FILE_ENCODING) as json_file:
+            json.dump(asdict(obj), json_file, indent=4)
+            return True
