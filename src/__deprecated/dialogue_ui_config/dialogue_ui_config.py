@@ -77,13 +77,7 @@ duc_question_timer_input_text = None
 
 
 def _load_default_color_set(sender, app_data, user_data):
-    global duc_color_setting
-    with open('dialogue_ui_config/dialogue_ui_config.json', "r", encoding="UTF-8") as ui_config_file:
-        row_data = ui_config_file.read()
-        row_config = json.loads(row_data)
-        duc_color_setting = hrsa_config.HRSAConfig(**row_config)
-        _init_question_timer(duc_color_setting.conversation_config)
-        _init_dialog_color(duc_color_setting)
+    dpg.configure_item("DUC_OPEN_FILE_DIALOG", show=True)
 
 
 def _save_color_set(sender, app_data, user_data):
@@ -127,9 +121,26 @@ def _set_question_timer(sender, app_data, user_data):
         duc_color_setting.conversation_config.question_timer_in_seconds = dpg.get_value(duc_question_timer_input_text)
 
 
+def _callback_load_dialog_config_file(sender, app_data, user_data):
+    json_file_path = app_data["file_path_name"]
+    global duc_color_setting
+    with open(json_file_path, "r", encoding="UTF-8") as ui_config_file:
+        row_data = ui_config_file.read()
+        row_config = json.loads(row_data)
+        duc_color_setting = hrsa_config.HRSAConfig(**row_config)
+        _init_question_timer(duc_color_setting.conversation_config)
+        _init_dialog_color(duc_color_setting)
+
 def init_ui():
     with dpg.collapsing_header(label="Dialogue UI Config", default_open=True, parent=hrsa_cct_constants.HRSA_CCT_TOOL):
         # TODO: UI Creation
+
+        # file selection dialog start
+        with dpg.file_dialog(height=300, width=600, directory_selector=False, show=False,
+                             callback=_callback_load_dialog_config_file, tag="DUC_OPEN_FILE_DIALOG", modal=True):
+            dpg.add_file_extension(".json", color=(255, 255, 0, 255))
+        # file selection dialog end
+
         dpg.add_button(label="Load Setting", callback=_load_default_color_set)
         dpg.add_button(label="Save Setting", callback=_save_color_set)
 
@@ -150,4 +161,3 @@ def init_ui():
             global duc_unlimited_question_timer_mark, duc_question_timer_input_text
             duc_unlimited_question_timer_mark = dpg.add_checkbox(label="Unlimited Timer", source="bool_value", callback=_set_question_timer)
             duc_question_timer_input_text = dpg.add_input_text(label="Question Timer in Seconds", width=100, decimal=True, callback=_set_question_timer)
-    _load_default_color_set(None, None, None)
