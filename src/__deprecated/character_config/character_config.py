@@ -43,8 +43,6 @@ selected_trainer_model_info_name = None
 selected_trainer_model_info_gender = None
 selected_trainer_model_info_ethnicity = None
 
-question_timer_checkbox = None
-
 target_devices = []
 
 
@@ -122,17 +120,17 @@ def _update_model_config(sender, app_data, user_data):
         if app_config is not None:
             app_config.patient_config.character_model_config.uid = uid
         dpg.delete_item(patient_model_detail_window, children_only=True)
-        dpg.add_image(detail_texture, tag='detail_' + uid, parent=patient_model_detail_window)
+        dpg.add_image(detail_texture, tag='detail_patient_' + uid, parent=patient_model_detail_window)
     elif user_data == 'MedicalStudent':
         if app_config is not None:
             app_config.medicalstudent_config.character_model_config.uid = uid
         dpg.delete_item(student_model_detail_window, children_only=True)
-        dpg.add_image(detail_texture, tag='detail_' + uid, parent=student_model_detail_window)
+        dpg.add_image(detail_texture, tag='detail_student_' + uid, parent=student_model_detail_window)
     elif user_data == 'Trainer':
         if app_config is not None:
             app_config.trainer_config.character_model_config.uid = uid
         dpg.delete_item(trainer_model_detail_window, children_only=True)
-        dpg.add_image(detail_texture, tag='detail_' + uid, parent=trainer_model_detail_window)
+        dpg.add_image(detail_texture, tag='detail_trainer_' + uid, parent=trainer_model_detail_window)
 
     _update_selected_model_info(user_data, uid)
 
@@ -164,8 +162,11 @@ def _load_character_model_image(image_name):
         return image_name
     image_data = dpg.load_image('../../data/avatar/' + image_name + '.png')
 
-    if image_data is None and "default_avatar" not in loaded_texture:
-        image_data = dpg.load_image('../../data/defaults/error.png')
+    if image_data is None:
+        if "default_avatar" not in loaded_texture:
+            image_data = dpg.load_image('../../data/defaults/error.png')
+        else:
+            return 'default_avatar'
         image_name = 'default_avatar'
 
     width, height, channels, data = image_data
@@ -274,14 +275,6 @@ def _filter_clear(sender, app_data, user_data):
 
     # _callback_update_filter(sender, app_data, user_data)
     _update_model_config('0', app_data, user_data)
-
-
-def _toggle_question_timer(sender, app_data, user_data):
-    global app_config
-    if app_config is None:
-        print('Test process, should load the configuration file firstly.')
-
-    # app_config
 
 
 def _select_target_device(sender, app_data, user_data):
@@ -395,9 +388,6 @@ def init_ui():
         selected_trainer_model_info_name = dpg.add_text('Name', parent=trainer_model_info_window)
         selected_trainer_model_info_gender = dpg.add_text('Gender', parent=trainer_model_info_window)
         selected_trainer_model_info_ethnicity = dpg.add_text('Ethnicity', parent=trainer_model_info_window)
-
-        global question_timer_checkbox
-        question_timer_checkbox = dpg.add_checkbox(label="Unlimited Timer", source="bool_value", callback=_toggle_question_timer)
 
         _callback_update_filter(None, None, 'Patient')
         _callback_update_filter(None, None, 'MedicalStudent')

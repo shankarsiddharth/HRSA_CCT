@@ -41,13 +41,22 @@ class CharacterConfig(object):
         return {"ui_config": self.ui_config.toJson(), "character_model_config": self.character_model_config.toJson()}
 
 
+class ConversationConfig(object):
+    def __init__(self, question_timer_in_seconds):
+        self.question_timer_in_seconds = question_timer_in_seconds
+
+    def toJson(self):
+        return {"question_timer_in_seconds": self.question_timer_in_seconds}
+
+
 class HRSAConfig(object):
-    def __init__(self, version, player_config, medicalstudent_config, patient_config, trainer_config):
+    def __init__(self, version, player_config, medicalstudent_config, patient_config, trainer_config, conversation_config):
         self.version = DataFileVersion(**version)
         self.player_config = CharacterConfig(**player_config)
         self.medicalstudent_config = CharacterConfig(**medicalstudent_config)
         self.patient_config = CharacterConfig(**patient_config)
         self.trainer_config = CharacterConfig(**trainer_config)
+        self.conversation_config = ConversationConfig(**conversation_config)
 
     def toJson(self):
         return {
@@ -55,5 +64,6 @@ class HRSAConfig(object):
             "player_config": self.player_config.toJson(),
             "medicalstudent_config": self.medicalstudent_config.toJson(),
             "patient_config": self.patient_config.toJson(),
-            "trainer_config": self.trainer_config.toJson()
+            "trainer_config": self.trainer_config.toJson(),
+            "conversation_config": self.conversation_config.toJson()
         }
