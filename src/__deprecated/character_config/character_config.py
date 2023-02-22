@@ -120,17 +120,17 @@ def _update_model_config(sender, app_data, user_data):
     global app_config
     if user_data == 'Patient':
         if app_config is not None:
-            app_config.patient.model_config.uid = uid
+            app_config.patient_config.character_model_config.uid = uid
         dpg.delete_item(patient_model_detail_window, children_only=True)
         dpg.add_image(detail_texture, tag='detail_' + uid, parent=patient_model_detail_window)
     elif user_data == 'MedicalStudent':
         if app_config is not None:
-            app_config.medicalstudent.model_config.uid = uid
+            app_config.medicalstudent_config.character_model_config.uid = uid
         dpg.delete_item(student_model_detail_window, children_only=True)
         dpg.add_image(detail_texture, tag='detail_' + uid, parent=student_model_detail_window)
     elif user_data == 'Trainer':
         if app_config is not None:
-            app_config.trainer.model_config.uid = uid
+            app_config.trainer_config.character_model_config.uid = uid
         dpg.delete_item(trainer_model_detail_window, children_only=True)
         dpg.add_image(detail_texture, tag='detail_' + uid, parent=trainer_model_detail_window)
 
@@ -227,9 +227,9 @@ def _load_character_config_for_current_scenario():
         row_config = json.loads(row_data)
         app_config = hrsa_config.HRSAConfig(**row_config)
 
-    _update_model_config(app_config.patient.model_config.uid, None, 'Patient')
-    _update_model_config(app_config.trainer.model_config.uid, None, 'Trainer')
-    _update_model_config(app_config.medicalstudent.model_config.uid, None, 'MedicalStudent')
+    _update_model_config(app_config.patient_config.character_model_config.uid, None, 'Patient')
+    _update_model_config(app_config.trainer_config.character_model_config.uid, None, 'Trainer')
+    _update_model_config(app_config.medicalstudent_config.character_model_config.uid, None, 'MedicalStudent')
 
 
 def _update_character_config_for_current_scenario():

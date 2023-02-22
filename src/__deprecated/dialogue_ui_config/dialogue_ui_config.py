@@ -41,7 +41,7 @@ def _callback_update_player_subtitle_text_color(sender, app_data, user_data):
     hex_color = '#%02x%02x%02x' % rgb_color
     # print(rgb_color, hex_color)
     global duc_color_setting
-    duc_color_setting.player.ui.subtitle.text_color = hex_color
+    duc_color_setting.player_config.ui_config.subtitle_config.text_color = hex_color
 
 
 def _callback_update_medicalstudent_subtitle_text_color(sender, app_data, user_data):
@@ -50,7 +50,7 @@ def _callback_update_medicalstudent_subtitle_text_color(sender, app_data, user_d
     hex_color = '#%02x%02x%02x' % rgb_color
     # print(rgb_color, hex_color)
     global duc_color_setting
-    duc_color_setting.medicalstudent.ui.subtitle.text_color = hex_color
+    duc_color_setting.medicalstudent_config.ui_config.subtitle_config.text_color = hex_color
 
 
 def _callback_update_patient_subtitle_text_color(sender, app_data, user_data):
@@ -59,7 +59,7 @@ def _callback_update_patient_subtitle_text_color(sender, app_data, user_data):
     hex_color = '#%02x%02x%02x' % rgb_color
     # print(rgb_color, hex_color)
     global duc_color_setting
-    duc_color_setting.patient.ui.subtitle.text_color = hex_color
+    duc_color_setting.patient_config.ui_config.subtitle_config.text_color = hex_color
 
 
 def _callback_update_trainer_subtitle_text_color(sender, app_data, user_data):
@@ -68,7 +68,7 @@ def _callback_update_trainer_subtitle_text_color(sender, app_data, user_data):
     hex_color = '#%02x%02x%02x' % rgb_color
     # print(rgb_color, hex_color)
     global duc_color_setting
-    duc_color_setting.trainer.ui.subtitle.text_color = hex_color
+    duc_color_setting.trainer_config.ui_config.subtitle_config.text_color = hex_color
 
 
 duc_color_setting = None
@@ -97,14 +97,14 @@ def init_ui():
         dpg.add_button(label="Load Setting", callback=_load_default_color_set)
         dpg.add_button(label="Save Setting", callback=_save_color_set)
 
-        dpg.add_color_edit(default_value=_hex_to_rgb(duc_color_setting.player.ui.subtitle.text_color), label="Player Subtitle Text Color",
+        dpg.add_color_edit(default_value=_hex_to_rgb(duc_color_setting.player_config.ui_config.subtitle_config.text_color), label="Player Subtitle Text Color",
                            tag="DUC_PLAYER_SUBTITLE_TEXT_COLOR", callback=_callback_update_player_subtitle_text_color, input_mode=dpg.mvColorEdit_input_rgb)
 
-        dpg.add_color_edit(default_value=_hex_to_rgb(duc_color_setting.medicalstudent.ui.subtitle.text_color), label="Medical Student Subtitle Text Color",
+        dpg.add_color_edit(default_value=_hex_to_rgb(duc_color_setting.medicalstudent_config.ui_config.subtitle_config.text_color), label="Medical Student Subtitle Text Color",
                            tag="DUC_MEDICALSTUDENT_SUBTITLE_TEXT_COLOR", callback=_callback_update_medicalstudent_subtitle_text_color, input_mode=dpg.mvColorEdit_input_rgb)
 
-        dpg.add_color_edit(default_value=_hex_to_rgb(duc_color_setting.patient.ui.subtitle.text_color), label="Patient Subtitle Text Color",
+        dpg.add_color_edit(default_value=_hex_to_rgb(duc_color_setting.patient_config.ui_config.subtitle_config.text_color), label="Patient Subtitle Text Color",
                            tag="DUC_PATIENT_SUBTITLE_TEXT_COLOR", callback=_callback_update_patient_subtitle_text_color, input_mode=dpg.mvColorEdit_input_rgb)
 
-        dpg.add_color_edit(default_value=_hex_to_rgb(duc_color_setting.trainer.ui.subtitle.text_color), label="Trainer Subtitle Text Color",
+        dpg.add_color_edit(default_value=_hex_to_rgb(duc_color_setting.trainer_config.ui_config.subtitle_config.text_color), label="Trainer Subtitle Text Color",
                            tag="DUC_TRAINER_SUBTITLE_TEXT_COLOR", callback=_callback_update_trainer_subtitle_text_color, input_mode=dpg.mvColorEdit_input_rgb)

@@ -1,3 +1,13 @@
+class DataFileVersion(object):
+    def __init__(self, major, minor, patch):
+        self.major = major
+        self.minor = minor
+        self.patch = patch
+
+    def toJson(self):
+        return {"major": self.major, "minor": self.minor, "patch": self.patch}
+
+
 class SubtitleConfig(object):
     def __init__(self, text_color):
         self.text_color = text_color
@@ -7,11 +17,11 @@ class SubtitleConfig(object):
 
 
 class UIConfig(object):
-    def __init__(self, subtitle):
-        self.subtitle = SubtitleConfig(**subtitle)
+    def __init__(self, subtitle_config):
+        self.subtitle_config = SubtitleConfig(**subtitle_config)
 
     def toJson(self):
-        return {"subtitle": self.subtitle.toJson()}
+        return {"subtitle_config": self.subtitle_config.toJson()}
 
 
 class ModelConfig(object):
@@ -23,20 +33,27 @@ class ModelConfig(object):
 
 
 class CharacterConfig(object):
-    def __init__(self, ui, model_config):
-        self.ui = UIConfig(**ui)
-        self.model_config = ModelConfig(**model_config)
+    def __init__(self, ui_config, character_model_config):
+        self.ui_config = UIConfig(**ui_config)
+        self.character_model_config = ModelConfig(**character_model_config)
 
     def toJson(self):
-        return {"ui": self.ui.toJson(), "model_config": self.model_config.toJson()}
+        return {"ui_config": self.ui_config.toJson(), "character_model_config": self.character_model_config.toJson()}
 
 
 class HRSAConfig(object):
-    def __init__(self, player, medicalstudent, patient, trainer):
-        self.player = CharacterConfig(**player)
-        self.medicalstudent = CharacterConfig(**medicalstudent)
-        self.patient = CharacterConfig(**patient)
-        self.trainer = CharacterConfig(**trainer)
+    def __init__(self, version, player_config, medicalstudent_config, patient_config, trainer_config):
+        self.version = DataFileVersion(**version)
+        self.player_config = CharacterConfig(**player_config)
+        self.medicalstudent_config = CharacterConfig(**medicalstudent_config)
+        self.patient_config = CharacterConfig(**patient_config)
+        self.trainer_config = CharacterConfig(**trainer_config)
 
     def toJson(self):
-        return {"player": self.player.toJson(), "medicalstudent": self.medicalstudent.toJson(), "patient": self.patient.toJson(), "trainer": self.trainer.toJson()}
+        return {
+            "version": self.version.toJson(),
+            "player_config": self.player_config.toJson(),
+            "medicalstudent_config": self.medicalstudent_config.toJson(),
+            "patient_config": self.patient_config.toJson(),
+            "trainer_config": self.trainer_config.toJson()
+        }

@@ -1,30 +1,47 @@
 {
-  "player": {
-    "ui": {
-      "subtitle": {
-        "text_color": "#FFFFFF"
-      }
+    "version": {
+        "major": 1,
+        "minor": 0,
+        "patch": 0
+    },
+    "player_config": {
+        "ui_config": {
+            "subtitle_config": {
+                "text_color": "#2b2323"
+            }
+        },
+        "character_model_config": {
+            "uid": "Male Medical Student"
+        }
+    },
+    "medicalstudent_config": {
+        "ui_config": {
+            "subtitle_config": {
+                "text_color": "#5b1919"
+            }
+        },
+        "character_model_config": {
+            "uid": "MedStudent1"
+        }
+    },
+    "patient_config": {
+        "ui_config": {
+            "subtitle_config": {
+                "text_color": "#0f3d53"
+            }
+        },
+        "character_model_config": {
+            "uid": "Patient1"
+        }
+    },
+    "trainer_config": {
+        "ui_config": {
+            "subtitle_config": {
+                "text_color": "#103e0c"
+            }
+        },
+        "character_model_config": {
+            "uid": "Trainer1"
+        }
     }
-  },
-  "medicalstudent": {
-    "ui": {
-      "subtitle": {
-        "text_color": "#00ABFF"
-      }
-    }
-  },
-  "patient": {
-    "ui": {
-      "subtitle": {
-        "text_color": "#FF0000"
-      }
-    }
-  },
-  "trainer": {
-    "ui": {
-      "subtitle": {
-        "text_color": "#0CA600"
-      }
-    }
-  }
 }

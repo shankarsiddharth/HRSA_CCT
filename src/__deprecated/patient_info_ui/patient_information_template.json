@@ -1,4 +1,9 @@
 {
+  "version": {
+    "major": 1,
+    "minor": 0,
+    "patch": 0
+  },
   "patient_demographics": {
     "first_name": "",
     "last_name": "",
