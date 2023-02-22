@@ -43,10 +43,10 @@ class CharacterConfig(object):
 
 class ConversationConfig(object):
     def __init__(self, question_timer_in_seconds):
-        self.question_timer_in_seconds = question_timer_in_seconds
+        self.question_timer_in_seconds: int = question_timer_in_seconds
 
     def toJson(self):
-        return {"question_timer_in_seconds": self.question_timer_in_seconds}
+        return {"question_timer_in_seconds": int(self.question_timer_in_seconds)}
 
 
 class HRSAConfig(object):
