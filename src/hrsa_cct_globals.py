@@ -1,6 +1,6 @@
-import app_logger
+from app_logger.app_logger import AppLogger
 
-log = app_logger.AppLogger()
+log = AppLogger()
 
 # Global Variables
 default_language_code = "en-US"
@@ -38,3 +38,5 @@ option_display_text_regular_expression = r"\s*[A-Za-z0-9]+\s*[\.](.*)"
 
 # Scenario Folder Cache
 app_data = dict()
+
+connect_to_cloud = False

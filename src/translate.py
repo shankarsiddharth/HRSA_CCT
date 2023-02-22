@@ -1,9 +1,9 @@
+import copy
 import json
 import os
+import pathlib
 import re
 import shutil
-import copy
-import pathlib
 
 import dearpygui.dearpygui as dpg
 from google.cloud import translate
@@ -15,6 +15,12 @@ from hrsa_cct_globals import log
 
 credentials = service_account.Credentials.from_service_account_file(hrsa_cct_constants.GOOGLE_CLOUD_SERVICE_ACCOUNT_FILE_PATH)
 clientTranslate = translate.TranslationServiceClient(credentials=credentials)
+
+gc_project_id = ''
+with open(hrsa_cct_constants.GOOGLE_CLOUD_SERVICE_ACCOUNT_FILE_PATH, 'r', encoding='utf-8') as f:
+    data = json.load(f)
+    if gc_project_id == '':
+        project_id = data['project_id']
 
 new_data_path = ""
 source_scenario_language_code_path = ""
@@ -39,8 +45,8 @@ SOURCE_SECTION_GROUP: str = "SOURCE_SECTION_GROUP"
 
 
 def callback_on_source_scenario_folder_selected(sender, app_data):
-    log.debug("Sender: " + str(sender), False)
-    log.debug("App Data: " + str(app_data), False)
+    log.debug("Sender: " + str(sender))
+    log.debug("App Data: " + str(app_data))
     global source_scenario_language_code_path
     global new_data_path
     source_scenario_folder_path = os.path.normpath(str(app_data['file_path_name']))
@@ -76,7 +82,7 @@ def set_new_language_code(sender):
         dpg.configure_item(TRANSLATE_TEXT_BUTTON, show=False)
 
 
-def translate_text(text="I want to translate this text.", project_id="decent-lambda-354120", language="es"):
+def translate_text(text="I want to translate this text.", language="es"):
     location = "global"
     parent = f"projects/{project_id}/locations/{location}"
     log.info("Translating : " + text + " - to " + language)
@@ -153,7 +159,7 @@ def callback_on_translate_text_clicked():
             if file.endswith(".ink"):
                 path_to_add = os.path.join(root, file)
                 ink_files_list.append(path_to_add)
-                log.trace("path_to_add: " + path_to_add, False)
+                log.trace("path_to_add: " + path_to_add)
     # translate ink files
     dialogue_text_list = list()
     for new_file_path in ink_files_list:
@@ -204,11 +210,13 @@ def callback_on_translate_text_clicked():
             total_characters_to_translate = total_characters_to_translate + len(dialogue_text_list_element)
         log_text = "total_characters_to_translate : " + str(total_characters_to_translate)
         log.info(log_text)
-        continue
+        if not hrsa_cct_globals.connect_to_cloud:
+            file_ink.close()
+            continue
         file_ink.seek(0, 0)
         data = file_ink.read()
         # print(data)
-        # log.trace(data, False)
+        # log.trace(data)
         file_ink.close()
         for dialogue_text_list_element in dialogue_text_list:
             translated_text = translate_text(text=dialogue_text_list_element, language=selected_language)

@@ -1,20 +1,17 @@
+import json
 import os
 import shutil
-import json
 import sys
 
 import dearpygui.dearpygui as dpg
-from dearpygui_ext import themes
-
-import hrsa_cct_globals
-from hrsa_cct_globals import log
 
 import audio_generation
 import hrsa_cct_constants
+import hrsa_cct_globals
 import translate
-from patient_info_ui import patient_info_ui
 from dialogue_ui_config import dialogue_ui_config
-from character_config import character_config
+from hrsa_cct_globals import log
+from patient_info_ui import patient_info_ui
 
 # debug build parameters
 is_debug = True
@@ -111,8 +108,8 @@ def create_scenario_folders(scenario_name, scenario_information_json_object) -> 
 
 
 def callback_on_data_folder_selected(sender, app_data):
-    log.debug("Sender: " + str(sender), False)
-    log.debug("App Data: " + str(app_data), False)
+    log.debug("Sender: " + str(sender))
+    log.debug("App Data: " + str(app_data))
     global data_path
     data_path = os.path.normpath(str(app_data['file_path_name']))
     log.info('Data Folder Path: ' + data_path)
@@ -147,8 +144,8 @@ def callback_on_create_scenario_button_clicked() -> None:
 
 
 def callback_on_scenario_source_folder_selected(sender, app_data):
-    log.debug("Sender: " + str(sender), False)
-    log.debug("App Data: " + str(app_data), False)
+    log.debug("Sender: " + str(sender))
+    log.debug("App Data: " + str(app_data))
     global scenario_path_source
     scenario_path_source = os.path.normpath(str(app_data['file_path_name']))
     log.info("Source Scenario Path: " + scenario_path_source)
@@ -156,8 +153,8 @@ def callback_on_scenario_source_folder_selected(sender, app_data):
 
 
 def callback_on_scenario_destination_folder_selected(sender, app_data):
-    log.debug("Sender: " + str(sender), False)
-    log.debug("App Data: " + str(app_data), False)
+    log.debug("Sender: " + str(sender))
+    log.debug("App Data: " + str(app_data))
     global scenario_path_destination
     scenario_path_destination = os.path.normpath(str(app_data['file_path_name']))
     log.info("Destination Scenario Path: " + scenario_path_destination)
@@ -178,7 +175,12 @@ def callback_on_copy_scenario_button_clicked():
 
 
 def save_init():
-    dpg.save_init_file("dpg.ini")
+    dpg.save_init_file("dpg_old.ini")
+
+
+def callback_on_connect_to_cloud_checkbox_clicked(sender, app_data, user_data):
+    hrsa_cct_globals.connect_to_cloud = dpg.get_value("connect_to_cloud")
+    print("Connect to Cloud: " + str(hrsa_cct_globals.connect_to_cloud))
 
 
 def main() -> None:
@@ -188,15 +190,17 @@ def main() -> None:
     # dpg.bind_theme(dark_theme_id)
 
     if not is_debug:
-        dpg.configure_app(manual_callback_management=False, docking=True, docking_space=True, init_file="dpg.ini")
+        dpg.configure_app(manual_callback_management=False, docking=True, docking_space=True, init_file="dpg_old.ini")
     else:
-        dpg.configure_app(manual_callback_management=True, docking=True, docking_space=True, init_file="dpg.ini")
+        dpg.configure_app(manual_callback_management=True, docking=True, docking_space=True, init_file="dpg_old.ini")
 
     dpg.create_viewport(title='HRSA Content Creation Tool', width=VIEWPORT_WIDTH, height=VIEWPORT_HEIGHT)
 
     with dpg.window(label="HRSA CCT", tag=hrsa_cct_constants.HRSA_CCT_TOOL, width=VIEWPORT_WIDTH, height=VIEWPORT_HEIGHT, no_title_bar=True, no_close=True):
         if is_debug:
             dpg.add_button(label="Save Init", callback=lambda: save_init)
+            dpg.add_checkbox(label="Connect to Cloud", tag="connect_to_cloud", default_value=hrsa_cct_globals.connect_to_cloud,
+                             callback=callback_on_connect_to_cloud_checkbox_clicked)
         with dpg.collapsing_header(label="Choose a location to create the Data Folder", default_open=True):
             dpg.add_file_dialog(tag=FILE_DIALOG_FOR_DATA_FOLDER, height=300, width=450, directory_selector=True, show=False, callback=callback_on_data_folder_selected)
             dpg.add_button(tag=SHOW_FILE_DIALOG_BUTTON_DATA_FOLDER, label="Select Data Folder",
@@ -229,7 +233,7 @@ def main() -> None:
         patient_info_ui.init_ui()
 
         # Dialogue UI Config - Initialize
-        # dialogue_ui_config.init_ui()
+        dialogue_ui_config.init_ui()
 
         # Character Config - Initialize
         # character_config.init_ui()
@@ -247,7 +251,8 @@ def main() -> None:
             dpg.add_text(tag=audio_generation.SCENARIO_LANGUAGE_CODE_DIRECTORY_PATH_TEXT, show=False)
             # TODO: Voice Configuration
             with dpg.collapsing_header(indent=50, tag=audio_generation.VOICE_CONFIG_SECTION, label="Configure Character Voice Settings", default_open=True, show=False):
-                dpg.add_listbox(tag=audio_generation.CHARACTER_SELECT_LISTBOX, label="Choose Character", num_items=5, show=True, callback=audio_generation.display_character_info)
+                dpg.add_listbox(tag=audio_generation.CHARACTER_SELECT_LISTBOX, label="Choose Character", num_items=5, show=True,
+                                callback=audio_generation.display_character_info)
                 dpg.add_listbox(tag=audio_generation.LANGUAGE_CODE_TEXT, label="Language Code", num_items=4, callback=audio_generation.callback_on_change_language_code)
                 dpg.add_listbox(tag=audio_generation.AUDIO_GENDER_TEXT, label="Gender", num_items=3, show=True, callback=audio_generation.callback_on_gender_selected)
                 dpg.add_listbox(tag=audio_generation.AUDIO_VOICE_LIST, label="Voice", num_items=10, tracked=True)
