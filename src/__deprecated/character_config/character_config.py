@@ -83,7 +83,7 @@ def _load_character_config():
     with open('character_config/CharacterModelData.json', 'r', encoding='UTF-8') as character_config_file:
         row_data = character_config_file.read()
         row_config = json.loads(row_data)
-
+        file_version = row_config['version']
         for data in row_config['ModelDataList']:
             item = character_model_data.CharacterModelData(**data)
             model_data_list.append(item)
@@ -165,7 +165,7 @@ def _load_character_model_image(image_name):
     image_data = dpg.load_image('../../data/avatar/' + image_name + '.png')
 
     if image_data is None and "default_avatar" not in loaded_texture:
-        image_data = dpg.load_image('../../data/avatar/error.png')
+        image_data = dpg.load_image('../../data/defaults/error.png')
         image_name = 'default_avatar'
 
     width, height, channels, data = image_data
@@ -403,13 +403,14 @@ def init_ui():
         _callback_update_filter(None, None, 'MedicalStudent')
         _callback_update_filter(None, None, 'Trainer')
 
-        dpg.add_text('Devices', indent=20)
-        connected_devices = adb.device_list()
-        for device in connected_devices:
-            print(device.serial, device.prop.model)
-            dpg.add_checkbox(label=device.serial, source="bool_value", callback=_select_target_device, user_data=device.serial)
-        if len(connected_devices) == 0:
-            dpg.add_text('No Device Connected!', indent=40)
+        with dpg.collapsing_header(label="Transfer to Device", default_open=True, parent=hrsa_cct_constants.HRSA_CCT_TOOL):
+            dpg.add_text('Devices', indent=20)
+            connected_devices = adb.device_list()
+            for device in connected_devices:
+                print(device.serial, device.prop.model)
+                dpg.add_checkbox(label=device.serial, source="bool_value", callback=_select_target_device, user_data=device.serial)
+            if len(connected_devices) == 0:
+                dpg.add_text('No Device Connected!', indent=40)
 
-        dpg.add_button(label='Install Latest Package', callback=_install_latest_package, user_data=True)
-        dpg.add_button(label='Enable Media Transfer', callback=_toggle_media_transfer, user_data=True)
+            dpg.add_button(label='Install Latest Package', callback=_install_latest_package, user_data=True)
+            dpg.add_button(label='Enable Media Transfer', callback=_toggle_media_transfer, user_data=True)

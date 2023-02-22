@@ -1,8 +1,9 @@
 class CharacterModelMetaData(object):
-    def __init__(self, CharacterType, GenderType, EthnicityType):
+    def __init__(self, CharacterType, GenderType, EthnicityType, PreviewLabel):
         self.CharacterType = CharacterType
         self.GenderType = GenderType
         self.EthnicityType = EthnicityType
+        self.PreviewLabel = PreviewLabel
 
 
 class CharacterModelData(object):

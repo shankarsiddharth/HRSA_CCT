@@ -9,8 +9,8 @@ import audio_generation
 import hrsa_cct_constants
 import hrsa_cct_globals
 import translate
-from dialogue_ui_config import dialogue_ui_config
 from character_config import character_config
+from dialogue_ui_config import dialogue_ui_config
 from hrsa_cct_globals import log
 from patient_info_ui import patient_info_ui
 
@@ -283,7 +283,7 @@ def main() -> None:
 
     dpg.setup_dearpygui()
     dpg.show_viewport()
-
+    dpg.maximize_viewport()
     # dpg.set_primary_window(hrsa_cct_constants.HRSA_CCT_TOOL, True)
 
     if not is_debug:

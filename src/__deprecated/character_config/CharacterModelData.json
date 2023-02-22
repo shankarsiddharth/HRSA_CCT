@@ -1,12 +1,17 @@
 {
-  "DataFileVersion": "1.0",
+  "version": {
+    "major": 1,
+    "minor": 0,
+    "patch": 0
+  },
   "ModelDataList": [
     {
       "uid": "MedStudent1",
       "metaData": {
         "CharacterType": "kMedicalStudent",
         "GenderType": "kFemale",
-        "EthnicityType": "kWhite"
+        "EthnicityType": "kWhite",
+        "PreviewLabel": "Student A"
       }
     },
     {
@@ -14,7 +19,8 @@
       "metaData": {
         "CharacterType": "kMedicalStudent",
         "GenderType": "kMale",
-        "EthnicityType": "kHispanic"
+        "EthnicityType": "kHispanic",
+        "PreviewLabel": "Student B"
       }
     },
     {
@@ -22,7 +28,8 @@
       "metaData": {
         "CharacterType": "kPatient",
         "GenderType": "kMale",
-        "EthnicityType": "kHispanic"
+        "EthnicityType": "kHispanic",
+        "PreviewLabel": "Patient A"
       }
     },
     {
@@ -30,7 +37,8 @@
       "metaData": {
         "CharacterType": "kPatient",
         "GenderType": "kFemale",
-        "EthnicityType": "kBlack"
+        "EthnicityType": "kBlack",
+        "PreviewLabel": "Patient B"
       }
     },
     {
@@ -38,7 +46,8 @@
       "metaData": {
         "CharacterType": "kTrainer",
         "GenderType": "kFemale",
-        "EthnicityType": "kWhite"
+        "EthnicityType": "kWhite",
+        "PreviewLabel": "Trainer"
       }
     }
   ]
