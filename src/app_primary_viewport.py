@@ -123,11 +123,11 @@ class AppPrimaryViewportUI(threading.Thread):
 
         log.on_init_and_render_ui()
 
-        with dpg.window(label="Window 1", tag="Window 1", width=300, height=300, no_resize=False, no_move=False, no_close=True, no_collapse=True):
-            dpg.add_button(label="Button 1", tag="Button 1", callback=self.button_callback)
-
-            with dpg.child_window(tag="Window 2", label="Window 2", width=150, height=150, show=False):
-                dpg.add_button(tag="Button 2", label="Button 2", callback=self.button_callback)
+        # with dpg.window(label="Window 1", tag="Window 1", width=300, height=300, no_resize=False, no_move=False, no_close=True, no_collapse=True):
+        #     dpg.add_button(label="Button 1", tag="Button 1", callback=self.button_callback)
+        #
+        #     with dpg.child_window(tag="Window 2", label="Window 2", width=150, height=150, show=False):
+        #         dpg.add_button(tag="Button 2", label="Button 2", callback=self.button_callback)
 
         dpg.setup_dearpygui()
         # dpg.maximize_viewport()
