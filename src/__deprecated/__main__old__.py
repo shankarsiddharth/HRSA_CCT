@@ -10,6 +10,7 @@ import hrsa_cct_constants
 import hrsa_cct_globals
 import translate
 from dialogue_ui_config import dialogue_ui_config
+from character_config import character_config
 from hrsa_cct_globals import log
 from patient_info_ui import patient_info_ui
 
@@ -236,7 +237,7 @@ def main() -> None:
         dialogue_ui_config.init_ui()
 
         # Character Config - Initialize
-        # character_config.init_ui()
+        character_config.init_ui()
 
         with dpg.collapsing_header(label="Choose the Scenario Folder for Audio Generation", default_open=False):
             dpg.add_file_dialog(tag=audio_generation.FILE_DIALOG_FOR_SCENARIO_FOLDER, height=300, width=450, directory_selector=True, show=False,
