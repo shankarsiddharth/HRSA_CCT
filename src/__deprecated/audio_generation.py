@@ -14,7 +14,9 @@ from hrsa_cct_globals import log
 
 # Google Cloud Configuration Data
 # Get Credentials from JSON file
-credentials = service_account.Credentials.from_service_account_file(hrsa_cct_constants.GOOGLE_CLOUD_SERVICE_ACCOUNT_FILE_PATH)
+path_string = os.path.abspath(hrsa_cct_constants.GOOGLE_CLOUD_SERVICE_ACCOUNT_FILE_PATH)
+print(path_string)
+credentials = service_account.Credentials.from_service_account_file(path_string)
 # Instantiates a client
 client = texttospeech.TextToSpeechClient(credentials=credentials)
 
@@ -252,7 +254,7 @@ def compile_ink_files():
         splitext_data = os.path.splitext(ink_file_path)
         json_file_path = splitext_data[0] + ".json"
         # TODO: Get Proper Path of this executable when packaging this program as .exe
-        inklecate_windows = "../bin/inklecate/Win64/inklecate.exe"
+        inklecate_windows = "../../bin/inklecate/Win64/inklecate.exe"
         cmd_string = inklecate_windows + " -o" + " " + json_file_path + " " + ink_file_path
         completed_process_result = subprocess.run([inklecate_windows, "-o", json_file_path, ink_file_path],
                                                   capture_output=True, text=True)

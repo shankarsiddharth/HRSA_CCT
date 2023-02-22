@@ -1,4 +1,3 @@
-
 class CharacterModelMetaData(object):
     def __init__(self, CharacterType, GenderType, EthnicityType):
         self.CharacterType = CharacterType

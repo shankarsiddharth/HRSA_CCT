@@ -1,11 +1,10 @@
-import dearpygui.dearpygui as dpg
-import hrsa_cct_constants
 import json
 
-from configuration import character_model_data
-from configuration import hrsa_config
-
+import dearpygui.dearpygui as dpg
 from adbutils import adb
+
+from __deprecated import hrsa_cct_constants
+from __deprecated.configuration import hrsa_config, character_model_data
 
 model_data_list = []
 

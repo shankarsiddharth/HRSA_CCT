@@ -1,0 +1,30 @@
+{
+  "player": {
+    "ui": {
+      "subtitle": {
+        "text_color": "#FFFFFF"
+      }
+    }
+  },
+  "medicalstudent": {
+    "ui": {
+      "subtitle": {
+        "text_color": "#00ABFF"
+      }
+    }
+  },
+  "patient": {
+    "ui": {
+      "subtitle": {
+        "text_color": "#FF0000"
+      }
+    }
+  },
+  "trainer": {
+    "ui": {
+      "subtitle": {
+        "text_color": "#0CA600"
+      }
+    }
+  }
+}

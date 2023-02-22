@@ -1,0 +1,42 @@
+{
+  "player": {
+    "ui": {
+      "subtitle": {
+        "text_color": "#FFFFFF"
+      }
+    },
+    "model_config": {
+      "uid": "Male Medical Student"
+    }
+  },
+  "medicalstudent": {
+    "ui": {
+      "subtitle": {
+        "text_color": "#FF0000"
+      }
+    },
+    "model_config": {
+      "uid": "MedStudent1"
+    }
+  },
+  "patient": {
+    "ui": {
+      "subtitle": {
+        "text_color": "#00ABFF"
+      }
+    },
+    "model_config": {
+      "uid": "Patient1"
+    }
+  },
+  "trainer": {
+    "ui": {
+      "subtitle": {
+        "text_color": "#0CA600"
+      }
+    },
+    "model_config": {
+      "uid": "Trainer1"
+    }
+  }
+}

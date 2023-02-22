@@ -1,10 +1,9 @@
 import json
-import os.path
 
 import dearpygui.dearpygui as dpg
-import json
-import hrsa_cct_constants
-from configuration import hrsa_config
+
+from __deprecated import hrsa_cct_constants
+from __deprecated.configuration import hrsa_config
 
 
 # GUI Element Tags
@@ -109,4 +108,3 @@ def init_ui():
 
         dpg.add_color_edit(default_value=_hex_to_rgb(duc_color_setting.trainer.ui.subtitle.text_color), label="Trainer Subtitle Text Color",
                            tag="DUC_TRAINER_SUBTITLE_TEXT_COLOR", callback=_callback_update_trainer_subtitle_text_color, input_mode=dpg.mvColorEdit_input_rgb)
-
