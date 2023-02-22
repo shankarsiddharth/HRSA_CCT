@@ -70,7 +70,7 @@ class ScenarioFolderData:
             return FileSystemResultData(is_success=False, error_message='Scenario Folder Already Exists')
 
         if self.is_scenario_language_folder_data_present(language_code):
-            file_system_result_data: FileSystemResultData = FileSystemResultData(is_success=False, error_message='Language Code is already exists')
+            file_system_result_data: FileSystemResultData = FileSystemResultData(is_success=False, error_message='Language Code already exists')
             return file_system_result_data
         new_scenario_path.mkdir()
         scenario_language_folder_data: ScenarioLanguageFolderData = ScenarioLanguageFolderData()
@@ -81,3 +81,19 @@ class ScenarioFolderData:
             return file_system_result_data
         self.scenario_language_folder_data_list.append(scenario_language_folder_data)
         return FileSystemResultData(is_success=True)
+
+    def refresh_scenario_data(self):
+        self.scenario_language_folder_data_list.clear()
+        self.initialize_scenario_folder_data()
+        pass
+
+    def get_scenario_languages(self) -> list[str] | None:
+        # TODO: Return the language codes as user-friendly names
+        language_folder_data_item: ScenarioLanguageFolderData
+        language_list: list[str] = [__hdfsc__.NONE_LANGUAGE_CODE]
+        for language_folder_data_item in self.scenario_language_folder_data_list:
+            language_list.append(language_folder_data_item.language_code)
+        if len(language_list) == 1:  # Only the None Language Code
+            return None
+        else:
+            return language_list

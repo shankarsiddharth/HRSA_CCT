@@ -15,10 +15,10 @@ class AppFileDialog(object):
         if cls._instance is None:
             with cls._lock:
                 if cls._instance is None:
-                    if sys.flags.dev_mode:
-                        print("AppFileDialog.__new__()")
                     cls._instance = super(AppFileDialog, cls).__new__(cls)
                     cls._instance.__initialize__()
+                    if sys.flags.dev_mode:
+                        print("AppFileDialog.__new__()")
         return cls._instance
 
     def __initialize__(self):

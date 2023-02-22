@@ -1,21 +1,12 @@
-import json
-import os
 import sys
 import threading
-from dataclasses import asdict
 
 from app_file_system.app_file_system import AppFileSystem
 from app_file_system.app_file_system_constants import AppFileSystemConstants
 from app_logger.app_logger import AppLogger
-from hrsa_data.scenario_data.ehr.patient_information import PatientInformation
-from hrsa_data.scenario_data.scenario_config.scenario_config import ScenarioConfig
-from hrsa_data.scenario_data.scenario_information.scenario_information import ScenarioInformation
-from hrsa_data.scenario_data.scenario_voice_config.scenario_voice_config import ScenarioVoiceConfig
 from .file_system_result_data import FileSystemResultData
 from .hrsa_data_file_system_constants import HRSADataFileSystemConstants
 from .hrsa_data_workspace_folder_data import HRSADataWorkspaceFolderData
-from .scenario_folder_data import ScenarioFolderData
-from .scenario_language_folder_data import ScenarioLanguageFolderData
 
 
 class HRSADataFileSystem(object):
@@ -50,26 +41,51 @@ class HRSADataFileSystem(object):
 
         # Initialize the workspace folder data from the workspace directory
         self.hrsa_data_workspace_folder_data.initialize_workspace_folder_data()
-        print("\n" + json.dumps(asdict(self.hrsa_data_workspace_folder_data), indent=4) + "\n")
-        self.__initialize_workspace_folder_data__()
+        # print("\n" + json.dumps(asdict(self.hrsa_data_workspace_folder_data), indent=4) + "\n")
 
-    def __initialize_workspace_folder_data__(self):
-        pass
-
-    def validate_scenario_name(self, scenario_name: str):
+    def validate_scenario_name(self, scenario_name: str) -> bool:
         # TODO: Check if scenario_name is valid (no special characters, etc.)
         # TODO: Check if scenario_name already exists
         # TODO: Check if the workspace folder has write permissions for the user
         return True
 
-    def create_new_scenario_folder_for_language(self, scenario_name, language_code):
+    def create_new_scenario_folder_for_language(self, scenario_name, language_code) -> bool:
         file_system_result_data: FileSystemResultData = self.hrsa_data_workspace_folder_data.create_new_scenario_folder_for_language(scenario_name, language_code)
         return file_system_result_data.is_success
 
-    def delete_scenario_folder(self, scenario_name):
+    def delete_scenario_folder(self, scenario_name) -> bool:
         if not self.hrsa_data_workspace_folder_data.delete_scenario_folder(scenario_name):
             return False
         return True
+
+    def set_current_scenario(self, scenario_name: str, language_code: str = '') -> bool:
+        """
+        Set the current scenario and language
+        If the language_code is not provided, then the default language code will be used
+        :param scenario_name:
+        :param language_code:
+        :return:
+        """
+        if language_code == '':
+            language_code = self.hdfsc.DEFAULT_LANGUAGE_CODE
+
+        if not self.set_current_scenario(scenario_name, language_code):
+            return False
+        return True
+
+    def set_current_scenario_and_language(self, scenario_name, language_code) -> bool:
+        if not self.hrsa_data_workspace_folder_data.set_current_scenario_name(scenario_name):
+            if not self.hrsa_data_workspace_folder_data.set_current_scenario_current_language_code(language_code):
+                return False
+            return False
+        return True
+
+    def refresh_scenario_data(self, scenario_name) -> None:
+        self.hrsa_data_workspace_folder_data.refresh_scenario_data(scenario_name)
+        pass
+
+    def get_current_scenario_languages(self) -> list[str] | None:
+        return self.hrsa_data_workspace_folder_data.get_current_scenario_languages()
 
     # def create_new_scenario_folder_for_default_language(self, scenario_name: str):
     #     if not self.validate_scenario_name(scenario_name):

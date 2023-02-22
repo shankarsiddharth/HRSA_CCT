@@ -21,8 +21,12 @@ class AppFileSystemConstants(object):
 
         # Constants
 
+        # ========================== START File Constants ===================================
         # Default File Encoding
         self.DEFAULT_FILE_ENCODING = "utf-8"
+        # Default Google Cloud Service Account File Name
+        self.GOOGLE_CLOUD_SERVICE_ACCOUNT_PRIVATE_KEY_JSON_FILE_NAME = "hrsa_service_account_private_key.json"
+        # ========================== END File Constants ===================================
 
         # ========================== START Application Constants ===================================
         # Application Folder Constants

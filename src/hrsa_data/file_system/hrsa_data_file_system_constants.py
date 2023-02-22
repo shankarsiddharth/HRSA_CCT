@@ -22,7 +22,7 @@ class HRSADataFileSystemConstants(object):
     def __initialize__(self):
 
         self.HRSA_CCT_WORKSPACE_FOLDER_NAME = "HRSA_CCT_Workspace"
-        
+
         # ========================== START HRSAData Folder Constants ===================================
         # HRSAData Folder Constants
         self.BREAK_ROOM_NAME = "BreakRoom"
@@ -41,7 +41,13 @@ class HRSADataFileSystemConstants(object):
         self.SCENARIO_CONFIG_JSON_FILE_NAME = "scenario_config.json"
         self.SCENARIO_THUMBNAIL_IMAGE_FILE_NAME = "thumbnail.jpg"
 
+        # HRSAData Scenario Constants
+        self.NONE_SCENARIO_CODE = "NONE"
+        self.NONE_SCENARIO_CODE_NAME = "(none)"
+
         # Default Language Constants
+        self.NONE_LANGUAGE_CODE = "NONE"
+        self.NONE_LANGUAGE_CODE_NAME = "(none)"
         self.DEFAULT_LANGUAGE_CODE = "en-US"
         self.DEFAULT_LANGUAGE_NAME = Language.get(self.DEFAULT_LANGUAGE_CODE).display_name()
         # ========================== END HRSAData Folder Constants ===================================

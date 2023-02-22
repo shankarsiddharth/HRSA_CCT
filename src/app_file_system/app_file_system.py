@@ -67,6 +67,19 @@ class AppFileSystem(object):
             if dpg_ini_file.exists():
                 os.remove(dpg_ini_file_path)
 
+    def get_google_cloud_credentials_file_path(self) -> str | None:
+        # TODO: Replace the following with proper path using the user config settings functionality after it is implemented
+        #   Use the default path if the user has not specified a path
+        #   If the user has specified a path, use that path
+        root_folder = self.get_root_folder()
+        config_folder_path = os.path.join(root_folder, self.afsc.CONFIG_FOLDER_NAME)
+        google_cloud_service_account_file_path = os.path.join(config_folder_path, self.afsc.GOOGLE_CLOUD_SERVICE_ACCOUNT_PRIVATE_KEY_JSON_FILE_NAME)
+        google_cloud_service_account_file = pathlib.Path(google_cloud_service_account_file_path)
+        if google_cloud_service_account_file.exists():
+            return google_cloud_service_account_file_path
+        else:
+            return None
+
     # ===================== START UI Layout Config methods =====================
 
     def get_dpg_ini_file_path(self):
