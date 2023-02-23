@@ -15,6 +15,10 @@ from .vital_signs import VitalSigns
 # Module Level Constants
 __afsc__: AppFileSystemConstants = AppFileSystemConstants()
 
+r"""
+Reference: https://www.healthit.gov/isa/united-states-core-data-interoperability-uscdi#draft-uscdi-v3
+"""
+
 
 @dataclass
 class PatientInformation:
