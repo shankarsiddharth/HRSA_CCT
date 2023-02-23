@@ -1,15 +1,34 @@
 import json
+import os
 
 import dearpygui.dearpygui as dpg
 
-from __deprecated import hrsa_cct_constants
+from __deprecated import hrsa_cct_constants, hrsa_cct_globals
 from __deprecated.configuration import hrsa_config
-
 
 # GUI Element Tags
 
 
 # Module Variables
+DUC_SCENARIO_CONFIG_JSON_PATH_TEXT: str = 'DUC_SCENARIO_CONFIG_JSON_PATH_TEXT'
+DUC_OPEN_FILE_DIALOG: str = 'DUC_OPEN_FILE_DIALOG'
+
+# scenario_config = dict()
+scenario_config_json_file_path = ""
+duc_scenario_path = ""
+
+duc_color_setting: hrsa_config.HRSAConfig = None
+duc_unlimited_question_timer_mark = None
+duc_question_timer_input_text = None
+
+
+def set_scenario_path(scenario_path):
+    global duc_scenario_path, scenario_config_json_file_path
+    duc_scenario_path = scenario_path
+    scenario_config_json_file_path = os.path.join(duc_scenario_path, hrsa_cct_globals.default_language_code, hrsa_cct_constants.SCENARIO_CONFIG_JSON_FILE_NAME)
+    dpg.configure_item(DUC_SCENARIO_CONFIG_JSON_PATH_TEXT, default_value=scenario_config_json_file_path)
+    _callback_load_dialog_config_file(None, app_data=dict(file_path_name=scenario_config_json_file_path), user_data=None)
+
 
 def _hsv_to_rgb(h, s, v):
     if s == 0.0: return (v, v, v)
@@ -71,19 +90,15 @@ def _callback_update_trainer_subtitle_text_color(sender, app_data, user_data):
     duc_color_setting.trainer_config.ui_config.subtitle_config.text_color = hex_color
 
 
-duc_color_setting: hrsa_config.HRSAConfig = None
-duc_unlimited_question_timer_mark = None
-duc_question_timer_input_text = None
-
-
 def _load_default_color_set(sender, app_data, user_data):
     dpg.configure_item("DUC_OPEN_FILE_DIALOG", show=True)
 
 
 def _save_color_set(sender, app_data, user_data):
+    global scenario_config_json_file_path
     global duc_color_setting
     duc_color_setting_json = json.dumps(duc_color_setting.toJson(), indent=4)
-    with open('dialogue_ui_config/dialogue_ui_config_back.json', "w", encoding="UTF-8") as outfile:
+    with open(scenario_config_json_file_path, "w", encoding="UTF-8") as outfile:
         outfile.write(duc_color_setting_json)
 
 
@@ -122,27 +137,48 @@ def _set_question_timer(sender, app_data, user_data):
 
 
 def _callback_load_dialog_config_file(sender, app_data, user_data):
-    json_file_path = app_data["file_path_name"]
-    global duc_color_setting
-    with open(json_file_path, "r", encoding="UTF-8") as ui_config_file:
+    global duc_color_setting, scenario_config_json_file_path
+    scenario_config_json_file_path = app_data["file_path_name"]
+    dpg.configure_item(DUC_SCENARIO_CONFIG_JSON_PATH_TEXT, default_value=str(scenario_config_json_file_path))
+    with open(scenario_config_json_file_path, "r", encoding="UTF-8") as ui_config_file:
         row_data = ui_config_file.read()
         row_config = json.loads(row_data)
         duc_color_setting = hrsa_config.HRSAConfig(**row_config)
         _init_question_timer(duc_color_setting.conversation_config)
         _init_dialog_color(duc_color_setting)
 
+
+def _select_scenario_config_file(sender, app_data, user_data):
+    dpg.configure_item(DUC_OPEN_FILE_DIALOG, show=True)
+
+
+#
+# def _callback_load_scenario_config_file(sender, app_data, user_data):
+#     global duc_color_setting, scenario_config_json_file_path
+#     scenario_config_json_file_path = app_data["file_path_name"]
+#     dpg.configure_item(DUC_SCENARIO_CONFIG_JSON_PATH_TEXT, default_value=str(scenario_config_json_file_path))
+#     if scenario_config_json_file_path is not None or scenario_config_json_file_path != '':
+#         with open(scenario_config_json_file_path, "r", encoding="UTF-8") as scenario_config_json:
+#             duc_color_setting = json.load(scenario_config_json)
+#
+#     _init_dialog_color(duc_color_setting)
+#     _init_question_timer(duc_color_setting.conversation_config)
+
+
 def init_ui():
     with dpg.collapsing_header(label="Dialogue UI Config", default_open=True, parent=hrsa_cct_constants.HRSA_CCT_TOOL):
         # TODO: UI Creation
-
+        dpg.add_text(tag=DUC_SCENARIO_CONFIG_JSON_PATH_TEXT)
         # file selection dialog start
         with dpg.file_dialog(height=300, width=600, directory_selector=False, show=False,
-                             callback=_callback_load_dialog_config_file, tag="DUC_OPEN_FILE_DIALOG", modal=True):
+                             callback=_callback_load_dialog_config_file, tag=DUC_OPEN_FILE_DIALOG, modal=True):
             dpg.add_file_extension(".json", color=(255, 255, 0, 255))
         # file selection dialog end
 
-        dpg.add_button(label="Load Setting", callback=_load_default_color_set)
-        dpg.add_button(label="Save Setting", callback=_save_color_set)
+        with dpg.group(horizontal=True):
+            dpg.add_button(label="Select Scenario Config JSON File...", callback=_select_scenario_config_file)
+
+        dpg.add_button(label="Load Setting", show=False, callback=_load_default_color_set)
 
         dpg.add_color_edit(label="Player Subtitle Text Color", tag="DUC_PLAYER_SUBTITLE_TEXT_COLOR",
                            callback=_callback_update_player_subtitle_text_color, input_mode=dpg.mvColorEdit_input_rgb)
@@ -160,4 +196,6 @@ def init_ui():
         with dpg.group(horizontal=True, indent=20):
             global duc_unlimited_question_timer_mark, duc_question_timer_input_text
             duc_unlimited_question_timer_mark = dpg.add_checkbox(label="Unlimited Timer", source="bool_value", callback=_set_question_timer)
-            duc_question_timer_input_text = dpg.add_input_text(label="Question Timer in Seconds", width=100, decimal=True, callback=_set_question_timer)
+            duc_question_timer_input_text = dpg.add_input_text(label="Question Timer in Seconds", width=100, decimal=True, default_value='60', callback=_set_question_timer)
+
+        dpg.add_button(label="Save Setting", show=True, callback=_save_color_set)

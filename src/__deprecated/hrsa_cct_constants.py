@@ -13,8 +13,9 @@ DIALOGUE_INK_JSON_FILE_NAME = "dialogue.json"
 FEEDBACK_INK_JSON_FILE_NAME = "feedback.json"
 AUDIO_FOLDER_NAME = "Audio"
 SCENARIO_INFORMATION_JSON_FILE_NAME = "scenario_information.json"
-CHARACTER_VOICE_CONFIG_JSON_FILE_NAME = "character_voice_config.json"
+CHARACTER_VOICE_CONFIG_JSON_FILE_NAME = "scenario_voice_config.json"
 PATIENT_INFORMATION_JSON_FILE_NAME = "patient_information.json"
+SCENARIO_CONFIG_JSON_FILE_NAME = "scenario_config.json"
 MAX_DIALOGUE_TEXT_CHARACTER_COUNT = 275  # 300 / 250
 
 GOOGLE_CLOUD_SERVICE_ACCOUNT_FILE_PATH = "../../config/hrsa_service_account_private_key.json"  # Path to Google Cloud Service Account JSON file

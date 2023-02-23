@@ -1,9 +1,10 @@
 import json
+import os
 
 import dearpygui.dearpygui as dpg
 from adbutils import adb
 
-from __deprecated import hrsa_cct_constants
+from __deprecated import hrsa_cct_constants, hrsa_cct_globals
 from __deprecated.configuration import hrsa_config, character_model_data
 
 model_data_list = []
@@ -44,6 +45,21 @@ selected_trainer_model_info_gender = None
 selected_trainer_model_info_ethnicity = None
 
 target_devices = []
+
+SCU_SCENARIO_CONFIG_JSON_PATH_TEXT: str = 'SCU_SCENARIO_CONFIG_JSON_PATH_TEXT'
+SCU_OPEN_FILE_DIALOG: str = 'SCU_OPEN_FILE_DIALOG'
+
+# scenario_config = dict()
+scenario_config_json_file_path = ""
+scu_scenario_path = ""
+
+
+def set_scenario_path(scenario_path):
+    global scu_scenario_path, scenario_config_json_file_path
+    dic_scenario_path = scenario_path
+    scenario_config_json_file_path = os.path.join(dic_scenario_path, hrsa_cct_globals.default_language_code, hrsa_cct_constants.SCENARIO_CONFIG_JSON_FILE_NAME)
+    dpg.configure_item(SCU_SCENARIO_CONFIG_JSON_PATH_TEXT, default_value=scenario_config_json_file_path)
+    _load_character_config_for_current_scenario(None, app_data=dict(file_path_name=scenario_config_json_file_path), user_data=None)
 
 
 def _get_character_by_uid(uid):
@@ -220,10 +236,12 @@ def _callback_update_filter(sender, app_data, user_data):
             # dpg.add_text(patient.uid, parent=target_window)
 
 
-def _load_character_config_for_current_scenario():
-    file_path = "character_config/test_app_config.json"
+def _load_character_config_for_current_scenario(sender, app_data, user_data):
+    global app_config, scenario_config_json_file_path
+    scenario_config_json_file_path = app_data["file_path_name"]
+    # file_path = "character_config/test_app_config.json"
     global app_config
-    with open(file_path, "r", encoding="UTF-8") as app_config_file:
+    with open(scenario_config_json_file_path, "r", encoding="UTF-8") as app_config_file:
         row_data = app_config_file.read()
         row_config = json.loads(row_data)
         app_config = hrsa_config.HRSAConfig(**row_config)
@@ -234,7 +252,8 @@ def _load_character_config_for_current_scenario():
 
 
 def _update_character_config_for_current_scenario():
-    file_path = "character_config/test_app_config.json"
+    global scenario_config_json_file_path
+    # file_path = "character_config/test_app_config.json"
     global app_config
     if app_config is None:
         print("Character config for current scenario is none!")
@@ -242,8 +261,8 @@ def _update_character_config_for_current_scenario():
 
     app_config_json = json.dumps(app_config.toJson(), indent=4)
     print(app_config_json)
-    # with open(file_path, "w", encoding="UTF-8") as outfile:
-    #     outfile.write(app_config_json)
+    with open(scenario_config_json_file_path, "w", encoding="UTF-8") as outfile:
+        outfile.write(app_config_json)
 
 
 def _filter_clear(sender, app_data, user_data):
@@ -316,6 +335,19 @@ def _install_latest_package(sender, app_data, user_data):
         device.install('/home/uoubyy/Downloads/Netease.apk', silent=True, callback=_install_package_callback)
 
 
+def _select_scenario_config_file(sender, app_data, user_data):
+    dpg.configure_item(SCU_OPEN_FILE_DIALOG, show=True)
+
+
+# def _callback_load_scenario_config_file(sender, app_data, user_data):
+#     global app_config, scenario_config_json_file_path
+#     scenario_config_json_file_path = app_data["file_path_name"]
+#     dpg.configure_item(SCU_SCENARIO_CONFIG_JSON_PATH_TEXT, default_value=str(scenario_config_json_file_path))
+#     if scenario_config_json_file_path is not None or scenario_config_json_file_path != '':
+#         with open(scenario_config_json_file_path, "r", encoding="UTF-8") as scenario_config_json:
+#             app_config = json.load(scenario_config_json)
+
+
 def init_ui():
     _load_character_config()
 
@@ -327,9 +359,15 @@ def init_ui():
 
     with dpg.collapsing_header(label="Character Config", default_open=True, parent=hrsa_cct_constants.HRSA_CCT_TOOL):
         # TODO: UI Creation
+        dpg.add_text(tag=SCU_SCENARIO_CONFIG_JSON_PATH_TEXT)
+        with dpg.file_dialog(height=300, width=600, directory_selector=False, show=False,
+                             callback=_load_character_config_for_current_scenario, tag=SCU_OPEN_FILE_DIALOG, modal=True):
+            dpg.add_file_extension(".json", color=(255, 255, 0, 255))
 
-        dpg.add_button(label="Load Setting", callback=_load_character_config_for_current_scenario)
-        dpg.add_button(label="Save Setting", callback=_update_character_config_for_current_scenario)
+        with dpg.group(horizontal=True):
+            dpg.add_button(label="Select Scenario Config JSON File...", callback=_select_scenario_config_file)
+
+        dpg.add_button(label="Load Setting", show=False, callback=_load_character_config_for_current_scenario)
 
         dpg.add_text('Patient', indent=20)
         with dpg.group(horizontal=True, indent=20):
@@ -404,3 +442,5 @@ def init_ui():
 
             dpg.add_button(label='Install Latest Package', callback=_install_latest_package, user_data=True)
             dpg.add_button(label='Enable Media Transfer', callback=_toggle_media_transfer, user_data=True)
+
+        dpg.add_button(label="Save Setting", show=True, callback=_update_character_config_for_current_scenario)
