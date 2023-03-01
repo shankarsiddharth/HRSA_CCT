@@ -1,10 +1,12 @@
 # ======================================================================================================================
 # Project HRSA CCT
 
+# inklecate binary files
 bin/inklecate/Win64/*
 !bin/inklecate/Win64/README.md
 !bin/inklecate/inklecate_version.txt
 
+# Inky binary files
 bin/Inky/Win64/*
 !bin/Inky/Win64/README.md
 !bin/Inky/inky_version.txt
@@ -12,12 +14,15 @@ bin/Inky/Win64/*
 # Ignore Service Account JSON files
 config/*.json
 
+# HRSAData folder
 [Hh][Rr][Ss][Aa][Dd][Aa][Tt][Aa]*/
 
 # Ignore the misc src folder
 src/**/__misc/**
-# Ignore the temporary test folder
-src/**/__tests/**
+
+# tests
+tests/**/*.json
+!tests/**/*_test.json
 
 # ======================================================================================================================
 

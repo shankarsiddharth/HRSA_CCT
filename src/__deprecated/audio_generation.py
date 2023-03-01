@@ -102,6 +102,8 @@ def callback_on_language_code_selected(sender):
         dpg.configure_item(VOICE_CONFIG_SECTION, show=True)
         character_list = list(character_voice_config_data.keys())
         if len(character_list) >= 1:
+            if 'version' in character_list:
+                character_list.remove('version')
             dpg.configure_item(CHARACTER_SELECT_LISTBOX, items=character_list, default_value=selected_character)
             dpg.configure_item(AUDIO_GENDER_TEXT, items=gender_list)
             dpg.configure_item(LANGUAGE_CODE_TEXT, items=hrsa_cct_globals.audio_generation_language_list)
