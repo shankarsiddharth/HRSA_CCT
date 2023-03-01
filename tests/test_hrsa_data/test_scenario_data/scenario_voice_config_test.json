@@ -1,0 +1,35 @@
+{
+    "version": {
+        "major": 1,
+        "minor": 0,
+        "patch": 0
+    },
+    "player": {
+        "language_code": "",
+        "gender": "",
+        "voice_name": "",
+        "language": "",
+        "model": ""
+    },
+    "medicalstudent": {
+        "language_code": "",
+        "gender": "",
+        "voice_name": "",
+        "language": "",
+        "model": ""
+    },
+    "patient": {
+        "language_code": "",
+        "gender": "",
+        "voice_name": "",
+        "language": "",
+        "model": ""
+    },
+    "trainer": {
+        "language_code": "",
+        "gender": "",
+        "voice_name": "",
+        "language": "",
+        "model": ""
+    }
+}

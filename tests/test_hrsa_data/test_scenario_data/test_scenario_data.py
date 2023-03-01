@@ -11,7 +11,7 @@ from tests.helper import get_test_path_of_file
 
 
 class TestScenarioData(unittest.TestCase):
-    file_path_to_test = os.path.join(get_test_path_of_file(__file__), 'scenario_voice_config.json')
+    file_path_to_test = os.path.join(get_test_path_of_file(__file__), 'scenario_voice_config_test.json')
 
     def test_scenario_information(self):
         print(json.dumps(asdict(ScenarioInformation())), '\n')
