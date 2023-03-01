@@ -199,10 +199,8 @@ def _callback_update_filter(sender, app_data, user_data):
     ethnicity = dpg.get_value(patient_ethnicity_combo)
 
     global patient_model_window, student_model_window, trainer_model_window
-    global patient_model_detail_window, student_model_detail_window, trainer_model_detail_window
 
     target_window = patient_model_window
-    target_detail_window = patient_model_detail_window
     if user_data == 'MedicalStudent':
         target_window = student_model_window
         gender = dpg.get_value(student_gender_combo)
@@ -224,7 +222,6 @@ def _callback_update_filter(sender, app_data, user_data):
     patients_data = _get_characters_of_type(conditions)
 
     dpg.delete_item(target_window, children_only=True)
-    dpg.delete_item(target_detail_window, children_only=True)
 
     global loaded_texture
     with dpg.group(horizontal=True, indent=20, parent=target_window):
@@ -265,35 +262,22 @@ def _update_character_config_for_current_scenario():
         outfile.write(app_config_json)
 
 
-def _filter_clear(sender, app_data, user_data):
+def _clear_filter(sender, app_data, user_data):
     print(sender, app_data, user_data)
     if user_data == 'Patient':
         global patient_gender_combo, patient_ethnicity_combo
         dpg.set_value(patient_gender_combo, 'None')
         dpg.set_value(patient_ethnicity_combo, 'None')
-        global selected_patient_model_info_name, selected_patient_model_info_gender, selected_patient_model_info_ethnicity
-        dpg.set_value(selected_patient_model_info_name, '')
-        dpg.set_value(selected_patient_model_info_gender, '')
-        dpg.set_value(selected_patient_model_info_ethnicity, '')
     elif user_data == 'MedicalStudent':
         global student_gender_combo, student_ethnicity_combo
         dpg.set_value(student_gender_combo, 'None')
         dpg.set_value(student_ethnicity_combo, 'None')
-        global selected_student_model_info_name, selected_student_model_info_gender, selected_student_model_info_ethnicity
-        dpg.set_value(selected_student_model_info_name, '')
-        dpg.set_value(selected_student_model_info_gender, '')
-        dpg.set_value(selected_student_model_info_ethnicity, '')
     elif user_data == 'Trainer':
         global trainer_gender_combo, trainer_ethnicity_combo
         dpg.set_value(trainer_gender_combo, 'None')
         dpg.set_value(trainer_ethnicity_combo, 'None')
-        global selected_trainer_model_info_name, selected_trainer_model_info_gender, selected_trainer_model_info_ethnicity
-        dpg.set_value(selected_trainer_model_info_name, '')
-        dpg.set_value(selected_trainer_model_info_gender, '')
-        dpg.set_value(selected_trainer_model_info_ethnicity, '')
 
-    # _callback_update_filter(sender, app_data, user_data)
-    _update_model_config('0', app_data, user_data)
+    _callback_update_filter(sender, app_data, user_data)
 
 
 def _select_target_device(sender, app_data, user_data):
@@ -375,7 +359,7 @@ def init_ui():
             patient_gender_combo = dpg.add_combo(('None', 'Male', 'Female'), label='Gender', default_value='None', callback=_callback_update_filter, width=200, user_data='Patient')
             patient_ethnicity_combo = dpg.add_combo(('None', 'White', 'Black', 'Hispanic'), label='Ethnicity', default_value='None', callback=_callback_update_filter, width=200,
                                                     user_data='Patient')
-            dpg.add_button(label='Reset', callback=_filter_clear, user_data='Patient')
+            dpg.add_button(label='Clear Filter', callback=_clear_filter, user_data='Patient')
 
         global patient_model_window, patient_model_detail_window, patient_model_info_window
         with dpg.group(horizontal=True):
@@ -395,7 +379,7 @@ def init_ui():
                                                  user_data='MedicalStudent')
             student_ethnicity_combo = dpg.add_combo(('None', 'White', 'Black', 'Hispanic'), label='Ethnicity', default_value='None', callback=_callback_update_filter, width=200,
                                                     user_data='MedicalStudent')
-            dpg.add_button(label='Reset', callback=_filter_clear, user_data='MedicalStudent')
+            dpg.add_button(label='Clear Filter', callback=_clear_filter, user_data='MedicalStudent')
 
         global student_model_window, student_model_detail_window
         with dpg.group(horizontal=True):
@@ -414,7 +398,7 @@ def init_ui():
             trainer_gender_combo = dpg.add_combo(('None', 'Male', 'Female'), label='Gender', default_value='None', callback=_callback_update_filter, width=200, user_data='Trainer')
             trainer_ethnicity_combo = dpg.add_combo(('None', 'White', 'Black', 'Hispanic'), label='Ethnicity', default_value='None', callback=_callback_update_filter, width=200,
                                                     user_data='Trainer')
-            dpg.add_button(label='Reset', callback=_filter_clear, user_data='Trainer')
+            dpg.add_button(label='Clear Filter', callback=_clear_filter, user_data='Trainer')
 
         global trainer_model_window, trainer_model_detail_window
         with dpg.group(horizontal=True):
