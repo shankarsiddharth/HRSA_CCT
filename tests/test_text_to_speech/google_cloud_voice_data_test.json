@@ -1,77 +1,122 @@
 {
     "voice_data": {
         "af-ZA": {
-            "language_code": "af-ZA",
-            "language_name": "Afrikaans (South Africa)",
             "gender_data": {
-                "MALE": [],
                 "FEMALE": [
                     "af-ZA-Standard-A"
                 ],
+                "MALE": [],
                 "NEUTRAL": []
-            }
+            },
+            "language_code": "af-ZA",
+            "language_name": "Afrikaans (South Africa)"
         },
         "ar-XA": {
-            "language_code": "ar-XA",
-            "language_name": "Arabic (Pseudo-Accents)",
             "gender_data": {
-                "MALE": [
-                    "ar-XA-Standard-B",
-                    "ar-XA-Standard-C",
-                    "ar-XA-Wavenet-B",
-                    "ar-XA-Wavenet-C"
-                ],
                 "FEMALE": [
                     "ar-XA-Standard-A",
                     "ar-XA-Standard-D",
                     "ar-XA-Wavenet-A",
                     "ar-XA-Wavenet-D"
                 ],
+                "MALE": [
+                    "ar-XA-Standard-B",
+                    "ar-XA-Standard-C",
+                    "ar-XA-Wavenet-B",
+                    "ar-XA-Wavenet-C"
+                ],
                 "NEUTRAL": []
-            }
+            },
+            "language_code": "ar-XA",
+            "language_name": "Arabic (Pseudo-Accents)"
         },
         "bg-BG": {
-            "language_code": "bg-BG",
-            "language_name": "Bulgarian (Bulgaria)",
             "gender_data": {
-                "MALE": [],
                 "FEMALE": [
                     "bg-BG-Standard-A"
                 ],
+                "MALE": [],
                 "NEUTRAL": []
-            }
+            },
+            "language_code": "bg-BG",
+            "language_name": "Bulgarian (Bulgaria)"
+        },
+        "bn-IN": {
+            "gender_data": {
+                "FEMALE": [
+                    "bn-IN-Standard-A",
+                    "bn-IN-Wavenet-A"
+                ],
+                "MALE": [
+                    "bn-IN-Standard-B",
+                    "bn-IN-Wavenet-B"
+                ],
+                "NEUTRAL": []
+            },
+            "language_code": "bn-IN",
+            "language_name": "Bangla (India)"
         },
         "ca-ES": {
-            "language_code": "ca-ES",
-            "language_name": "Catalan (Spain)",
             "gender_data": {
-                "MALE": [],
                 "FEMALE": [
                     "ca-ES-Standard-A"
                 ],
+                "MALE": [],
                 "NEUTRAL": []
-            }
+            },
+            "language_code": "ca-ES",
+            "language_name": "Catalan (Spain)"
+        },
+        "cmn-CN": {
+            "gender_data": {
+                "FEMALE": [
+                    "cmn-CN-Standard-A",
+                    "cmn-CN-Standard-D",
+                    "cmn-CN-Wavenet-A",
+                    "cmn-CN-Wavenet-D"
+                ],
+                "MALE": [
+                    "cmn-CN-Standard-C",
+                    "cmn-CN-Standard-B",
+                    "cmn-CN-Wavenet-B",
+                    "cmn-CN-Wavenet-C"
+                ],
+                "NEUTRAL": []
+            },
+            "language_code": "cmn-CN",
+            "language_name": "Mandarin Chinese (China)"
+        },
+        "cmn-TW": {
+            "gender_data": {
+                "FEMALE": [
+                    "cmn-TW-Standard-A",
+                    "cmn-TW-Wavenet-A"
+                ],
+                "MALE": [
+                    "cmn-TW-Standard-B",
+                    "cmn-TW-Standard-C",
+                    "cmn-TW-Wavenet-B",
+                    "cmn-TW-Wavenet-C"
+                ],
+                "NEUTRAL": []
+            },
+            "language_code": "cmn-TW",
+            "language_name": "Mandarin Chinese (Taiwan)"
         },
         "cs-CZ": {
-            "language_code": "cs-CZ",
-            "language_name": "Czech (Czechia)",
             "gender_data": {
-                "MALE": [],
                 "FEMALE": [
                     "cs-CZ-Standard-A",
                     "cs-CZ-Wavenet-A"
                 ],
+                "MALE": [],
                 "NEUTRAL": []
-            }
+            },
+            "language_code": "cs-CZ",
+            "language_name": "Czech (Czechia)"
         },
         "da-DK": {
-            "language_code": "da-DK",
-            "language_name": "Danish (Denmark)",
             "gender_data": {
-                "MALE": [
-                    "da-DK-Standard-C",
-                    "da-DK-Wavenet-C"
-                ],
                 "FEMALE": [
                     "da-DK-Standard-D",
                     "da-DK-Standard-E",
@@ -80,23 +125,17 @@
                     "da-DK-Wavenet-E",
                     "da-DK-Wavenet-A"
                 ],
+                "MALE": [
+                    "da-DK-Standard-C",
+                    "da-DK-Wavenet-C"
+                ],
                 "NEUTRAL": []
-            }
+            },
+            "language_code": "da-DK",
+            "language_name": "Danish (Denmark)"
         },
         "de-DE": {
-            "language_code": "de-DE",
-            "language_name": "German (Germany)",
             "gender_data": {
-                "MALE": [
-                    "de-DE-Standard-B",
-                    "de-DE-Standard-D",
-                    "de-DE-Standard-E",
-                    "de-DE-Wavenet-B",
-                    "de-DE-Wavenet-D",
-                    "de-DE-Wavenet-E",
-                    "de-DE-Neural2-B",
-                    "de-DE-Neural2-D"
-                ],
                 "FEMALE": [
                     "de-DE-Standard-A",
                     "de-DE-Standard-C",
@@ -107,34 +146,35 @@
                     "de-DE-Neural2-C",
                     "de-DE-Neural2-F"
                 ],
+                "MALE": [
+                    "de-DE-Standard-B",
+                    "de-DE-Standard-D",
+                    "de-DE-Standard-E",
+                    "de-DE-Wavenet-B",
+                    "de-DE-Wavenet-D",
+                    "de-DE-Wavenet-E",
+                    "de-DE-Neural2-B",
+                    "de-DE-Neural2-D"
+                ],
                 "NEUTRAL": []
-            }
+            },
+            "language_code": "de-DE",
+            "language_name": "German (Germany)"
         },
         "el-GR": {
-            "language_code": "el-GR",
-            "language_name": "Greek (Greece)",
             "gender_data": {
-                "MALE": [],
                 "FEMALE": [
                     "el-GR-Standard-A",
                     "el-GR-Wavenet-A"
                 ],
+                "MALE": [],
                 "NEUTRAL": []
-            }
+            },
+            "language_code": "el-GR",
+            "language_name": "Greek (Greece)"
         },
         "en-AU": {
-            "language_code": "en-AU",
-            "language_name": "English (Australia)",
             "gender_data": {
-                "MALE": [
-                    "en-AU-Standard-B",
-                    "en-AU-Standard-D",
-                    "en-AU-Wavenet-B",
-                    "en-AU-Wavenet-D",
-                    "en-AU-News-G",
-                    "en-AU-Neural2-B",
-                    "en-AU-Neural2-D"
-                ],
                 "FEMALE": [
                     "en-AU-Standard-A",
                     "en-AU-Standard-C",
@@ -145,25 +185,22 @@
                     "en-AU-Neural2-A",
                     "en-AU-Neural2-C"
                 ],
+                "MALE": [
+                    "en-AU-Standard-B",
+                    "en-AU-Standard-D",
+                    "en-AU-Wavenet-B",
+                    "en-AU-Wavenet-D",
+                    "en-AU-News-G",
+                    "en-AU-Neural2-B",
+                    "en-AU-Neural2-D"
+                ],
                 "NEUTRAL": []
-            }
+            },
+            "language_code": "en-AU",
+            "language_name": "English (Australia)"
         },
         "en-GB": {
-            "language_code": "en-GB",
-            "language_name": "English (United Kingdom)",
             "gender_data": {
-                "MALE": [
-                    "en-GB-Standard-B",
-                    "en-GB-Standard-D",
-                    "en-GB-Wavenet-B",
-                    "en-GB-Wavenet-D",
-                    "en-GB-News-J",
-                    "en-GB-News-K",
-                    "en-GB-News-L",
-                    "en-GB-News-M",
-                    "en-GB-Neural2-B",
-                    "en-GB-Neural2-D"
-                ],
                 "FEMALE": [
                     "en-GB-Standard-A",
                     "en-GB-Standard-C",
@@ -178,51 +215,44 @@
                     "en-GB-Neural2-C",
                     "en-GB-Neural2-F"
                 ],
+                "MALE": [
+                    "en-GB-Standard-B",
+                    "en-GB-Standard-D",
+                    "en-GB-Wavenet-B",
+                    "en-GB-Wavenet-D",
+                    "en-GB-News-J",
+                    "en-GB-News-K",
+                    "en-GB-News-L",
+                    "en-GB-News-M",
+                    "en-GB-Neural2-B",
+                    "en-GB-Neural2-D"
+                ],
                 "NEUTRAL": []
-            }
+            },
+            "language_code": "en-GB",
+            "language_name": "English (United Kingdom)"
         },
         "en-IN": {
-            "language_code": "en-IN",
-            "language_name": "English (India)",
             "gender_data": {
-                "MALE": [
-                    "en-IN-Standard-B",
-                    "en-IN-Standard-C",
-                    "en-IN-Wavenet-B",
-                    "en-IN-Wavenet-C"
-                ],
                 "FEMALE": [
                     "en-IN-Standard-D",
                     "en-IN-Standard-A",
                     "en-IN-Wavenet-D",
                     "en-IN-Wavenet-A"
                 ],
+                "MALE": [
+                    "en-IN-Standard-B",
+                    "en-IN-Standard-C",
+                    "en-IN-Wavenet-B",
+                    "en-IN-Wavenet-C"
+                ],
                 "NEUTRAL": []
-            }
+            },
+            "language_code": "en-IN",
+            "language_name": "English (India)"
         },
         "en-US": {
-            "language_code": "en-US",
-            "language_name": "English (United States)",
             "gender_data": {
-                "MALE": [
-                    "en-US-Standard-A",
-                    "en-US-Standard-B",
-                    "en-US-Standard-D",
-                    "en-US-Standard-I",
-                    "en-US-Standard-J",
-                    "en-US-News-M",
-                    "en-US-News-N",
-                    "en-US-Wavenet-I",
-                    "en-US-Wavenet-J",
-                    "en-US-Wavenet-A",
-                    "en-US-Wavenet-B",
-                    "en-US-Wavenet-D",
-                    "en-US-Neural2-A",
-                    "en-US-Neural2-D",
-                    "en-US-Neural2-I",
-                    "en-US-Neural2-J",
-                    "en-US-Studio-M"
-                ],
                 "FEMALE": [
                     "en-US-Standard-C",
                     "en-US-Standard-E",
@@ -243,23 +273,36 @@
                     "en-US-Neural2-H",
                     "en-US-Studio-O"
                 ],
+                "MALE": [
+                    "en-US-Standard-A",
+                    "en-US-Standard-B",
+                    "en-US-Standard-D",
+                    "en-US-Standard-I",
+                    "en-US-Standard-J",
+                    "en-US-News-M",
+                    "en-US-News-N",
+                    "en-US-Wavenet-I",
+                    "en-US-Wavenet-J",
+                    "en-US-Wavenet-A",
+                    "en-US-Wavenet-B",
+                    "en-US-Wavenet-D",
+                    "en-US-Neural2-A",
+                    "en-US-Neural2-D",
+                    "en-US-Neural2-I",
+                    "en-US-Neural2-J",
+                    "en-US-Studio-M"
+                ],
                 "NEUTRAL": []
-            }
+            },
+            "language_code": "en-US",
+            "language_name": "English (United States)"
         },
         "es-ES": {
-            "language_code": "es-ES",
-            "language_name": "Spanish (Spain)",
             "gender_data": {
-                "MALE": [
-                    "es-ES-Standard-B",
-                    "es-ES-Wavenet-B",
-                    "es-ES-Neural2-B",
-                    "es-ES-Neural2-F"
-                ],
                 "FEMALE": [
-                    "es-ES-Standard-A",
                     "es-ES-Standard-C",
                     "es-ES-Standard-D",
+                    "es-ES-Standard-A",
                     "es-ES-Wavenet-C",
                     "es-ES-Wavenet-D",
                     "es-ES-Neural2-A",
@@ -267,52 +310,85 @@
                     "es-ES-Neural2-D",
                     "es-ES-Neural2-E"
                 ],
+                "MALE": [
+                    "es-ES-Standard-B",
+                    "es-ES-Wavenet-B",
+                    "es-ES-Neural2-B",
+                    "es-ES-Neural2-F"
+                ],
                 "NEUTRAL": []
-            }
+            },
+            "language_code": "es-ES",
+            "language_name": "Spanish (Spain)"
+        },
+        "es-US": {
+            "gender_data": {
+                "FEMALE": [
+                    "es-US-Standard-A",
+                    "es-US-Wavenet-A",
+                    "es-US-News-G",
+                    "es-US-News-F",
+                    "es-US-Neural2-A"
+                ],
+                "MALE": [
+                    "es-US-Standard-B",
+                    "es-US-Standard-C",
+                    "es-US-Wavenet-B",
+                    "es-US-Wavenet-C",
+                    "es-US-News-E",
+                    "es-US-News-D",
+                    "es-US-Neural2-B",
+                    "es-US-Neural2-C"
+                ],
+                "NEUTRAL": []
+            },
+            "language_code": "es-US",
+            "language_name": "Spanish (United States)"
+        },
+        "eu-ES": {
+            "gender_data": {
+                "FEMALE": [
+                    "eu-ES-Standard-A"
+                ],
+                "MALE": [],
+                "NEUTRAL": []
+            },
+            "language_code": "eu-ES",
+            "language_name": "Basque (Spain)"
         },
         "fi-FI": {
-            "language_code": "fi-FI",
-            "language_name": "Finnish (Finland)",
             "gender_data": {
-                "MALE": [],
                 "FEMALE": [
                     "fi-FI-Standard-A",
                     "fi-FI-Wavenet-A"
                 ],
+                "MALE": [],
                 "NEUTRAL": []
-            }
+            },
+            "language_code": "fi-FI",
+            "language_name": "Finnish (Finland)"
         },
         "fil-PH": {
-            "language_code": "fil-PH",
-            "language_name": "Filipino (Philippines)",
             "gender_data": {
-                "MALE": [
-                    "fil-PH-Standard-C",
-                    "fil-PH-Standard-D",
-                    "fil-PH-Wavenet-C",
-                    "fil-PH-Wavenet-D"
-                ],
                 "FEMALE": [
                     "fil-PH-Standard-A",
                     "fil-PH-Standard-B",
                     "fil-PH-Wavenet-A",
                     "fil-PH-Wavenet-B"
                 ],
+                "MALE": [
+                    "fil-PH-Standard-C",
+                    "fil-PH-Standard-D",
+                    "fil-PH-Wavenet-C",
+                    "fil-PH-Wavenet-D"
+                ],
                 "NEUTRAL": []
-            }
+            },
+            "language_code": "fil-PH",
+            "language_name": "Filipino (Philippines)"
         },
         "fr-CA": {
-            "language_code": "fr-CA",
-            "language_name": "French (Canada)",
             "gender_data": {
-                "MALE": [
-                    "fr-CA-Standard-B",
-                    "fr-CA-Standard-D",
-                    "fr-CA-Wavenet-B",
-                    "fr-CA-Wavenet-D",
-                    "fr-CA-Neural2-B",
-                    "fr-CA-Neural2-D"
-                ],
                 "FEMALE": [
                     "fr-CA-Standard-A",
                     "fr-CA-Standard-C",
@@ -321,21 +397,21 @@
                     "fr-CA-Neural2-A",
                     "fr-CA-Neural2-C"
                 ],
+                "MALE": [
+                    "fr-CA-Standard-B",
+                    "fr-CA-Standard-D",
+                    "fr-CA-Wavenet-B",
+                    "fr-CA-Wavenet-D",
+                    "fr-CA-Neural2-B",
+                    "fr-CA-Neural2-D"
+                ],
                 "NEUTRAL": []
-            }
+            },
+            "language_code": "fr-CA",
+            "language_name": "French (Canada)"
         },
         "fr-FR": {
-            "language_code": "fr-FR",
-            "language_name": "French (France)",
             "gender_data": {
-                "MALE": [
-                    "fr-FR-Standard-B",
-                    "fr-FR-Standard-D",
-                    "fr-FR-Wavenet-B",
-                    "fr-FR-Wavenet-D",
-                    "fr-FR-Neural2-B",
-                    "fr-FR-Neural2-D"
-                ],
                 "FEMALE": [
                     "fr-FR-Standard-A",
                     "fr-FR-Standard-C",
@@ -347,40 +423,66 @@
                     "fr-FR-Neural2-C",
                     "fr-FR-Neural2-E"
                 ],
+                "MALE": [
+                    "fr-FR-Standard-B",
+                    "fr-FR-Standard-D",
+                    "fr-FR-Wavenet-B",
+                    "fr-FR-Wavenet-D",
+                    "fr-FR-Neural2-B",
+                    "fr-FR-Neural2-D"
+                ],
                 "NEUTRAL": []
-            }
+            },
+            "language_code": "fr-FR",
+            "language_name": "French (France)"
+        },
+        "gl-ES": {
+            "gender_data": {
+                "FEMALE": [
+                    "gl-ES-Standard-A"
+                ],
+                "MALE": [],
+                "NEUTRAL": []
+            },
+            "language_code": "gl-ES",
+            "language_name": "Galician (Spain)"
+        },
+        "gu-IN": {
+            "gender_data": {
+                "FEMALE": [
+                    "gu-IN-Standard-A",
+                    "gu-IN-Wavenet-A"
+                ],
+                "MALE": [
+                    "gu-IN-Standard-B",
+                    "gu-IN-Wavenet-B"
+                ],
+                "NEUTRAL": []
+            },
+            "language_code": "gu-IN",
+            "language_name": "Gujarati (India)"
         },
         "he-IL": {
-            "language_code": "he-IL",
-            "language_name": "Hebrew (Israel)",
             "gender_data": {
-                "MALE": [
-                    "he-IL-Standard-D",
-                    "he-IL-Standard-B",
-                    "he-IL-Wavenet-D",
-                    "he-IL-Wavenet-B"
-                ],
                 "FEMALE": [
                     "he-IL-Standard-A",
                     "he-IL-Standard-C",
                     "he-IL-Wavenet-A",
                     "he-IL-Wavenet-C"
                 ],
+                "MALE": [
+                    "he-IL-Standard-D",
+                    "he-IL-Standard-B",
+                    "he-IL-Wavenet-D",
+                    "he-IL-Wavenet-B"
+                ],
                 "NEUTRAL": []
-            }
+            },
+            "language_code": "he-IL",
+            "language_name": "Hebrew (Israel)"
         },
         "hi-IN": {
-            "language_code": "hi-IN",
-            "language_name": "Hindi (India)",
             "gender_data": {
-                "MALE": [
-                    "hi-IN-Standard-B",
-                    "hi-IN-Standard-C",
-                    "hi-IN-Wavenet-B",
-                    "hi-IN-Wavenet-C",
-                    "hi-IN-Neural2-B",
-                    "hi-IN-Neural2-C"
-                ],
                 "FEMALE": [
                     "hi-IN-Standard-D",
                     "hi-IN-Standard-A",
@@ -389,62 +491,63 @@
                     "hi-IN-Neural2-A",
                     "hi-IN-Neural2-D"
                 ],
+                "MALE": [
+                    "hi-IN-Standard-B",
+                    "hi-IN-Standard-C",
+                    "hi-IN-Wavenet-B",
+                    "hi-IN-Wavenet-C",
+                    "hi-IN-Neural2-B",
+                    "hi-IN-Neural2-C"
+                ],
                 "NEUTRAL": []
-            }
+            },
+            "language_code": "hi-IN",
+            "language_name": "Hindi (India)"
         },
         "hu-HU": {
-            "language_code": "hu-HU",
-            "language_name": "Hungarian (Hungary)",
             "gender_data": {
-                "MALE": [],
                 "FEMALE": [
                     "hu-HU-Standard-A",
                     "hu-HU-Wavenet-A"
                 ],
+                "MALE": [],
                 "NEUTRAL": []
-            }
+            },
+            "language_code": "hu-HU",
+            "language_name": "Hungarian (Hungary)"
         },
         "id-ID": {
-            "language_code": "id-ID",
-            "language_name": "Indonesian (Indonesia)",
             "gender_data": {
-                "MALE": [
-                    "id-ID-Standard-B",
-                    "id-ID-Standard-C",
-                    "id-ID-Wavenet-B",
-                    "id-ID-Wavenet-C"
-                ],
                 "FEMALE": [
                     "id-ID-Standard-A",
                     "id-ID-Standard-D",
                     "id-ID-Wavenet-D",
                     "id-ID-Wavenet-A"
                 ],
+                "MALE": [
+                    "id-ID-Standard-B",
+                    "id-ID-Standard-C",
+                    "id-ID-Wavenet-B",
+                    "id-ID-Wavenet-C"
+                ],
                 "NEUTRAL": []
-            }
+            },
+            "language_code": "id-ID",
+            "language_name": "Indonesian (Indonesia)"
         },
         "is-IS": {
-            "language_code": "is-IS",
-            "language_name": "Icelandic (Iceland)",
             "gender_data": {
-                "MALE": [],
                 "FEMALE": [
                     "is-IS-Standard-A"
                 ],
+                "MALE": [],
                 "NEUTRAL": []
-            }
+            },
+            "language_code": "is-IS",
+            "language_name": "Icelandic (Iceland)"
         },
         "it-IT": {
-            "language_code": "it-IT",
-            "language_name": "Italian (Italy)",
             "gender_data": {
-                "MALE": [
-                    "it-IT-Standard-C",
-                    "it-IT-Standard-D",
-                    "it-IT-Wavenet-C",
-                    "it-IT-Wavenet-D",
-                    "it-IT-Neural2-C"
-                ],
                 "FEMALE": [
                     "it-IT-Standard-B",
                     "it-IT-Standard-A",
@@ -452,501 +555,27 @@
                     "it-IT-Wavenet-B",
                     "it-IT-Neural2-A"
                 ],
-                "NEUTRAL": []
-            }
-        },
-        "ko-KR": {
-            "language_code": "ko-KR",
-            "language_name": "Korean (South Korea)",
-            "gender_data": {
                 "MALE": [
-                    "ko-KR-Standard-C",
-                    "ko-KR-Standard-D",
-                    "ko-KR-Wavenet-C",
-                    "ko-KR-Wavenet-D",
-                    "ko-KR-Neural2-C"
-                ],
-                "FEMALE": [
-                    "ko-KR-Standard-A",
-                    "ko-KR-Standard-B",
-                    "ko-KR-Wavenet-A",
-                    "ko-KR-Wavenet-B",
-                    "ko-KR-Neural2-A",
-                    "ko-KR-Neural2-B"
+                    "it-IT-Standard-C",
+                    "it-IT-Standard-D",
+                    "it-IT-Wavenet-C",
+                    "it-IT-Wavenet-D",
+                    "it-IT-Neural2-C"
                 ],
                 "NEUTRAL": []
-            }
-        },
-        "lt-LT": {
-            "language_code": "lt-LT",
-            "language_name": "Lithuanian (Lithuania)",
-            "gender_data": {
-                "MALE": [
-                    "lt-LT-Standard-A"
-                ],
-                "FEMALE": [],
-                "NEUTRAL": []
-            }
-        },
-        "lv-LV": {
-            "language_code": "lv-LV",
-            "language_name": "Latvian (Latvia)",
-            "gender_data": {
-                "MALE": [
-                    "lv-LV-Standard-A"
-                ],
-                "FEMALE": [],
-                "NEUTRAL": []
-            }
-        },
-        "ms-MY": {
-            "language_code": "ms-MY",
-            "language_name": "Malay (Malaysia)",
-            "gender_data": {
-                "MALE": [
-                    "ms-MY-Standard-B",
-                    "ms-MY-Standard-D",
-                    "ms-MY-Wavenet-B",
-                    "ms-MY-Wavenet-D"
-                ],
-                "FEMALE": [
-                    "ms-MY-Standard-A",
-                    "ms-MY-Standard-C",
-                    "ms-MY-Wavenet-A",
-                    "ms-MY-Wavenet-C"
-                ],
-                "NEUTRAL": []
-            }
-        },
-        "nb-NO": {
-            "language_code": "nb-NO",
-            "language_name": "Norwegian Bokm\u00e5l (Norway)",
-            "gender_data": {
-                "MALE": [
-                    "nb-NO-Standard-B",
-                    "nb-NO-Standard-D",
-                    "nb-NO-Wavenet-B",
-                    "nb-NO-Wavenet-D"
-                ],
-                "FEMALE": [
-                    "nb-NO-Standard-A",
-                    "nb-NO-Standard-E",
-                    "nb-NO-Standard-C",
-                    "nb-NO-Wavenet-A",
-                    "nb-NO-Wavenet-C",
-                    "nb-NO-Wavenet-E"
-                ],
-                "NEUTRAL": []
-            }
-        },
-        "nl-NL": {
-            "language_code": "nl-NL",
-            "language_name": "Dutch (Netherlands)",
-            "gender_data": {
-                "MALE": [
-                    "nl-NL-Standard-B",
-                    "nl-NL-Standard-C",
-                    "nl-NL-Wavenet-B",
-                    "nl-NL-Wavenet-C"
-                ],
-                "FEMALE": [
-                    "nl-NL-Standard-D",
-                    "nl-NL-Standard-A",
-                    "nl-NL-Standard-E",
-                    "nl-NL-Wavenet-D",
-                    "nl-NL-Wavenet-A",
-                    "nl-NL-Wavenet-E"
-                ],
-                "NEUTRAL": []
-            }
-        },
-        "pl-PL": {
-            "language_code": "pl-PL",
-            "language_name": "Polish (Poland)",
-            "gender_data": {
-                "MALE": [
-                    "pl-PL-Standard-B",
-                    "pl-PL-Standard-C",
-                    "pl-PL-Wavenet-B",
-                    "pl-PL-Wavenet-C"
-                ],
-                "FEMALE": [
-                    "pl-PL-Standard-A",
-                    "pl-PL-Standard-E",
-                    "pl-PL-Standard-D",
-                    "pl-PL-Wavenet-A",
-                    "pl-PL-Wavenet-E",
-                    "pl-PL-Wavenet-D"
-                ],
-                "NEUTRAL": []
-            }
-        },
-        "pt-BR": {
-            "language_code": "pt-BR",
-            "language_name": "Portuguese (Brazil)",
-            "gender_data": {
-                "MALE": [
-                    "pt-BR-Standard-B",
-                    "pt-BR-Wavenet-B",
-                    "pt-BR-Neural2-B"
-                ],
-                "FEMALE": [
-                    "pt-BR-Standard-A",
-                    "pt-BR-Standard-C",
-                    "pt-BR-Wavenet-A",
-                    "pt-BR-Wavenet-C",
-                    "pt-BR-Neural2-A",
-                    "pt-BR-Neural2-C"
-                ],
-                "NEUTRAL": []
-            }
-        },
-        "pt-PT": {
-            "language_code": "pt-PT",
-            "language_name": "Portuguese (Portugal)",
-            "gender_data": {
-                "MALE": [
-                    "pt-PT-Standard-B",
-                    "pt-PT-Standard-C",
-                    "pt-PT-Wavenet-B",
-                    "pt-PT-Wavenet-C"
-                ],
-                "FEMALE": [
-                    "pt-PT-Standard-A",
-                    "pt-PT-Standard-D",
-                    "pt-PT-Wavenet-A",
-                    "pt-PT-Wavenet-D"
-                ],
-                "NEUTRAL": []
-            }
-        },
-        "ro-RO": {
-            "language_code": "ro-RO",
-            "language_name": "Romanian (Romania)",
-            "gender_data": {
-                "MALE": [],
-                "FEMALE": [
-                    "ro-RO-Standard-A",
-                    "ro-RO-Wavenet-A"
-                ],
-                "NEUTRAL": []
-            }
-        },
-        "ru-RU": {
-            "language_code": "ru-RU",
-            "language_name": "Russian (Russia)",
-            "gender_data": {
-                "MALE": [
-                    "ru-RU-Standard-B",
-                    "ru-RU-Standard-D",
-                    "ru-RU-Wavenet-B",
-                    "ru-RU-Wavenet-D"
-                ],
-                "FEMALE": [
-                    "ru-RU-Standard-E",
-                    "ru-RU-Standard-A",
-                    "ru-RU-Standard-C",
-                    "ru-RU-Wavenet-E",
-                    "ru-RU-Wavenet-A",
-                    "ru-RU-Wavenet-C"
-                ],
-                "NEUTRAL": []
-            }
-        },
-        "sk-SK": {
-            "language_code": "sk-SK",
-            "language_name": "Slovak (Slovakia)",
-            "gender_data": {
-                "MALE": [],
-                "FEMALE": [
-                    "sk-SK-Standard-A",
-                    "sk-SK-Wavenet-A"
-                ],
-                "NEUTRAL": []
-            }
-        },
-        "sr-RS": {
-            "language_code": "sr-RS",
-            "language_name": "Serbian (Serbia)",
-            "gender_data": {
-                "MALE": [],
-                "FEMALE": [
-                    "sr-RS-Standard-A"
-                ],
-                "NEUTRAL": []
-            }
-        },
-        "th-TH": {
-            "language_code": "th-TH",
-            "language_name": "Thai (Thailand)",
-            "gender_data": {
-                "MALE": [],
-                "FEMALE": [
-                    "th-TH-Standard-A",
-                    "th-TH-Neural2-C"
-                ],
-                "NEUTRAL": []
-            }
-        },
-        "tr-TR": {
-            "language_code": "tr-TR",
-            "language_name": "Turkish (Turkey)",
-            "gender_data": {
-                "MALE": [
-                    "tr-TR-Standard-B",
-                    "tr-TR-Standard-E",
-                    "tr-TR-Wavenet-B",
-                    "tr-TR-Wavenet-E"
-                ],
-                "FEMALE": [
-                    "tr-TR-Standard-C",
-                    "tr-TR-Standard-D",
-                    "tr-TR-Standard-A",
-                    "tr-TR-Wavenet-C",
-                    "tr-TR-Wavenet-D",
-                    "tr-TR-Wavenet-A"
-                ],
-                "NEUTRAL": []
-            }
-        },
-        "uk-UA": {
-            "language_code": "uk-UA",
-            "language_name": "Ukrainian (Ukraine)",
-            "gender_data": {
-                "MALE": [],
-                "FEMALE": [
-                    "uk-UA-Standard-A",
-                    "uk-UA-Wavenet-A"
-                ],
-                "NEUTRAL": []
-            }
-        },
-        "vi-VN": {
-            "language_code": "vi-VN",
-            "language_name": "Vietnamese (Vietnam)",
-            "gender_data": {
-                "MALE": [
-                    "vi-VN-Standard-B",
-                    "vi-VN-Standard-D",
-                    "vi-VN-Wavenet-B",
-                    "vi-VN-Wavenet-D"
-                ],
-                "FEMALE": [
-                    "vi-VN-Standard-A",
-                    "vi-VN-Standard-C",
-                    "vi-VN-Wavenet-A",
-                    "vi-VN-Wavenet-C"
-                ],
-                "NEUTRAL": []
-            }
-        },
-        "eu-ES": {
-            "language_code": "eu-ES",
-            "language_name": "Basque (Spain)",
-            "gender_data": {
-                "MALE": [],
-                "FEMALE": [
-                    "eu-ES-Standard-A"
-                ],
-                "NEUTRAL": []
-            }
-        },
-        "gl-ES": {
-            "language_code": "gl-ES",
-            "language_name": "Galician (Spain)",
-            "gender_data": {
-                "MALE": [],
-                "FEMALE": [
-                    "gl-ES-Standard-A"
-                ],
-                "NEUTRAL": []
-            }
-        },
-        "mr-IN": {
-            "language_code": "mr-IN",
-            "language_name": "Marathi (India)",
-            "gender_data": {
-                "MALE": [
-                    "mr-IN-Standard-B",
-                    "mr-IN-Wavenet-B"
-                ],
-                "FEMALE": [
-                    "mr-IN-Standard-A",
-                    "mr-IN-Standard-C",
-                    "mr-IN-Wavenet-A",
-                    "mr-IN-Wavenet-C"
-                ],
-                "NEUTRAL": []
-            }
-        },
-        "pa-IN": {
-            "language_code": "pa-IN",
-            "language_name": "Punjabi (India)",
-            "gender_data": {
-                "MALE": [
-                    "pa-IN-Standard-B",
-                    "pa-IN-Standard-D",
-                    "pa-IN-Wavenet-B",
-                    "pa-IN-Wavenet-D"
-                ],
-                "FEMALE": [
-                    "pa-IN-Standard-A",
-                    "pa-IN-Standard-C",
-                    "pa-IN-Wavenet-A",
-                    "pa-IN-Wavenet-C"
-                ],
-                "NEUTRAL": []
-            }
-        },
-        "sv-SE": {
-            "language_code": "sv-SE",
-            "language_name": "Swedish (Sweden)",
-            "gender_data": {
-                "MALE": [
-                    "sv-SE-Standard-D",
-                    "sv-SE-Standard-E",
-                    "sv-SE-Wavenet-C",
-                    "sv-SE-Wavenet-E"
-                ],
-                "FEMALE": [
-                    "sv-SE-Standard-B",
-                    "sv-SE-Standard-C",
-                    "sv-SE-Standard-A",
-                    "sv-SE-Wavenet-A",
-                    "sv-SE-Wavenet-B",
-                    "sv-SE-Wavenet-D"
-                ],
-                "NEUTRAL": []
-            }
-        },
-        "ta-IN": {
-            "language_code": "ta-IN",
-            "language_name": "Tamil (India)",
-            "gender_data": {
-                "MALE": [
-                    "ta-IN-Standard-D",
-                    "ta-IN-Standard-B",
-                    "ta-IN-Wavenet-B",
-                    "ta-IN-Wavenet-D"
-                ],
-                "FEMALE": [
-                    "ta-IN-Standard-C",
-                    "ta-IN-Standard-A",
-                    "ta-IN-Wavenet-A",
-                    "ta-IN-Wavenet-C"
-                ],
-                "NEUTRAL": []
-            }
-        },
-        "yue-HK": {
-            "language_code": "yue-HK",
-            "language_name": "Cantonese (Hong Kong SAR China)",
-            "gender_data": {
-                "MALE": [
-                    "yue-HK-Standard-B",
-                    "yue-HK-Standard-D"
-                ],
-                "FEMALE": [
-                    "yue-HK-Standard-A",
-                    "yue-HK-Standard-C"
-                ],
-                "NEUTRAL": []
-            }
-        },
-        "bn-IN": {
-            "language_code": "bn-IN",
-            "language_name": "Bangla (India)",
-            "gender_data": {
-                "MALE": [
-                    "bn-IN-Standard-B",
-                    "bn-IN-Wavenet-B"
-                ],
-                "FEMALE": [
-                    "bn-IN-Standard-A",
-                    "bn-IN-Wavenet-A"
-                ],
-                "NEUTRAL": []
-            }
-        },
-        "cmn-CN": {
-            "language_code": "cmn-CN",
-            "language_name": "Mandarin Chinese (China)",
-            "gender_data": {
-                "MALE": [
-                    "cmn-CN-Standard-C",
-                    "cmn-CN-Standard-B",
-                    "cmn-CN-Wavenet-B",
-                    "cmn-CN-Wavenet-C"
-                ],
-                "FEMALE": [
-                    "cmn-CN-Standard-A",
-                    "cmn-CN-Standard-D",
-                    "cmn-CN-Wavenet-A",
-                    "cmn-CN-Wavenet-D"
-                ],
-                "NEUTRAL": []
-            }
-        },
-        "cmn-TW": {
-            "language_code": "cmn-TW",
-            "language_name": "Mandarin Chinese (Taiwan)",
-            "gender_data": {
-                "MALE": [
-                    "cmn-TW-Standard-B",
-                    "cmn-TW-Standard-C",
-                    "cmn-TW-Wavenet-B",
-                    "cmn-TW-Wavenet-C"
-                ],
-                "FEMALE": [
-                    "cmn-TW-Standard-A",
-                    "cmn-TW-Wavenet-A"
-                ],
-                "NEUTRAL": []
-            }
-        },
-        "es-US": {
-            "language_code": "es-US",
-            "language_name": "Spanish (United States)",
-            "gender_data": {
-                "MALE": [
-                    "es-US-Standard-B",
-                    "es-US-Standard-C",
-                    "es-US-Wavenet-B",
-                    "es-US-Wavenet-C",
-                    "es-US-News-E",
-                    "es-US-News-D",
-                    "es-US-Neural2-B",
-                    "es-US-Neural2-C"
-                ],
-                "FEMALE": [
-                    "es-US-Standard-A",
-                    "es-US-Wavenet-A",
-                    "es-US-News-G",
-                    "es-US-News-F",
-                    "es-US-Neural2-A"
-                ],
-                "NEUTRAL": []
-            }
-        },
-        "gu-IN": {
-            "language_code": "gu-IN",
-            "language_name": "Gujarati (India)",
-            "gender_data": {
-                "MALE": [
-                    "gu-IN-Standard-B",
-                    "gu-IN-Wavenet-B"
-                ],
-                "FEMALE": [
-                    "gu-IN-Standard-A",
-                    "gu-IN-Wavenet-A"
-                ],
-                "NEUTRAL": []
-            }
+            },
+            "language_code": "it-IT",
+            "language_name": "Italian (Italy)"
         },
         "ja-JP": {
-            "language_code": "ja-JP",
-            "language_name": "Japanese (Japan)",
             "gender_data": {
+                "FEMALE": [
+                    "ja-JP-Standard-A",
+                    "ja-JP-Standard-B",
+                    "ja-JP-Wavenet-B",
+                    "ja-JP-Wavenet-A",
+                    "ja-JP-Neural2-B"
+                ],
                 "MALE": [
                     "ja-JP-Standard-C",
                     "ja-JP-Standard-D",
@@ -955,75 +584,446 @@
                     "ja-JP-Neural2-C",
                     "ja-JP-Neural2-D"
                 ],
-                "FEMALE": [
-                    "ja-JP-Standard-A",
-                    "ja-JP-Standard-B",
-                    "ja-JP-Wavenet-B",
-                    "ja-JP-Wavenet-A",
-                    "ja-JP-Neural2-B"
-                ],
                 "NEUTRAL": []
-            }
+            },
+            "language_code": "ja-JP",
+            "language_name": "Japanese (Japan)"
         },
         "kn-IN": {
-            "language_code": "kn-IN",
-            "language_name": "Kannada (India)",
             "gender_data": {
-                "MALE": [
-                    "kn-IN-Standard-B",
-                    "kn-IN-Wavenet-B"
-                ],
                 "FEMALE": [
                     "kn-IN-Standard-A",
                     "kn-IN-Wavenet-A"
                 ],
+                "MALE": [
+                    "kn-IN-Standard-B",
+                    "kn-IN-Wavenet-B"
+                ],
                 "NEUTRAL": []
-            }
+            },
+            "language_code": "kn-IN",
+            "language_name": "Kannada (India)"
+        },
+        "ko-KR": {
+            "gender_data": {
+                "FEMALE": [
+                    "ko-KR-Standard-A",
+                    "ko-KR-Standard-B",
+                    "ko-KR-Wavenet-A",
+                    "ko-KR-Wavenet-B",
+                    "ko-KR-Neural2-A",
+                    "ko-KR-Neural2-B"
+                ],
+                "MALE": [
+                    "ko-KR-Standard-C",
+                    "ko-KR-Standard-D",
+                    "ko-KR-Wavenet-C",
+                    "ko-KR-Wavenet-D",
+                    "ko-KR-Neural2-C"
+                ],
+                "NEUTRAL": []
+            },
+            "language_code": "ko-KR",
+            "language_name": "Korean (South Korea)"
+        },
+        "lt-LT": {
+            "gender_data": {
+                "FEMALE": [],
+                "MALE": [
+                    "lt-LT-Standard-A"
+                ],
+                "NEUTRAL": []
+            },
+            "language_code": "lt-LT",
+            "language_name": "Lithuanian (Lithuania)"
+        },
+        "lv-LV": {
+            "gender_data": {
+                "FEMALE": [],
+                "MALE": [
+                    "lv-LV-Standard-A"
+                ],
+                "NEUTRAL": []
+            },
+            "language_code": "lv-LV",
+            "language_name": "Latvian (Latvia)"
         },
         "ml-IN": {
-            "language_code": "ml-IN",
-            "language_name": "Malayalam (India)",
             "gender_data": {
-                "MALE": [
-                    "ml-IN-Standard-B",
-                    "ml-IN-Wavenet-B",
-                    "ml-IN-Wavenet-D"
-                ],
                 "FEMALE": [
                     "ml-IN-Standard-A",
                     "ml-IN-Wavenet-A",
                     "ml-IN-Wavenet-C"
                 ],
+                "MALE": [
+                    "ml-IN-Standard-B",
+                    "ml-IN-Wavenet-B",
+                    "ml-IN-Wavenet-D"
+                ],
                 "NEUTRAL": []
-            }
+            },
+            "language_code": "ml-IN",
+            "language_name": "Malayalam (India)"
+        },
+        "mr-IN": {
+            "gender_data": {
+                "FEMALE": [
+                    "mr-IN-Standard-A",
+                    "mr-IN-Standard-C",
+                    "mr-IN-Wavenet-A",
+                    "mr-IN-Wavenet-C"
+                ],
+                "MALE": [
+                    "mr-IN-Standard-B",
+                    "mr-IN-Wavenet-B"
+                ],
+                "NEUTRAL": []
+            },
+            "language_code": "mr-IN",
+            "language_name": "Marathi (India)"
+        },
+        "ms-MY": {
+            "gender_data": {
+                "FEMALE": [
+                    "ms-MY-Standard-A",
+                    "ms-MY-Standard-C",
+                    "ms-MY-Wavenet-A",
+                    "ms-MY-Wavenet-C"
+                ],
+                "MALE": [
+                    "ms-MY-Standard-B",
+                    "ms-MY-Standard-D",
+                    "ms-MY-Wavenet-B",
+                    "ms-MY-Wavenet-D"
+                ],
+                "NEUTRAL": []
+            },
+            "language_code": "ms-MY",
+            "language_name": "Malay (Malaysia)"
+        },
+        "nb-NO": {
+            "gender_data": {
+                "FEMALE": [
+                    "nb-NO-Standard-A",
+                    "nb-NO-Standard-E",
+                    "nb-NO-Standard-C",
+                    "nb-NO-Wavenet-A",
+                    "nb-NO-Wavenet-C",
+                    "nb-NO-Wavenet-E"
+                ],
+                "MALE": [
+                    "nb-NO-Standard-B",
+                    "nb-NO-Standard-D",
+                    "nb-NO-Wavenet-B",
+                    "nb-NO-Wavenet-D"
+                ],
+                "NEUTRAL": []
+            },
+            "language_code": "nb-NO",
+            "language_name": "Norwegian Bokm\u00e5l (Norway)"
         },
         "nl-BE": {
-            "language_code": "nl-BE",
-            "language_name": "Dutch (Belgium)",
             "gender_data": {
-                "MALE": [
-                    "nl-BE-Standard-B",
-                    "nl-BE-Wavenet-B"
-                ],
                 "FEMALE": [
                     "nl-BE-Standard-A",
                     "nl-BE-Wavenet-A"
                 ],
+                "MALE": [
+                    "nl-BE-Standard-B",
+                    "nl-BE-Wavenet-B"
+                ],
                 "NEUTRAL": []
-            }
+            },
+            "language_code": "nl-BE",
+            "language_name": "Dutch (Belgium)"
+        },
+        "nl-NL": {
+            "gender_data": {
+                "FEMALE": [
+                    "nl-NL-Standard-D",
+                    "nl-NL-Standard-A",
+                    "nl-NL-Standard-E",
+                    "nl-NL-Wavenet-D",
+                    "nl-NL-Wavenet-A",
+                    "nl-NL-Wavenet-E"
+                ],
+                "MALE": [
+                    "nl-NL-Standard-B",
+                    "nl-NL-Standard-C",
+                    "nl-NL-Wavenet-B",
+                    "nl-NL-Wavenet-C"
+                ],
+                "NEUTRAL": []
+            },
+            "language_code": "nl-NL",
+            "language_name": "Dutch (Netherlands)"
+        },
+        "pa-IN": {
+            "gender_data": {
+                "FEMALE": [
+                    "pa-IN-Standard-A",
+                    "pa-IN-Standard-C",
+                    "pa-IN-Wavenet-A",
+                    "pa-IN-Wavenet-C"
+                ],
+                "MALE": [
+                    "pa-IN-Standard-B",
+                    "pa-IN-Standard-D",
+                    "pa-IN-Wavenet-B",
+                    "pa-IN-Wavenet-D"
+                ],
+                "NEUTRAL": []
+            },
+            "language_code": "pa-IN",
+            "language_name": "Punjabi (India)"
+        },
+        "pl-PL": {
+            "gender_data": {
+                "FEMALE": [
+                    "pl-PL-Standard-A",
+                    "pl-PL-Standard-E",
+                    "pl-PL-Standard-D",
+                    "pl-PL-Wavenet-A",
+                    "pl-PL-Wavenet-E",
+                    "pl-PL-Wavenet-D"
+                ],
+                "MALE": [
+                    "pl-PL-Standard-B",
+                    "pl-PL-Standard-C",
+                    "pl-PL-Wavenet-B",
+                    "pl-PL-Wavenet-C"
+                ],
+                "NEUTRAL": []
+            },
+            "language_code": "pl-PL",
+            "language_name": "Polish (Poland)"
+        },
+        "pt-BR": {
+            "gender_data": {
+                "FEMALE": [
+                    "pt-BR-Standard-A",
+                    "pt-BR-Standard-C",
+                    "pt-BR-Wavenet-A",
+                    "pt-BR-Wavenet-C",
+                    "pt-BR-Neural2-A",
+                    "pt-BR-Neural2-C"
+                ],
+                "MALE": [
+                    "pt-BR-Standard-B",
+                    "pt-BR-Wavenet-B",
+                    "pt-BR-Neural2-B"
+                ],
+                "NEUTRAL": []
+            },
+            "language_code": "pt-BR",
+            "language_name": "Portuguese (Brazil)"
+        },
+        "pt-PT": {
+            "gender_data": {
+                "FEMALE": [
+                    "pt-PT-Standard-A",
+                    "pt-PT-Standard-D",
+                    "pt-PT-Wavenet-A",
+                    "pt-PT-Wavenet-D"
+                ],
+                "MALE": [
+                    "pt-PT-Standard-B",
+                    "pt-PT-Standard-C",
+                    "pt-PT-Wavenet-B",
+                    "pt-PT-Wavenet-C"
+                ],
+                "NEUTRAL": []
+            },
+            "language_code": "pt-PT",
+            "language_name": "Portuguese (Portugal)"
+        },
+        "ro-RO": {
+            "gender_data": {
+                "FEMALE": [
+                    "ro-RO-Wavenet-A",
+                    "ro-RO-Standard-A"
+                ],
+                "MALE": [],
+                "NEUTRAL": []
+            },
+            "language_code": "ro-RO",
+            "language_name": "Romanian (Romania)"
+        },
+        "ru-RU": {
+            "gender_data": {
+                "FEMALE": [
+                    "ru-RU-Standard-E",
+                    "ru-RU-Standard-A",
+                    "ru-RU-Standard-C",
+                    "ru-RU-Wavenet-E",
+                    "ru-RU-Wavenet-A",
+                    "ru-RU-Wavenet-C"
+                ],
+                "MALE": [
+                    "ru-RU-Standard-B",
+                    "ru-RU-Standard-D",
+                    "ru-RU-Wavenet-B",
+                    "ru-RU-Wavenet-D"
+                ],
+                "NEUTRAL": []
+            },
+            "language_code": "ru-RU",
+            "language_name": "Russian (Russia)"
+        },
+        "sk-SK": {
+            "gender_data": {
+                "FEMALE": [
+                    "sk-SK-Standard-A",
+                    "sk-SK-Wavenet-A"
+                ],
+                "MALE": [],
+                "NEUTRAL": []
+            },
+            "language_code": "sk-SK",
+            "language_name": "Slovak (Slovakia)"
+        },
+        "sr-RS": {
+            "gender_data": {
+                "FEMALE": [
+                    "sr-RS-Standard-A"
+                ],
+                "MALE": [],
+                "NEUTRAL": []
+            },
+            "language_code": "sr-RS",
+            "language_name": "Serbian (Serbia)"
+        },
+        "sv-SE": {
+            "gender_data": {
+                "FEMALE": [
+                    "sv-SE-Standard-B",
+                    "sv-SE-Standard-C",
+                    "sv-SE-Standard-A",
+                    "sv-SE-Wavenet-A",
+                    "sv-SE-Wavenet-B",
+                    "sv-SE-Wavenet-D"
+                ],
+                "MALE": [
+                    "sv-SE-Standard-D",
+                    "sv-SE-Standard-E",
+                    "sv-SE-Wavenet-C",
+                    "sv-SE-Wavenet-E"
+                ],
+                "NEUTRAL": []
+            },
+            "language_code": "sv-SE",
+            "language_name": "Swedish (Sweden)"
+        },
+        "ta-IN": {
+            "gender_data": {
+                "FEMALE": [
+                    "ta-IN-Standard-C",
+                    "ta-IN-Standard-A",
+                    "ta-IN-Wavenet-A",
+                    "ta-IN-Wavenet-C"
+                ],
+                "MALE": [
+                    "ta-IN-Standard-D",
+                    "ta-IN-Standard-B",
+                    "ta-IN-Wavenet-B",
+                    "ta-IN-Wavenet-D"
+                ],
+                "NEUTRAL": []
+            },
+            "language_code": "ta-IN",
+            "language_name": "Tamil (India)"
         },
         "te-IN": {
-            "language_code": "te-IN",
-            "language_name": "Telugu (India)",
             "gender_data": {
-                "MALE": [
-                    "te-IN-Standard-B"
-                ],
                 "FEMALE": [
                     "te-IN-Standard-A"
                 ],
+                "MALE": [
+                    "te-IN-Standard-B"
+                ],
                 "NEUTRAL": []
-            }
+            },
+            "language_code": "te-IN",
+            "language_name": "Telugu (India)"
+        },
+        "th-TH": {
+            "gender_data": {
+                "FEMALE": [
+                    "th-TH-Standard-A",
+                    "th-TH-Neural2-C"
+                ],
+                "MALE": [],
+                "NEUTRAL": []
+            },
+            "language_code": "th-TH",
+            "language_name": "Thai (Thailand)"
+        },
+        "tr-TR": {
+            "gender_data": {
+                "FEMALE": [
+                    "tr-TR-Standard-C",
+                    "tr-TR-Standard-D",
+                    "tr-TR-Standard-A",
+                    "tr-TR-Wavenet-C",
+                    "tr-TR-Wavenet-D",
+                    "tr-TR-Wavenet-A"
+                ],
+                "MALE": [
+                    "tr-TR-Standard-B",
+                    "tr-TR-Standard-E",
+                    "tr-TR-Wavenet-B",
+                    "tr-TR-Wavenet-E"
+                ],
+                "NEUTRAL": []
+            },
+            "language_code": "tr-TR",
+            "language_name": "Turkish (Turkey)"
+        },
+        "uk-UA": {
+            "gender_data": {
+                "FEMALE": [
+                    "uk-UA-Standard-A",
+                    "uk-UA-Wavenet-A"
+                ],
+                "MALE": [],
+                "NEUTRAL": []
+            },
+            "language_code": "uk-UA",
+            "language_name": "Ukrainian (Ukraine)"
+        },
+        "vi-VN": {
+            "gender_data": {
+                "FEMALE": [
+                    "vi-VN-Standard-A",
+                    "vi-VN-Standard-C",
+                    "vi-VN-Wavenet-A",
+                    "vi-VN-Wavenet-C"
+                ],
+                "MALE": [
+                    "vi-VN-Standard-B",
+                    "vi-VN-Standard-D",
+                    "vi-VN-Wavenet-B",
+                    "vi-VN-Wavenet-D"
+                ],
+                "NEUTRAL": []
+            },
+            "language_code": "vi-VN",
+            "language_name": "Vietnamese (Vietnam)"
+        },
+        "yue-HK": {
+            "gender_data": {
+                "FEMALE": [
+                    "yue-HK-Standard-A",
+                    "yue-HK-Standard-C"
+                ],
+                "MALE": [
+                    "yue-HK-Standard-B",
+                    "yue-HK-Standard-D"
+                ],
+                "NEUTRAL": []
+            },
+            "language_code": "yue-HK",
+            "language_name": "Cantonese (Hong Kong SAR China)"
         }
     }
 }

@@ -38,7 +38,7 @@ class TestGoogleCloudTTS(unittest.TestCase):
         self.gctts.cache_voice_data()
         google_cloud_voice_data: GoogleCloudVoiceData = self.gctts.get_voice_data()
         with open(self.file_to_create, 'w') as f:
-            json.dump(asdict(google_cloud_voice_data), f, indent=4)
+            json.dump(asdict(google_cloud_voice_data), f, indent=4, sort_keys=True)
 
         copy_file(self.file_to_create, self.file_to_test)
 
