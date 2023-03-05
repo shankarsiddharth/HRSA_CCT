@@ -30,8 +30,11 @@ class GoogleCloudTranslate(object):
         self.gc_sp: GoogleCloudServiceProvider = GoogleCloudServiceProvider()
         self.google_cloud_translate_data: GoogleCloudTranslateData = GoogleCloudTranslateData()
         self.translate_client = translate.TranslationServiceClient(credentials=self.gc_sp.credentials)
+        self.is_data_cached = False
 
     def get_translate_language_data(self) -> GoogleCloudTranslateData:
+        if not self.is_data_cached:
+            self.cache_translate_language_data()
         return self.google_cloud_translate_data
 
     def cache_translate_language_data(self):
@@ -48,3 +51,5 @@ class GoogleCloudTranslate(object):
             self.google_cloud_translate_data.language_data[language.language_code].language_code = language.language_code
             language_name = langcodes.Language.get(language.language_code).display_name()
             self.google_cloud_translate_data.language_data[language.language_code].language_name = language_name
+
+        self.is_data_cached = True

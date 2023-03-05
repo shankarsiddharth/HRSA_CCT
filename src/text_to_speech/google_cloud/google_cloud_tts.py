@@ -30,9 +30,11 @@ class GoogleCloudTTS(object):
         self.gc_sp: GoogleCloudServiceProvider = GoogleCloudServiceProvider()
         self.google_cloud_voice_data: GoogleCloudVoiceData = GoogleCloudVoiceData()
         self.tts_client = texttospeech.TextToSpeechClient(credentials=self.gc_sp.credentials)
-        pass
+        self.is_data_cached = False
 
     def get_voice_data(self) -> GoogleCloudVoiceData:
+        if not self.is_data_cached:
+            self.cache_voice_data()
         return self.google_cloud_voice_data
 
     def cache_voice_data(self):
@@ -70,4 +72,4 @@ class GoogleCloudTTS(object):
                 else:
                     continue
 
-        print(f"Google Cloud Voice Data: {self.google_cloud_voice_data}")
+        self.is_data_cached = True
