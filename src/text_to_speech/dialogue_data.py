@@ -1,6 +1,6 @@
 from dataclasses import dataclass, field
 
-from .room_dialogue_data import RoomDialogueData
+from text_to_speech.room_dialogue_data import RoomDialogueData
 
 
 @dataclass
