@@ -2,12 +2,12 @@ import sys
 import threading
 
 from google.cloud import texttospeech
-from google.oauth2 import service_account
 from langcodes import Language
 
 from app_file_system.app_file_system import AppFileSystem
-from text_to_speech.google_cloud_voice_data import GoogleCloudVoiceData
-from text_to_speech.google_cloud_voice_language_data import GoogleCloudVoiceLanguageData
+from service_providers.google_cloud import GoogleCloudServiceProvider
+from .google_cloud_voice_data import GoogleCloudVoiceData
+from .google_cloud_voice_language_data import GoogleCloudVoiceLanguageData
 
 
 class GoogleCloudTTS(object):
@@ -27,13 +27,9 @@ class GoogleCloudTTS(object):
 
     def __initialize__(self):
         self.afs: AppFileSystem = AppFileSystem()
-        self.credentials_file_path = self.afs.get_google_cloud_credentials_file_path()
+        self.gc_sp: GoogleCloudServiceProvider = GoogleCloudServiceProvider()
         self.google_cloud_voice_data: GoogleCloudVoiceData = GoogleCloudVoiceData()
-        if self.credentials_file_path is None:
-            # TODO: Implement proper error handling, possibly UI notification
-            raise FileNotFoundError("Google Cloud credentials file not found")
-        self.credentials = service_account.Credentials.from_service_account_file(self.credentials_file_path)
-        self.tts_client = texttospeech.TextToSpeechClient(credentials=self.credentials)
+        self.tts_client = texttospeech.TextToSpeechClient(credentials=self.gc_sp.credentials)
         pass
 
     def get_voice_data(self) -> GoogleCloudVoiceData:

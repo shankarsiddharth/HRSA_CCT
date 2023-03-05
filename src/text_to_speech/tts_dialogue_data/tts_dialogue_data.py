@@ -1,10 +1,10 @@
 from dataclasses import dataclass, field
 
-from text_to_speech.room_dialogue_data import RoomDialogueData
+from .room_dialogue_data import RoomDialogueData
 
 
 @dataclass
-class DialogueData:
+class TTSDialogueData:
     # Break Room Dialogue Data
     break_room_dialogue_data: RoomDialogueData = field(default_factory=RoomDialogueData)
     # Patient Room Dialogue Data

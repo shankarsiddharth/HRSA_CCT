@@ -1,6 +1,6 @@
 from dataclasses import dataclass, field
 
-from text_to_speech.google_cloud_voice_language_data import GoogleCloudVoiceLanguageData
+from .google_cloud_voice_language_data import GoogleCloudVoiceLanguageData
 
 
 @dataclass

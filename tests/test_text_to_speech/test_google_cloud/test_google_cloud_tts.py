@@ -4,9 +4,9 @@ import unittest
 from dataclasses import asdict
 from types import SimpleNamespace
 
-from tests.helper import get_test_path_of_file, copy_file
-from text_to_speech.google_cloud_tts import GoogleCloudTTS
-from text_to_speech.google_cloud_voice_data import GoogleCloudVoiceData
+from tests.helper import get_test_path_of_file, copy_file, afsc
+from text_to_speech.google_cloud.google_cloud_tts import GoogleCloudTTS
+from text_to_speech.google_cloud.google_cloud_voice_data import GoogleCloudVoiceData
 
 
 class TestGoogleCloudTTS(unittest.TestCase):
@@ -34,16 +34,23 @@ class TestGoogleCloudTTS(unittest.TestCase):
         else:
             self.fail('es-ES not in google_cloud_voice_data.voice_data')
 
+        self.assertNotIn('ex-US', voice_data_dict)
+
+        # if 'ex-ES' in voice_data_dict:
+        #     self.assertEqual(voice_data_dict['ex-ES'].language_code, 'ex-ES')
+        # else:
+        #     self.fail('ex-ES not in google_cloud_voice_data.voice_data')
+
     def test_create_new_file(self):
         self.gctts.cache_voice_data()
         google_cloud_voice_data: GoogleCloudVoiceData = self.gctts.get_voice_data()
-        with open(self.file_to_create, 'w') as f:
+        with open(self.file_to_create, 'w', encoding=afsc.DEFAULT_FILE_ENCODING) as f:
             json.dump(asdict(google_cloud_voice_data), f, indent=4, sort_keys=True)
 
         copy_file(self.file_to_create, self.file_to_test)
 
     def test_load_from_string(self):
-        with open(self.file_to_test) as f:
+        with open(self.file_to_test, encoding=afsc.DEFAULT_FILE_ENCODING) as f:
             text = f.read()
             # Parse JSON into an object with attributes corresponding to dict keys.
             google_cloud_voice_data: GoogleCloudVoiceData = json.loads(text, object_hook=lambda d: SimpleNamespace(**d))

@@ -1,6 +1,6 @@
 from dataclasses import dataclass, field
 
-from text_to_speech.audio_dialogue_data import AudioDialogueData
+from .audio_dialogue_data import AudioDialogueData
 
 
 @dataclass

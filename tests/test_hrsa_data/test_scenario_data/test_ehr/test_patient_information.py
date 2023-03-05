@@ -5,7 +5,7 @@ from dataclasses import asdict
 from types import SimpleNamespace
 
 from hrsa_data.scenario_data.ehr.patient_information import PatientInformation
-from tests.helper import get_test_path_of_file
+from tests.helper import get_test_path_of_file, afsc
 
 
 class TestPatientInformationLoading(unittest.TestCase):
@@ -109,14 +109,14 @@ class TestPatientInformationLoading(unittest.TestCase):
         )
 
     def test_load_from_string(self):
-        with open(self.file_to_test) as f:
+        with open(self.file_to_test, encoding=afsc.DEFAULT_FILE_ENCODING) as f:
             text = f.read()
             # Parse JSON into an object with attributes corresponding to dict keys.
             patient_information_data: PatientInformation = json.loads(text, object_hook=lambda d: SimpleNamespace(**d))
             self.process_patient_information_data(patient_information_data)
 
     def test_load_from_dict(self):
-        with open(self.file_to_test) as f:
+        with open(self.file_to_test, encoding=afsc.DEFAULT_FILE_ENCODING) as f:
             patient_information_data: PatientInformation = PatientInformation.from_dict(json.load(f))
             print(json.dumps(asdict(patient_information_data)), '\n')
             self.process_patient_information_data(patient_information_data)
@@ -183,7 +183,7 @@ class TestPatientInformationLoading(unittest.TestCase):
 
     def test_create_new_file(self):
         config_data: PatientInformation = PatientInformation()
-        with open(self.file_to_create, 'w') as f:
+        with open(self.file_to_create, 'w', encoding=afsc.DEFAULT_FILE_ENCODING) as f:
             json.dump(asdict(config_data), f, indent=4)
 
 

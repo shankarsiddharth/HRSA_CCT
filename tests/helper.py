@@ -2,6 +2,10 @@ import os
 import pathlib
 import shutil
 
+from app_file_system.app_file_system_constants import AppFileSystemConstants
+
+afsc: AppFileSystemConstants = AppFileSystemConstants()
+
 
 def get_test_path_of_file(in_file):
     return pathlib.Path(in_file).parent.resolve()
