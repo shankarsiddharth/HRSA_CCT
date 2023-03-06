@@ -27,3 +27,13 @@ class SocialHealthHistory:
             _refugee_status,
             _congregate_living
         )
+
+    def to_dict(self):
+        return {
+            "social_history_observation": self.social_history_observation,
+            "alcohol_use": self.alcohol_use,
+            "drug_use": self.drug_use,
+            "sexual_activity": self.sexual_activity,
+            "refugee_status": self.refugee_status,
+            "congregate_living": self.congregate_living
+        }
