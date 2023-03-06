@@ -5,8 +5,10 @@ from dataclasses import asdict
 from types import SimpleNamespace
 
 from tests.helper import get_test_path_of_file, copy_file, afsc
+from tests.settings import SKIP_CLOUD_CONNECT_TESTS, SKIP_CLOUD_CONNECT_TESTS_WITH_NEGLIGIBLE_COST, SKIP_CLOUD_CONNECT_TESTS_WITH_HIGH_COST
 from text_translate.google_cloud.google_cloud_translate import GoogleCloudTranslate
 from text_translate.google_cloud.google_cloud_translate_data import GoogleCloudTranslateData
+from text_translate.google_cloud.google_cloud_translate_response_data import GoogleCloudTranslateResponseData
 
 
 class TestGoogleCloudTranslate(unittest.TestCase):
@@ -56,6 +58,37 @@ class TestGoogleCloudTranslate(unittest.TestCase):
             # Parse JSON into an object with attributes corresponding to dict keys.
             google_cloud_translate_data: GoogleCloudTranslateData = json.loads(text, object_hook=lambda d: SimpleNamespace(**d))
             self.process_google_cloud_voice_data(google_cloud_translate_data)
+
+    @unittest.skipIf(SKIP_CLOUD_CONNECT_TESTS or SKIP_CLOUD_CONNECT_TESTS_WITH_HIGH_COST,
+                     "Skipping test that requires cloud connection")
+    def test_translate_list_length(self):
+        string_to_repeat = "This is a test."
+        input_text = list()
+        for i in range(1, 1026):
+            input_text.append(string_to_repeat)
+        print(len(input_text))
+        gc_rd: GoogleCloudTranslateResponseData = self.gc_translate.translate_text(text=input_text, target_language_code='es', source_language_code='en-US')
+        self.assertEqual(gc_rd.response_data[0].translated_text, 'Esta es una prueba para traducir contenido de texto grande.')
+
+    @unittest.skipIf(SKIP_CLOUD_CONNECT_TESTS or SKIP_CLOUD_CONNECT_TESTS_WITH_HIGH_COST,
+                     "Skipping test that requires cloud connection")
+    def test_translate_codepoint_length(self):
+        string_to_repeat = "This is a test for translating large text content."
+        input_text = list()
+        input_text_length = 0
+        for i in range(1, 1025):
+            input_text.append(string_to_repeat)
+            input_text_length += len(string_to_repeat.encode('utf-8'))
+        print(input_text_length)
+        gc_rd: GoogleCloudTranslateResponseData = self.gc_translate.translate_text(text=input_text, target_language_code='es', source_language_code='en-US')
+        self.assertEqual(gc_rd.response_data[0].translated_text, 'Esta es una prueba para traducir contenido de texto grande.')
+
+    @unittest.skipIf(SKIP_CLOUD_CONNECT_TESTS or SKIP_CLOUD_CONNECT_TESTS_WITH_NEGLIGIBLE_COST,
+                     "Skipping test that requires cloud connection")
+    def test_translate_simple(self):
+        input_text = ["This is a test."]
+        gc_rd: GoogleCloudTranslateResponseData = self.gc_translate.translate_text(text=input_text, target_language_code='es', source_language_code='en-US')
+        self.assertEqual(gc_rd.response_data[0].translated_text, 'Esto es una prueba.')
 
 
 if __name__ == '__main__':
