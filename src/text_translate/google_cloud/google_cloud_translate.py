@@ -122,6 +122,10 @@ class GoogleCloudTranslate(object):
         # Remove empty strings from the list
         text_content_list_without_empty_string = list(filter(None, text_content_list))
 
+        # Check if the list is empty
+        if len(text_content_list_without_empty_string) <= 0:
+            return GoogleCloudTranslateResponseData()
+
         # Check if the length of the text list is greater than 1024
         if len(text_content_list_without_empty_string) > 1024:
             return self._translate_text_list_elements(text_content_list_without_empty_string, target_language_code, source_language_code)
