@@ -1,3 +1,5 @@
+from dataclasses import asdict
+
 from hrsa_data.scenario_data.ehr.patient_information import PatientInformation
 from hrsa_data.scenario_data.ehr.social_health_history import SocialHealthHistory
 from text_translate.google_cloud.google_cloud_translate import GoogleCloudTranslate
@@ -14,7 +16,7 @@ def translate_patient_info():
     for item in patient_info.problems.problems:
         translated_problem = item.problem
         if item.problem:
-            gc_rd: GoogleCloudTranslateResponseData = gc_translate.translate_text(text=[item.problem],
+            gc_rd: GoogleCloudTranslateResponseData = gc_translate.translate_text(text_content_list=[item.problem],
                                                                                   target_language_code='es',
                                                                                   source_language_code='en-US')
             translated_problem = gc_rd.response_data[0].translated_text
@@ -23,7 +25,7 @@ def translate_patient_info():
     # translate family_health_history
     translated_family_health_history = []
     for item in patient_info.family_health_history.family_health_history:
-        gc_rd: GoogleCloudTranslateResponseData = gc_translate.translate_text(text=[item],
+        gc_rd: GoogleCloudTranslateResponseData = gc_translate.translate_text(text_content_list=[item],
                                                                               target_language_code='es',
                                                                               source_language_code='en-US')
         if len(gc_rd.response_data) > 0:
@@ -33,8 +35,9 @@ def translate_patient_info():
     patient_info.family_health_history.family_health_history = translated_family_health_history
 
     # translate social_health_history
-    social_health_history_dict = patient_info.social_health_history.to_dict()
-    gc_rd: GoogleCloudTranslateResponseData = gc_translate.translate_text(text=list(social_health_history_dict.values()),
+    # social_health_history_dict = patient_info.social_health_history.to_dict()
+    social_health_history_dict = asdict(patient_info.social_health_history)
+    gc_rd: GoogleCloudTranslateResponseData = gc_translate.translate_text(text_content_list=list(social_health_history_dict.values()),
                                                                           target_language_code='es',
                                                                           source_language_code='en-US')
     social_health_history_values = [value.translated_text for value in gc_rd.response_data.values()]

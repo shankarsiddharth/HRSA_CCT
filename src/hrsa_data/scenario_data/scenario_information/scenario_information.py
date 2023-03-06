@@ -38,5 +38,5 @@ class ScenarioInformation:
     def save_to_json_file(obj: 'ScenarioInformation', json_file_path: str) -> bool:
         # TODO: Add error handling - save scenario information to json file
         with open(json_file_path, 'w', encoding=__afsc__.DEFAULT_FILE_ENCODING) as json_file:
-            json.dump(asdict(obj), json_file, indent=4)
+            json.dump(asdict(obj), json_file, indent=4, ensure_ascii=False)
             return True

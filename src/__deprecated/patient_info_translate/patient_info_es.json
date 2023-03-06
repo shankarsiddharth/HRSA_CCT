@@ -110,7 +110,7 @@
     },
     "family_health_history": {
         "family_health_history": [
-            "Padre muri\u00f3 de un infarto a los 60 a\u00f1os",
+            "Padre murió de un infarto a los 60 años",
             "la madre tiene diabetes",
             "hermano tiene presion alta"
         ]
@@ -118,7 +118,7 @@
     "social_health_history": {
         "social_history_observation": "socialmente activo",
         "alcohol_use": "1-2 vasos de cerveza, 3 veces por semana",
-        "drug_use": "Dejar de fumar hace 20 a\u00f1os",
+        "drug_use": "Dejar de fumar hace 20 años",
         "sexual_activity": "Sexualmente activa con su esposo",
         "refugee_status": "no un refugiado",
         "congregate_living": "Vivir en paz con su esposo."

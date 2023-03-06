@@ -61,5 +61,5 @@ class PatientInformation:
     def save_to_json_file(obj: 'PatientInformation', json_file_path) -> bool:
         # TODO: Add error handling - save patient information to json file
         with open(json_file_path, 'w', encoding=__afsc__.DEFAULT_FILE_ENCODING) as json_file:
-            json.dump(asdict(obj), json_file, indent=4)
+            json.dump(asdict(obj), json_file, indent=4, ensure_ascii=False)
             return True
