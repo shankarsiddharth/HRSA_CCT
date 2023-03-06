@@ -75,25 +75,29 @@ class GoogleCloudTranslate(object):
         translated_text = response.translations[0].translated_text
         return translated_text
 
-    def _translate_text_list_elements(self, text: list, target_language_code="es", source_language_code="en-US") -> GoogleCloudTranslateResponseData:
+    def _translate_text_list_elements(self, text_content_list: list, target_language_code="es", source_language_code="en-US") -> GoogleCloudTranslateResponseData:
         gc_rd: GoogleCloudTranslateResponseData = GoogleCloudTranslateResponseData()
 
-        for index in range(0, len(text)):
+        for index in range(0, len(text_content_list)):
             response_element_data: GoogleCloudTranslateResponseElementData = GoogleCloudTranslateResponseElementData()
-            response_element_data.original_text = text[index]
+            response_element_data.original_text = text_content_list[index]
             # TODO: Implement proper error handling for network operations, possibly UI notification
-            response_element_data.translated_text = self._translate_text_list_element(response_element_data.original_text, target_language_code, source_language_code)
+            if len(text_content_list[index]) <= 0:
+                response_element_data.original_text = ""
+                response_element_data.translated_text = ""
+            else:
+                response_element_data.translated_text = self._translate_text_list_element(response_element_data.original_text, target_language_code, source_language_code)
 
             gc_rd.response_data[index] = response_element_data
 
         return gc_rd
 
-    def _translate_text_list(self, text: list, target_language_code="es", source_language_code="en-US") -> GoogleCloudTranslateResponseData:
+    def _translate_text_list(self, text_content_list: list, target_language_code="es", source_language_code="en-US") -> GoogleCloudTranslateResponseData:
         # TODO: Implement proper error handling for network operations, possibly UI notification
         response = self.translate_client.translate_text(
             request={
                 "parent": self.gc_sp.translate_text_parent,
-                "contents": text,
+                "contents": text_content_list,
                 "mime_type": "text/plain",  # mime types: text/plain, text/html
                 "source_language_code": source_language_code,
                 "target_language_code": target_language_code,
@@ -105,26 +109,29 @@ class GoogleCloudTranslate(object):
         index = 0
         for translation in response.translations:
             response_element_data: GoogleCloudTranslateResponseElementData = GoogleCloudTranslateResponseElementData()
-            response_element_data.original_text = text[index]
+            response_element_data.original_text = text_content_list[index]
             response_element_data.translated_text = translation.translated_text
             gc_rd.response_data[index] = response_element_data
             index += 1
 
         return gc_rd
 
-    def translate_text(self, text: list, target_language_code="es", source_language_code="en-US") -> GoogleCloudTranslateResponseData:
+    def translate_text(self, text_content_list: list, target_language_code="es", source_language_code="en-US") -> GoogleCloudTranslateResponseData:
         # Reference: https://cloud.google.com/translate/docs/reference/rest/v3/projects.locations/translateText
 
+        # Remove empty strings from the list
+        text_content_list_without_empty_string = list(filter(None, text_content_list))
+
         # Check if the length of the text list is greater than 1024
-        if len(text) > 1024:
-            return self._translate_text_list_elements(text, target_language_code, source_language_code)
+        if len(text_content_list_without_empty_string) > 1024:
+            return self._translate_text_list_elements(text_content_list_without_empty_string, target_language_code, source_language_code)
 
         # Check if the length of the codepoints is greater than 30k
         codepoints_length = 0
-        for index in range(0, len(text)):
-            codepoints_length += len(text[index].encode('utf-8'))  # Get the length of the text in bytes
+        for index in range(0, len(text_content_list_without_empty_string)):
+            codepoints_length += len(text_content_list_without_empty_string[index].encode('utf-8'))  # Get the length of the text in bytes
 
         if codepoints_length > 30000:
-            return self._translate_text_list_elements(text, target_language_code, source_language_code)
+            return self._translate_text_list_elements(text_content_list_without_empty_string, target_language_code, source_language_code)
 
-        return self._translate_text_list(text, target_language_code, source_language_code)
+        return self._translate_text_list(text_content_list_without_empty_string, target_language_code, source_language_code)

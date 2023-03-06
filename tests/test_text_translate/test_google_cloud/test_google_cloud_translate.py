@@ -67,7 +67,7 @@ class TestGoogleCloudTranslate(unittest.TestCase):
         for i in range(1, 1026):
             input_text.append(string_to_repeat)
         print(len(input_text))
-        gc_rd: GoogleCloudTranslateResponseData = self.gc_translate.translate_text(text=input_text, target_language_code='es', source_language_code='en-US')
+        gc_rd: GoogleCloudTranslateResponseData = self.gc_translate.translate_text(text_content_list_without_empty_string=input_text, target_language_code='es', source_language_code='en-US')
         self.assertEqual(gc_rd.response_data[0].translated_text, 'Esta es una prueba para traducir contenido de texto grande.')
 
     @unittest.skipIf(SKIP_CLOUD_CONNECT_TESTS or SKIP_CLOUD_CONNECT_TESTS_WITH_HIGH_COST,
@@ -80,14 +80,14 @@ class TestGoogleCloudTranslate(unittest.TestCase):
             input_text.append(string_to_repeat)
             input_text_length += len(string_to_repeat.encode('utf-8'))
         print(input_text_length)
-        gc_rd: GoogleCloudTranslateResponseData = self.gc_translate.translate_text(text=input_text, target_language_code='es', source_language_code='en-US')
+        gc_rd: GoogleCloudTranslateResponseData = self.gc_translate.translate_text(text_content_list_without_empty_string=input_text, target_language_code='es', source_language_code='en-US')
         self.assertEqual(gc_rd.response_data[0].translated_text, 'Esta es una prueba para traducir contenido de texto grande.')
 
     @unittest.skipIf(SKIP_CLOUD_CONNECT_TESTS or SKIP_CLOUD_CONNECT_TESTS_WITH_NEGLIGIBLE_COST,
                      "Skipping test that requires cloud connection")
     def test_translate_simple(self):
         input_text = ["This is a test."]
-        gc_rd: GoogleCloudTranslateResponseData = self.gc_translate.translate_text(text=input_text, target_language_code='es', source_language_code='en-US')
+        gc_rd: GoogleCloudTranslateResponseData = self.gc_translate.translate_text(text_content_list_without_empty_string=input_text, target_language_code='es', source_language_code='en-US')
         self.assertEqual(gc_rd.response_data[0].translated_text, 'Esto es una prueba.')
 
 
