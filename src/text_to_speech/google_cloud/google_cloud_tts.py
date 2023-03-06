@@ -72,4 +72,9 @@ class GoogleCloudTTS(object):
                 else:
                     continue
 
+        for key in self.google_cloud_voice_data.voice_data:
+            self.google_cloud_voice_data.voice_data[key].gender_data.MALE.sort()
+            self.google_cloud_voice_data.voice_data[key].gender_data.FEMALE.sort()
+            self.google_cloud_voice_data.voice_data[key].gender_data.NEUTRAL.sort()
+
         self.is_data_cached = True
