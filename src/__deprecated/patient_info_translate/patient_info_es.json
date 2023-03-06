@@ -35,12 +35,12 @@
     "problems": {
         "problems": [
             {
-                "problem": "Weight Gain",
+                "problem": "Aumento de peso",
                 "date_of_diagnosis": "",
                 "date_of_resolution": ""
             },
             {
-                "problem": "Increasing Fatigue",
+                "problem": "Aumento de la fatiga",
                 "date_of_diagnosis": "",
                 "date_of_resolution": ""
             },
@@ -110,17 +110,17 @@
     },
     "family_health_history": {
         "family_health_history": [
-            "Father died of a heart attack at age 60",
-            "Mother has diabetes",
-            "Brother has high blood pressure"
+            "Padre muri\u00f3 de un infarto a los 60 a\u00f1os",
+            "la madre tiene diabetes",
+            "hermano tiene presion alta"
         ]
     },
     "social_health_history": {
-        "social_history_observation": "Socially Active",
-        "alcohol_use": "1-2 glasses of beer, 3 times per week",
-        "drug_use": "Quit smoking 20 years ago",
-        "sexual_activity": "Sexually active with her husband",
-        "refugee_status": "Not a refugee",
-        "congregate_living": "Living peacefully with her husband"
+        "social_history_observation": "socialmente activo",
+        "alcohol_use": "1-2 vasos de cerveza, 3 veces por semana",
+        "drug_use": "Dejar de fumar hace 20 a\u00f1os",
+        "sexual_activity": "Sexualmente activa con su esposo",
+        "refugee_status": "no un refugiado",
+        "congregate_living": "Vivir en paz con su esposo."
     }
 }
