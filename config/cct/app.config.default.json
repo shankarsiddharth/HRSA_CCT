@@ -1,0 +1,15 @@
+{
+    "version": {
+        "major": 1,
+        "minor": 0,
+        "patch": 0
+    },
+    "cct_config": {
+        "service_provider": {
+            "google_cloud": {
+                "use_user_service_account_file": false,
+                "user_service_account_file_path": ""
+            }
+        }
+    }
+}
