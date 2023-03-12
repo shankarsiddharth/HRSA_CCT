@@ -1,4 +1,4 @@
-import sys
+from app_debug.app_debug import IS_DEBUG_MODE_ENABLED
 
 APP_VERSION_MAJOR = 0
 APP_VERSION_MINOR = 1
@@ -9,5 +9,5 @@ if APP_RELEASE_TYPE != "":
     APP_RELEASE_TYPE = f"-{APP_RELEASE_TYPE}"
 APP_VERSION_STRING = f"{APP_VERSION_PREFIX}{APP_VERSION_MAJOR}.{APP_VERSION_MINOR}.{APP_VERSION_PATCH}{APP_RELEASE_TYPE}"
 
-if sys.flags.dev_mode:
+if IS_DEBUG_MODE_ENABLED:
     print("AppVersion.__init__()")
