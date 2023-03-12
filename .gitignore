@@ -12,7 +12,14 @@ bin/Inky/Win64/*
 !bin/Inky/inky_version.txt
 
 # Ignore Service Account JSON files
-config/*.json
+config/service_providers/**/*.json
+!config/service_providers/google_cloud/README.md
+# Ignore Old Service Account JSON files
+config/**private_key**.json
+
+# Ignore Project Log folder
+[Ll][Oo][Gg][Ss]/**
+[Ll][Oo][Gg]/**
 
 # HRSAData folder
 [Hh][Rr][Ss][Aa][Dd][Aa][Tt][Aa]*/
