@@ -3,12 +3,12 @@ import os
 import pathlib
 import sys
 import threading
-import traceback
 from logging.handlers import SocketHandler
 
-from app_file_system.app_file_system import AppFileSystem
-from app_file_system.app_file_system_constants import AppFileSystemConstants
+from app_debug.app_debug import IS_DEBUG_MODE_ENABLED
 from . import app_logging_custom as alc
+from .app_logger_file_system import AppLoggerFileSystem
+from .app_logger_file_system_constants import AppLoggerFileSystemConstants
 from .app_logger_ui import AppUILogger
 
 
@@ -23,37 +23,21 @@ class AppLogger(object):
                 if cls._instance is None:
                     cls._instance = super(AppLogger, cls).__new__(cls)
                     cls._instance.__initialize__()
-                    if sys.flags.dev_mode:
+                    if IS_DEBUG_MODE_ENABLED:
                         print("AppLogger.__new__()")
         return cls._instance
 
     def __initialize__(self):
-        self.afsc = AppFileSystemConstants()
-        self.afs = AppFileSystem()
+        self.alfsc: AppLoggerFileSystemConstants = AppLoggerFileSystemConstants()
+        self.alfs: AppLoggerFileSystem = AppLoggerFileSystem()
         self.should_log_to_ui = True
 
         print("Creating Logger Instance...")
-
-        print("Getting root folder...")
-        root_folder_path = self.afs.get_root_folder()
-
-        print("Checking log folder...")
-        self.log_folder_path = os.path.join(root_folder_path, self.afsc.LOG_FOLDER_NAME)
-        self.log_folder = pathlib.Path(self.log_folder_path)
-        if not self.log_folder.exists():
-            print("Log folder does not exist. Creating it.")
-            print("Creating log folder: " + self.log_folder_path)
-            try:
-                os.makedirs(self.log_folder_path)
-            except OSError as e:
-                traceback_string = traceback.format_exc()
-                exception_message = ("Creation of the log folder %s failed" % self.log_folder_path) + str(e) + "\n" + traceback_string
-                print(exception_message)
-
-        print("Log Folder exists.")
-        self.log_file_path = os.path.join(self.log_folder_path, self.afsc.LOG_FILE_NAME)
-
-        self.backup_log_file_path = os.path.join(self.log_folder_path, self.afsc.BACKUP_LOG_FILE_NAME)
+        # Initialize log folder
+        self.log_folder_path = self.alfs.initialize_log_folder()
+        # Initialize log file paths
+        self.log_file_path = os.path.join(self.log_folder_path, self.alfsc.LOG_FILE_NAME)
+        self.backup_log_file_path = os.path.join(self.log_folder_path, self.alfsc.BACKUP_LOG_FILE_NAME)
 
         self.log_file = pathlib.Path(self.log_file_path)
         self.backup_log_file = pathlib.Path(self.backup_log_file_path)
@@ -114,7 +98,7 @@ class AppLogger(object):
     def on_init_and_render_ui(self, parent=None):
         self.ui_logger: AppUILogger = AppUILogger(parent=parent)
         self.ui_logger.trace("HRSA CCT UI Logger Started")
-        if sys.flags.dev_mode:
+        if IS_DEBUG_MODE_ENABLED:
             self.ui_logger.debug('Test UI Debug')
             self.ui_logger.info('Test UI Info')
             self.ui_logger.success('Test UI Success')
@@ -134,7 +118,6 @@ class AppLogger(object):
             self.ui_logger = None
 
     def _log(self, level, message, *args):
-
         if level < self.log_level:
             return
 

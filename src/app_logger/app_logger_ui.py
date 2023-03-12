@@ -1,8 +1,8 @@
 import logging
-import sys
 
 import dearpygui.dearpygui as dpg
 
+from app_debug.app_debug import IS_DEBUG_MODE_ENABLED
 from . import app_logging_custom as alc
 
 
@@ -13,7 +13,7 @@ class AppUILogger:
         self.log_level = 0
         self._auto_scroll = True
         self._default_show_all_logs = False
-        if sys.flags.dev_mode:
+        if IS_DEBUG_MODE_ENABLED:
             self._default_show_all_logs = True
         self._show_all_logs_tag = "UI Logger Show All Logs"
         self._filter_text_tag = "UI Logger Filter Text Box"
