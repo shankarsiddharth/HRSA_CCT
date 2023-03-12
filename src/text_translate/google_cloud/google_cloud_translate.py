@@ -1,10 +1,10 @@
-import sys
 import threading
 
 import langcodes
 from google.cloud import translate
 
 from app_file_system.app_file_system import AppFileSystem
+from app_debug.app_debug import IS_DEBUG_MODE_ENABLED
 from service_providers.google_cloud import GoogleCloudServiceProvider
 from .google_cloud_translate_data import GoogleCloudTranslateData
 from .google_cloud_translate_language_data import GoogleCloudTranslateLanguageData
@@ -23,7 +23,7 @@ class GoogleCloudTranslate(object):
                 if cls._instance is None:
                     cls._instance = super(GoogleCloudTranslate, cls).__new__(cls)
                     cls._instance.__initialize__()
-                    if sys.flags.dev_mode:
+                    if IS_DEBUG_MODE_ENABLED:
                         print("GoogleCloudTranslate.__new__()")
         return cls._instance
 

@@ -1,11 +1,11 @@
 import json
-import sys
 import threading
 
 from google.oauth2 import service_account
 
 from app_file_system.app_file_system import AppFileSystem
 from app_file_system.app_file_system_constants import AppFileSystemConstants
+from app_debug.app_debug import IS_DEBUG_MODE_ENABLED
 
 
 class GoogleCloudServiceProvider(object):
@@ -19,7 +19,7 @@ class GoogleCloudServiceProvider(object):
                 if cls._instance is None:
                     cls._instance = super(GoogleCloudServiceProvider, cls).__new__(cls)
                     cls._instance.__initialize__()
-                    if sys.flags.dev_mode:
+                    if IS_DEBUG_MODE_ENABLED:
                         print("GoogleCloudServiceProvider.__new__()")
         return cls._instance
 

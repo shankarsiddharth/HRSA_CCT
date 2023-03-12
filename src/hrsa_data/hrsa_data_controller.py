@@ -1,8 +1,9 @@
-import sys
 import threading
 
+from app_debug.app_debug import IS_DEBUG_MODE_ENABLED
 from .file_system.hrsa_data_file_system import HRSADataFileSystem
 from .file_system.hrsa_data_file_system_constants import HRSADataFileSystemConstants
+from .file_system.scenario_language_folder_data import ScenarioLanguageFolderData
 
 
 class HRSADataController(object):
@@ -19,7 +20,7 @@ class HRSADataController(object):
                 if cls._instance is None:
                     cls._instance = super(HRSADataController, cls).__new__(cls)
                     cls._instance.__initialize__()
-                    if sys.flags.dev_mode:
+                    if IS_DEBUG_MODE_ENABLED:
                         print("HRSADataController.__new__()")
         return cls._instance
 
@@ -46,3 +47,6 @@ class HRSADataController(object):
         if not self.__hdfs__.delete_scenario_folder(scenario_name):
             return False
         return True
+
+    def get_current_scenario_folder_data_for_current_language_code(self) -> ScenarioLanguageFolderData | None:
+        return self.__hdfs__.get_current_scenario_folder_data_for_current_language_code()

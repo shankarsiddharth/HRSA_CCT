@@ -1,9 +1,9 @@
-import sys
 import threading
 from tkinter import *
 from tkinter.filedialog import askopenfilename
 
 from app_queue import AppQueue
+from app_debug.app_debug import IS_DEBUG_MODE_ENABLED
 
 
 class AppFileDialog(object):
@@ -17,7 +17,7 @@ class AppFileDialog(object):
                 if cls._instance is None:
                     cls._instance = super(AppFileDialog, cls).__new__(cls)
                     cls._instance.__initialize__()
-                    if sys.flags.dev_mode:
+                    if IS_DEBUG_MODE_ENABLED:
                         print("AppFileDialog.__new__()")
         return cls._instance
 

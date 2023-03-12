@@ -5,6 +5,7 @@ from google.cloud import texttospeech
 from langcodes import Language
 
 from app_file_system.app_file_system import AppFileSystem
+from app_debug.app_debug import IS_DEBUG_MODE_ENABLED
 from service_providers.google_cloud import GoogleCloudServiceProvider
 from .google_cloud_voice_data import GoogleCloudVoiceData
 from .google_cloud_voice_language_data import GoogleCloudVoiceLanguageData
@@ -21,7 +22,7 @@ class GoogleCloudTTS(object):
                 if cls._instance is None:
                     cls._instance = super(GoogleCloudTTS, cls).__new__(cls)
                     cls._instance.__initialize__()
-                    if sys.flags.dev_mode:
+                    if IS_DEBUG_MODE_ENABLED:
                         print("GoogleCloudTTS.__new__()")
         return cls._instance
 

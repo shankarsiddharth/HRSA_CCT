@@ -1,6 +1,7 @@
 import queue
-import sys
 import threading
+
+from app_debug.app_debug import IS_DEBUG_MODE_ENABLED
 
 
 class AppQueue(object):
@@ -19,7 +20,7 @@ class AppQueue(object):
                 if cls._instance is None:
                     cls._instance = super(AppQueue, cls).__new__(cls)
                     cls._instance.__initialize__()
-                    if sys.flags.dev_mode:
+                    if IS_DEBUG_MODE_ENABLED:
                         print("AppQueue.__new__()")
         return cls._instance
 

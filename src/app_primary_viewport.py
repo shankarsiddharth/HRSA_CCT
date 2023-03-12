@@ -1,15 +1,15 @@
-import sys
 import threading
 import time
 
 import dearpygui.dearpygui as dpg
 
-import app_version as av
+import app_version.app_version as av
+from app_debug.app_debug import IS_DEBUG_MODE_ENABLED
 from app_font_registry.app_dpg_font_registry import AppFontRegistry
-from app_theme.app_dpg_theme import AppTheme
 from app_globals import log, file_dialog
 from app_primary_window import AppPrimaryWindow
 from app_queue import AppQueue
+from app_theme.app_dpg_theme import AppTheme
 
 
 class AppPrimaryViewportController(object):
@@ -98,15 +98,15 @@ class AppPrimaryViewportUI(threading.Thread):
         dpg.bind_font(self.font_registry.default_font)
 
         # TODO: Change this to use load_init_file instead of init_file and replace the path with self.dpg_ini_file_path
-        dpg.configure_app(manual_callback_management=sys.flags.dev_mode, docking=True, docking_space=True,
+        dpg.configure_app(manual_callback_management=IS_DEBUG_MODE_ENABLED, docking=True, docking_space=True,
                           load_init_file=self.dpg_ini_file_path, auto_device=True)
 
-        # dpg.configure_app(manual_callback_management=sys.flags.dev_mode, docking=True, docking_space=True,
+        # dpg.configure_app(manual_callback_management=IS_DEBUG_MODE_ENABLED, docking=True, docking_space=True,
         #                   init_file=self.dpg_ini_file_path, auto_device=True)
 
         dpg.create_viewport(title=self.viewport_title, width=self.VIEWPORT_WIDTH, height=self.VIEWPORT_HEIGHT)
 
-        if sys.flags.dev_mode:
+        if IS_DEBUG_MODE_ENABLED:
             dpg.configure_viewport(item=self.viewport_title, always_on_top=True)
 
         dpg.set_exit_callback(callback=self.__exit_callback__)
@@ -136,7 +136,7 @@ class AppPrimaryViewportUI(threading.Thread):
         # below replaces, start_dearpygui()
         while dpg.is_dearpygui_running():
 
-            if sys.flags.dev_mode:
+            if IS_DEBUG_MODE_ENABLED:
                 jobs = dpg.get_callback_queue()  # retrieves and clears queue
                 dpg.run_callbacks(jobs)
 
