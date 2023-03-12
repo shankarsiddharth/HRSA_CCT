@@ -39,7 +39,7 @@ class HRSADataFileSystem(object):
         #   Currently, this is not implemented and will be empty
         self.hrsa_data_workspace_root_folder_path = self.afs.get_hrsa_data_workspace_folder_path()
         self.hrsa_data_workspace_folder_data: HRSADataWorkspaceFolderData = HRSADataWorkspaceFolderData(
-            hrsa_data_workspace_folder_root_path=self.hrsa_data_workspace_root_folder_path
+            folder_root_path=self.hrsa_data_workspace_root_folder_path
         )
 
         # Initialize the workspace folder data from the workspace directory

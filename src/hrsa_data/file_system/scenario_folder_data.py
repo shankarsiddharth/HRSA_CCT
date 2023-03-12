@@ -15,7 +15,7 @@ class ScenarioFolderData:
     # Scenario Name
     scenario_name: str = field(default='')
     # Scenario Folder Path - Root
-    scenario_folder_root_path: str = field(default='')
+    folder_root_path: str = field(default='')
     scenario_language_folder_data_list: list[ScenarioLanguageFolderData] = field(default_factory=list)
 
     # def __post_init__(self):
@@ -44,7 +44,7 @@ class ScenarioFolderData:
         return self.get_scenario_language_folder_data(__hdfsc__.DEFAULT_LANGUAGE_CODE)
 
     def initialize_scenario_folder_data(self):
-        scenario_root_path: str = self.scenario_folder_root_path
+        scenario_root_path: str = self.folder_root_path
         dir_list = os.listdir(scenario_root_path)
         if len(dir_list) == 0:
             os.rmdir(scenario_root_path)
@@ -54,7 +54,7 @@ class ScenarioFolderData:
             if os.path.isdir(dir_item_path):
                 scenario_language_folder_data: ScenarioLanguageFolderData = ScenarioLanguageFolderData()
                 scenario_language_folder_data.language_code = dir_item
-                scenario_language_folder_data.scenario_language_folder_root_path = dir_item_path
+                scenario_language_folder_data.folder_root_path = dir_item_path
                 if scenario_language_folder_data.initialize_scenario_language_folder_data():
                     self.scenario_language_folder_data_list.append(scenario_language_folder_data)
                 else:
@@ -63,7 +63,7 @@ class ScenarioFolderData:
         return True
 
     def create_new_scenario_folder_for_language(self, language_code) -> FileSystemResultData:
-        new_scenario_path = pathlib.Path(self.scenario_folder_root_path)
+        new_scenario_path = pathlib.Path(self.folder_root_path)
 
         if new_scenario_path.exists():
             # TODO: Folder already exists, handle this
@@ -75,7 +75,7 @@ class ScenarioFolderData:
         new_scenario_path.mkdir()
         scenario_language_folder_data: ScenarioLanguageFolderData = ScenarioLanguageFolderData()
         scenario_language_folder_data.language_code = language_code
-        scenario_language_folder_data.scenario_language_folder_root_path = os.path.join(self.scenario_folder_root_path, language_code)
+        scenario_language_folder_data.folder_root_path = os.path.join(self.folder_root_path, language_code)
         file_system_result_data: FileSystemResultData = scenario_language_folder_data.create_new_scenario_language_folder()
         if not file_system_result_data.is_success:
             return file_system_result_data

@@ -21,14 +21,14 @@ class ScenarioLanguageFolderData:
     language_code: str = field(default=__hdfsc__.DEFAULT_LANGUAGE_CODE)
 
     # Scenario Language Folder Path - Root
-    scenario_language_folder_root_path: str = field(default='')
+    folder_root_path: str = field(default='')
 
     # Break Room Folder Data
-    scenario_break_room_folder_data: RoomFolderData = field(default_factory=RoomFolderData)
+    break_room_folder_data: RoomFolderData = field(default_factory=RoomFolderData)
     # Patient Room Folder Data
-    scenario_patient_room_folder_data: RoomFolderData = field(default_factory=RoomFolderData)
+    patient_room_folder_data: RoomFolderData = field(default_factory=RoomFolderData)
     # Feedback Room Folder Data
-    scenario_feedback_room_folder_data: FeedbackRoomFolderData = field(default_factory=FeedbackRoomFolderData)
+    feedback_room_folder_data: FeedbackRoomFolderData = field(default_factory=FeedbackRoomFolderData)
 
     # Scenario Language Folder - Data File Paths
     scenario_information_json_file_path: str = field(default='')
@@ -44,7 +44,7 @@ class ScenarioLanguageFolderData:
     patient_information: PatientInformation = field(default_factory=PatientInformation)
 
     def initialize_scenario_language_folder_data(self):
-        language_folder_root: str = self.scenario_language_folder_root_path
+        language_folder_root: str = self.folder_root_path
         dir_list = os.listdir(language_folder_root)
         if len(dir_list) == 0:
             os.rmdir(language_folder_root)
@@ -53,18 +53,21 @@ class ScenarioLanguageFolderData:
             dir_item_path: str = os.path.join(language_folder_root, dir_item)
             if os.path.isdir(dir_item_path):
                 if dir_item == __hdfsc__.BREAK_ROOM_NAME:
-                    self.scenario_break_room_folder_data.room_folder_root_path = dir_item_path
-                    if not self.scenario_break_room_folder_data.initialize_room_folder_data():
+                    self.break_room_folder_data.folder_root_path = dir_item_path
+                    self.break_room_folder_data.room_name = __hdfsc__.BREAK_ROOM_NAME
+                    if not self.break_room_folder_data.initialize_room_folder_data():
                         # TODO: Log error / warning - Break Room Folder Content Error
                         pass
                 elif dir_item == __hdfsc__.PATIENT_ROOM_NAME:
-                    self.scenario_patient_room_folder_data.room_folder_root_path = dir_item_path
-                    if not self.scenario_patient_room_folder_data.initialize_room_folder_data():
+                    self.patient_room_folder_data.folder_root_path = dir_item_path
+                    self.patient_room_folder_data.room_name = __hdfsc__.PATIENT_ROOM_NAME
+                    if not self.patient_room_folder_data.initialize_room_folder_data():
                         # TODO: Log error / warning - Patient Room Folder Content Error
                         pass
                 elif dir_item == __hdfsc__.FEEDBACK_ROOM_NAME:
-                    self.scenario_feedback_room_folder_data.feedback_room_folder_root_path = dir_item_path
-                    if not self.scenario_feedback_room_folder_data.initialize_feedback_room_folder_data():
+                    self.feedback_room_folder_data.folder_root_path = dir_item_path
+                    self.feedback_room_folder_data.room_name = __hdfsc__.FEEDBACK_ROOM_NAME
+                    if not self.feedback_room_folder_data.initialize_feedback_room_folder_data():
                         # TODO: Log error / warning - Feedback Room Folder Content Error
                         pass
 
@@ -92,7 +95,7 @@ class ScenarioLanguageFolderData:
 
     def create_new_scenario_language_folder(self) -> FileSystemResultData:
         # Create the language folder
-        language_folder_path = pathlib.Path(self.scenario_language_folder_root_path)
+        language_folder_path = pathlib.Path(self.folder_root_path)
         if language_folder_path.exists():
             # TODO: Folder already exists - Log error
             return FileSystemResultData(False, 'Language Folder Already Exists')
@@ -101,49 +104,52 @@ class ScenarioLanguageFolderData:
 
         # Create the break room folder
         break_room_folder_data: RoomFolderData = RoomFolderData()
-        break_room_folder_data.room_folder_root_path = os.path.join(self.scenario_language_folder_root_path, __hdfsc__.BREAK_ROOM_NAME)
+        break_room_folder_data.room_name = __hdfsc__.BREAK_ROOM_NAME
+        break_room_folder_data.folder_root_path = os.path.join(self.folder_root_path, __hdfsc__.BREAK_ROOM_NAME)
         file_system_result_data: FileSystemResultData = break_room_folder_data.create_new_room_folder()
         if not file_system_result_data.is_success:
             return file_system_result_data
-        self.scenario_break_room_folder_data = break_room_folder_data
+        self.break_room_folder_data = break_room_folder_data
 
         # Create the patient room folder
         patient_room_folder_data: RoomFolderData = RoomFolderData()
-        patient_room_folder_data.room_folder_root_path = os.path.join(self.scenario_language_folder_root_path, __hdfsc__.PATIENT_ROOM_NAME)
+        patient_room_folder_data.room_name = __hdfsc__.PATIENT_ROOM_NAME
+        patient_room_folder_data.folder_root_path = os.path.join(self.folder_root_path, __hdfsc__.PATIENT_ROOM_NAME)
         file_system_result_data: FileSystemResultData = patient_room_folder_data.create_new_room_folder()
         if not file_system_result_data.is_success:
             return file_system_result_data
-        self.scenario_patient_room_folder_data = patient_room_folder_data
+        self.patient_room_folder_data = patient_room_folder_data
 
         # Create the feedback room folder
         feedback_room_folder_data: FeedbackRoomFolderData = FeedbackRoomFolderData()
-        feedback_room_folder_data.feedback_room_folder_root_path = os.path.join(self.scenario_language_folder_root_path, __hdfsc__.FEEDBACK_ROOM_NAME)
+        feedback_room_folder_data.room_name = __hdfsc__.FEEDBACK_ROOM_NAME
+        feedback_room_folder_data.folder_root_path = os.path.join(self.folder_root_path, __hdfsc__.FEEDBACK_ROOM_NAME)
         file_system_result_data: FileSystemResultData = feedback_room_folder_data.create_new_feedback_room_folder()
         if not file_system_result_data.is_success:
             return file_system_result_data
-        self.scenario_feedback_room_folder_data = feedback_room_folder_data
+        self.feedback_room_folder_data = feedback_room_folder_data
 
         # Create the scenario information json file
-        self.scenario_information_json_file_path = os.path.join(self.scenario_language_folder_root_path, __hdfsc__.SCENARIO_INFORMATION_JSON_FILE_NAME)
+        self.scenario_information_json_file_path = os.path.join(self.folder_root_path, __hdfsc__.SCENARIO_INFORMATION_JSON_FILE_NAME)
         # Get the scenario name from the folder path information
-        language_folder_name: str = os.path.dirname(self.scenario_language_folder_root_path)
+        language_folder_name: str = os.path.dirname(self.folder_root_path)
         scenario_folder_name: str = os.path.basename(language_folder_name)
         self.scenario_information.name = scenario_folder_name
         if not ScenarioInformation.save_to_json_file(self.scenario_information, self.scenario_information_json_file_path):
             return FileSystemResultData(False, 'Failed to create the scenario information json file')
 
         # Create the scenario config json file
-        self.scenario_config_json_file_path = os.path.join(self.scenario_language_folder_root_path, __hdfsc__.SCENARIO_CONFIG_JSON_FILE_NAME)
+        self.scenario_config_json_file_path = os.path.join(self.folder_root_path, __hdfsc__.SCENARIO_CONFIG_JSON_FILE_NAME)
         if not ScenarioConfig.save_to_json_file(self.scenario_config, self.scenario_config_json_file_path):
             return FileSystemResultData(False, 'Failed to create the scenario config json file')
 
         # Create the scenario voice config json file
-        self.scenario_voice_config_json_file_path = os.path.join(self.scenario_language_folder_root_path, __hdfsc__.SCENARIO_VOICE_CONFIG_JSON_FILE_NAME)
+        self.scenario_voice_config_json_file_path = os.path.join(self.folder_root_path, __hdfsc__.SCENARIO_VOICE_CONFIG_JSON_FILE_NAME)
         if not ScenarioVoiceConfig.save_to_json_file(self.scenario_voice_config, self.scenario_voice_config_json_file_path):
             return FileSystemResultData(False, 'Failed to create the scenario voice config json file')
 
         # Create the patient information json file
-        self.patient_information_json_file_path = os.path.join(self.scenario_language_folder_root_path, __hdfsc__.PATIENT_INFORMATION_JSON_FILE_NAME)
+        self.patient_information_json_file_path = os.path.join(self.folder_root_path, __hdfsc__.PATIENT_INFORMATION_JSON_FILE_NAME)
         if not PatientInformation.save_to_json_file(self.patient_information, self.patient_information_json_file_path):
             return FileSystemResultData(False, 'Failed to create the patient information json file')
 
