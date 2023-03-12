@@ -8,4 +8,4 @@ class RoomDialogueData:
     # Room Name
     room_name: str = field(default='')
     # Audio Dialogue Data List
-    audio_dialogue_data_list: list[AudioDialogueData] = field(default_factory=list)
+    audio_dialogue_data_dict: dict[str, AudioDialogueData] = field(default_factory=dict)
