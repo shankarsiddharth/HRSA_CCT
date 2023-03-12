@@ -1,12 +1,15 @@
-import sys
+import json
 import threading
+from dataclasses import asdict
 
 from app_file_system.app_file_system import AppFileSystem
 from app_file_system.app_file_system_constants import AppFileSystemConstants
 from app_logger.app_logger import AppLogger
+from app_debug.app_debug import IS_DEBUG_MODE_ENABLED
 from .file_system_result_data import FileSystemResultData
 from .hrsa_data_file_system_constants import HRSADataFileSystemConstants
 from .hrsa_data_workspace_folder_data import HRSADataWorkspaceFolderData
+from .scenario_language_folder_data import ScenarioLanguageFolderData
 
 
 class HRSADataFileSystem(object):
@@ -20,7 +23,7 @@ class HRSADataFileSystem(object):
                 if cls._instance is None:
                     cls._instance = super(HRSADataFileSystem, cls).__new__(cls)
                     cls._instance.__initialize__()
-                    if sys.flags.dev_mode:
+                    if IS_DEBUG_MODE_ENABLED:
                         print("HRSADataFileSystem.__new__()")
         return cls._instance
 
@@ -34,14 +37,14 @@ class HRSADataFileSystem(object):
         #   then, populate the self.hrsa_data_workspace_folder_path_data object with the workspace folder data
         #   this will useful while creating new scenarios to check if the scenario name already exists
         #   Currently, this is not implemented and will be empty
-        self.hrsa_data_workspace_root_folder_path = self.afs.get_user_hrsa_data_workspace_path()
+        self.hrsa_data_workspace_root_folder_path = self.afs.get_hrsa_data_workspace_folder_path()
         self.hrsa_data_workspace_folder_data: HRSADataWorkspaceFolderData = HRSADataWorkspaceFolderData(
             hrsa_data_workspace_folder_root_path=self.hrsa_data_workspace_root_folder_path
         )
 
         # Initialize the workspace folder data from the workspace directory
         self.hrsa_data_workspace_folder_data.initialize_workspace_folder_data()
-        # print("\n" + json.dumps(asdict(self.hrsa_data_workspace_folder_data), indent=4) + "\n")
+        print("\n" + json.dumps(asdict(self.hrsa_data_workspace_folder_data), indent=4) + "\n")
 
     def validate_scenario_name(self, scenario_name: str) -> bool:
         # TODO: Check if scenario_name is valid (no special characters, etc.)
@@ -69,7 +72,7 @@ class HRSADataFileSystem(object):
         if language_code == '':
             language_code = self.hdfsc.DEFAULT_LANGUAGE_CODE
 
-        if not self.set_current_scenario(scenario_name, language_code):
+        if not self.set_current_scenario_and_language(scenario_name, language_code):
             return False
         return True
 
@@ -86,6 +89,9 @@ class HRSADataFileSystem(object):
 
     def get_current_scenario_languages(self) -> list[str] | None:
         return self.hrsa_data_workspace_folder_data.get_current_scenario_languages()
+
+    def get_current_scenario_folder_data_for_current_language_code(self) -> ScenarioLanguageFolderData | None:
+        return self.hrsa_data_workspace_folder_data.get_current_scenario_folder_data_for_current_language_code()
 
     # def create_new_scenario_folder_for_default_language(self, scenario_name: str):
     #     if not self.validate_scenario_name(scenario_name):

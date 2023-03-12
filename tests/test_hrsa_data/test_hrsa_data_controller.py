@@ -21,7 +21,7 @@ class TestHRSADataController(unittest.TestCase):
 
     def test_create_new_scenario_data(self):
         # Workspace Root Path
-        ws_root = self.afs.get_user_hrsa_data_workspace_path()
+        ws_root = self.afs.get_hrsa_data_workspace_folder_path()
         # Scenario Path
         test_scenario_1 = 'test_scenario_1'
         test_scenario_1_path = self.delete_scenario_if_exist(test_scenario_1, ws_root)
@@ -35,7 +35,7 @@ class TestHRSADataController(unittest.TestCase):
 
     def test_create_new_scenario_data_for_language(self):
         # Workspace Root Path
-        ws_root = self.afs.get_user_hrsa_data_workspace_path()
+        ws_root = self.afs.get_hrsa_data_workspace_folder_path()
         # Scenario Path
         test_scenario_1 = 'test_scenario_1'
         self.hdc.delete_scenario_data(test_scenario_1)
