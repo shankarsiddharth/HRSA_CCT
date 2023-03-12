@@ -176,11 +176,11 @@ def _load_character_model_image(image_name):
 
     if image_name in loaded_texture:
         return image_name
-    image_data = dpg.load_image('../../data/avatar/' + image_name + '.png')
+    image_data = dpg.load_image('../../data/images/avatars/' + image_name + '.png')
 
     if image_data is None:
         if "default_avatar" not in loaded_texture:
-            image_data = dpg.load_image('../../data/defaults/error.png')
+            image_data = dpg.load_image('../../assets/images/avatars/error.png')
         else:
             return 'default_avatar'
         image_name = 'default_avatar'
