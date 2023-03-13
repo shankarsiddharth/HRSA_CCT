@@ -17,6 +17,9 @@ config/service_providers/**/*.json
 # Ignore Old Service Account JSON files
 config/**private_key**.json
 
+# Ignore the Service Account JSON files in old config folder
+cctconfig/**/*.json
+
 # Ignore Project Log folder
 [Ll][Oo][Gg][Ss]/**
 [Ll][Oo][Gg]/**

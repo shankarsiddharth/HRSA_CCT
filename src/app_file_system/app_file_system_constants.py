@@ -41,6 +41,22 @@ class AppFileSystemConstants(object):
 
         # Assets Font Folder & File Constants
         self.FONTS_FOLDER_NAME = "fonts"
+        # Assets Images Folder & File Constants
+        self.ASSETS_IMAGES_FOLDER_NAME = "images"
+        self.ASSETS_IMAGES_AVATARS_FOLDER_NAME = "avatars"
+
+        # region Binary Folder & File Constants
+        self.BINARY_INKLECATE_FOLDER_NAME = "inklecate"
+        self.BINARY_INKY_FOLDER_NAME = "Inky"
+
+        self.WINDOWS_BINARY_FOLDER_NAME = "Win64"
+        self.LINUX_BINARY_FOLDER_NAME = "Linux"
+        self.MACOS_BINARY_FOLDER_NAME = "Mac"
+
+        self.DEFAULT_WINDOWS_INKLECATE_EXECUTABLE_FILE_NAME = "inklecate.exe"
+        self.DEFAULT_LINUX_INKLECATE_EXECUTABLE_FILE_NAME = "inklecate"
+        self.DEFAULT_MACOS_INKLECATE_EXECUTABLE_NAME = "inklecate"
+        # endregion Binary Folder & File Constants
 
         # Config CCT Folder & File Constants - CCT stands for "Content Creation Tool"
         self.CONFIG_CCT_FOLDER_NAME = "cct"
@@ -59,7 +75,6 @@ class AppFileSystemConstants(object):
 
         # Data Folder & File Constants
         self.DATA_IMAGES_FOLDER_NAME = "images"
-        self.DATA_IMAGES_COMMON_FOLDER_NAME = "common"
         self.DATA_IMAGES_AVATARS_FOLDER_NAME = "avatars"
 
         # endregion Application Constants
@@ -86,5 +101,9 @@ class AppFileSystemConstants(object):
         self.DEFAULT_BOLD_FONT_NAME = "OpenSans-Bold.ttf"
         self.DEFAULT_BOLD_FONT_SIZE = 16
         # endregion Application Fonts Constants
+
+        # region Application Assets Images File Constants
+        self.DEFAULT_ERROR_AVATAR_IMAGE_FILE_NAME = "error.png"
+        # endregion Application Assets Images File Constants
 
         # endregion Constants

@@ -176,11 +176,15 @@ def _load_character_model_image(image_name):
 
     if image_name in loaded_texture:
         return image_name
-    image_data = dpg.load_image('../../data/images/avatars/' + image_name + '.png')
+    avatars_folder_path = hrsa_cct_globals.hfs.get_default_data_images_avatars_folder_path()
+    avatar_image_path_to_load = os.path.join(avatars_folder_path, image_name + '.png')
+    image_data = dpg.load_image(avatar_image_path_to_load)
 
     if image_data is None:
         if "default_avatar" not in loaded_texture:
-            image_data = dpg.load_image('../../assets/images/avatars/error.png')
+            error_image_file_name = hrsa_cct_globals.hfsc.DEFAULT_ERROR_AVATAR_IMAGE_FILE_NAME
+            error_image_path_to_load = hrsa_cct_globals.hfs.get_default_assets_images_avatars_file_path(error_image_file_name)
+            image_data = dpg.load_image(error_image_path_to_load)
         else:
             return 'default_avatar'
         image_name = 'default_avatar'

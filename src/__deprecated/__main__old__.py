@@ -9,6 +9,7 @@ import audio_generation
 import hrsa_cct_constants
 import hrsa_cct_globals
 import translate
+from __deprecated import hrsa_cct_config
 from character_config import character_config
 from dialogue_ui_config import dialogue_ui_config
 from hrsa_cct_globals import log
@@ -36,6 +37,9 @@ FILE_DIALOG: str = "FILE_DIALOG"
 FILE_DIALOG_FOR_DATA_FOLDER: str = "FILE_DIALOG_FOR_DATA_FOLDER"
 SHOW_FILE_DIALOG_BUTTON_DATA_FOLDER: str = "SHOW_FILE_DIALOG_BUTTON_DATA_FOLDER"
 DATA_DIRECTORY_PATH_TEXT: str = "DATA_DIRECTORY_PATH_TEXT"
+FILE_DIALOG_FOR_GOOGLE_CLOUD_CREDENTIALS: str = "FILE_DIALOG_FOR_GOOGLE_CLOUD_CREDENTIALS"
+SHOW_FILE_DIALOG_BUTTON_GOOGLE_CLOUD_CREDENTIALS: str = "SHOW_FILE_DIALOG_BUTTON_GOOGLE_CLOUD_CREDENTIALS"
+GOOGLE_CLOUD_CREDENTIALS_FILE_PATH_TEXT: str = "GOOGLE_CLOUD_CREDENTIALS_FILE_PATH_TEXT"
 FILE_DIALOG_FOR_SCENARIO_FOLDER_SOURCE: str = "FILE_DIALOG_FOR_SCENARIO_FOLDER_SOURCE"
 SHOW_FILE_DIALOG_BUTTON_SCENARIO_SOURCE_FOLDER: str = "SHOW_FILE_DIALOG_BUTTON_SCENARIO_SOURCE_FOLDER"
 SCENARIO_DIRECTORY_PATH_TEXT_SOURCE: str = "SCENARIO_DIRECTORY_PATH_TEXT_SOURCE"
@@ -119,6 +123,12 @@ def callback_on_data_folder_selected(sender, app_data):
     # TODO : Error Checking of Valid Data Folder
 
 
+def callback_on_google_cloud_credentials_file_selected(sender, app_data):
+    log.debug("Sender: " + str(sender))
+    log.debug("App Data: " + str(app_data))
+    pass
+
+
 # def callback_on_select_data_folder_button_clicked():
 #     dpg.configure_item(FILE_DIALOG_FOR_DATA_FOLDER, show=True, modal=True)
 #
@@ -178,7 +188,8 @@ def callback_on_copy_scenario_button_clicked():
 
 
 def save_init():
-    dpg.save_init_file("dpg_old.ini")
+    print("Saving Init File", hrsa_cct_config.dpg_ini_file_path)
+    dpg.save_init_file(hrsa_cct_config.dpg_ini_file_path)
 
 
 def callback_on_connect_to_cloud_checkbox_clicked(sender, app_data, user_data):
@@ -193,17 +204,24 @@ def main() -> None:
     # dpg.bind_theme(dark_theme_id)
 
     if not is_debug:
-        dpg.configure_app(manual_callback_management=False, docking=True, docking_space=True, init_file="dpg_old.ini")
+        dpg.configure_app(manual_callback_management=False, docking=True, docking_space=True, load_init_file=hrsa_cct_config.dpg_ini_file_path)
     else:
-        dpg.configure_app(manual_callback_management=True, docking=True, docking_space=True, init_file="dpg_old.ini")
+        dpg.configure_app(manual_callback_management=True, docking=True, docking_space=True, load_init_file=hrsa_cct_config.dpg_ini_file_path)
 
     dpg.create_viewport(title='HRSA Content Creation Tool', width=VIEWPORT_WIDTH, height=VIEWPORT_HEIGHT)
 
     with dpg.window(label="HRSA CCT", tag=hrsa_cct_constants.HRSA_CCT_TOOL, width=VIEWPORT_WIDTH, height=VIEWPORT_HEIGHT, no_title_bar=True, no_close=True):
         if is_debug:
-            dpg.add_button(label="Save Init", callback=lambda: save_init)
+            dpg.add_button(label="Save Init", callback=save_init)
             dpg.add_checkbox(label="Connect to Cloud", tag="connect_to_cloud", default_value=hrsa_cct_globals.connect_to_cloud,
                              callback=callback_on_connect_to_cloud_checkbox_clicked)
+        with dpg.collapsing_header(label="Google Cloud Credentials File", default_open=True):
+            dpg.add_file_dialog(tag=FILE_DIALOG_FOR_GOOGLE_CLOUD_CREDENTIALS, height=300, width=450, show=False, callback=callback_on_google_cloud_credentials_file_selected)
+            dpg.add_button(tag=SHOW_FILE_DIALOG_BUTTON_GOOGLE_CLOUD_CREDENTIALS, label="Select Google Cloud Credentials File",
+                           callback=lambda s, a: callback_on_show_file_dialog_clicked(item_tag=FILE_DIALOG_FOR_GOOGLE_CLOUD_CREDENTIALS))
+            dpg.add_text(tag=GOOGLE_CLOUD_CREDENTIALS_FILE_PATH_TEXT)
+            dpg.add_separator()
+
         with dpg.collapsing_header(label="Choose a location to create the Data Folder", default_open=True):
             dpg.add_file_dialog(tag=FILE_DIALOG_FOR_DATA_FOLDER, height=300, width=450, directory_selector=True, show=False, callback=callback_on_data_folder_selected)
             dpg.add_button(tag=SHOW_FILE_DIALOG_BUTTON_DATA_FOLDER, label="Select Data Folder",

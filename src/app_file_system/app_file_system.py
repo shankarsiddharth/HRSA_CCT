@@ -65,6 +65,21 @@ class AppFileSystem(object):
         default_assets_font_folder_path = os.path.join(asset_folder_path, self.afsc.FONTS_FOLDER_NAME)
         return default_assets_font_folder_path
 
+    def get_default_assets_images_folder_path(self):
+        asset_folder_path = self.get_default_assets_folder_path()
+        default_assets_image_folder_path = os.path.join(asset_folder_path, self.afsc.ASSETS_IMAGES_FOLDER_NAME)
+        return default_assets_image_folder_path
+
+    def get_default_assets_images_avatars_folder_path(self):
+        assets_images_folder_path = self.get_default_assets_images_folder_path()
+        default_assets_image_avatar_folder_path = os.path.join(assets_images_folder_path, self.afsc.ASSETS_IMAGES_AVATARS_FOLDER_NAME)
+        return default_assets_image_avatar_folder_path
+
+    def get_default_assets_images_avatars_file_path(self, image_file_name) -> str:
+        assets_images_avatars_folder_path = self.get_default_assets_images_avatars_folder_path()
+        image_path = os.path.join(assets_images_avatars_folder_path, image_file_name)
+        return image_path
+
     def get_default_config_cct_folder_path(self):
         config_folder_path = self.get_default_config_folder_path()
         default_config_cct_folder_path = os.path.join(config_folder_path, self.afsc.CONFIG_CCT_FOLDER_NAME)
@@ -104,11 +119,6 @@ class AppFileSystem(object):
         data_folder_path = self.get_default_data_folder_path()
         default_data_images_folder_path = os.path.join(data_folder_path, self.afsc.DATA_IMAGES_FOLDER_NAME)
         return default_data_images_folder_path
-
-    def get_default_data_images_common_folder_path(self):
-        data_images_folder_path = self.get_default_data_images_folder_path()
-        default_data_images_common_folder_path = os.path.join(data_images_folder_path, self.afsc.DATA_IMAGES_COMMON_FOLDER_NAME)
-        return default_data_images_common_folder_path
 
     def get_default_data_images_avatars_folder_path(self):
         data_images_folder_path = self.get_default_data_images_folder_path()

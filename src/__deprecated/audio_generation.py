@@ -3,6 +3,7 @@ import json
 import os
 import re
 import subprocess
+import sys
 
 import dearpygui.dearpygui as dpg
 from google.cloud import texttospeech
@@ -10,7 +11,7 @@ from google.oauth2 import service_account
 
 import hrsa_cct_constants
 import hrsa_cct_globals
-from hrsa_cct_globals import log
+from hrsa_cct_globals import log, hfsc, hfs
 
 # Google Cloud Configuration Data
 # Get Credentials from JSON file
@@ -256,9 +257,10 @@ def compile_ink_files():
         splitext_data = os.path.splitext(ink_file_path)
         json_file_path = splitext_data[0] + ".json"
         # TODO: Get Proper Path of this executable when packaging this program as .exe
-        inklecate_windows = "../../bin/inklecate/Win64/inklecate.exe"
-        cmd_string = inklecate_windows + " -o" + " " + json_file_path + " " + ink_file_path
-        completed_process_result = subprocess.run([inklecate_windows, "-o", json_file_path, ink_file_path],
+        bin_folder = hfs.get_default_binary_folder_path()
+        inklecate_windows_path = os.path.join(bin_folder, hfsc.BINARY_INKLECATE_FOLDER_NAME, hfsc.WINDOWS_BINARY_FOLDER_NAME, hfsc.DEFAULT_WINDOWS_INKLECATE_EXECUTABLE_FILE_NAME)
+        cmd_string = inklecate_windows_path + " -o" + " " + json_file_path + " " + ink_file_path
+        completed_process_result = subprocess.run([inklecate_windows_path, "-o", json_file_path, ink_file_path],
                                                   capture_output=True, text=True)
         log.debug("cmd_string: " + cmd_string)
         log.debug("stdout: " + completed_process_result.stdout)
@@ -457,3 +459,7 @@ def generate_audio_gc_tts(dialogue_text, audio_file_path, language_code, in_gend
         output_audio_file.write(response.audio_content)
         log_text = "Audio File Written : " + audio_file_path
         log.info(log_text)
+
+
+if sys.flags.dev_mode:
+    print("audio_generation.__init__()")

@@ -4,6 +4,7 @@ import os
 import pathlib
 import re
 import shutil
+import sys
 
 import dearpygui.dearpygui as dpg
 from google.cloud import translate
@@ -227,3 +228,7 @@ def callback_on_translate_text_clicked():
             file.write(data)
     log_text = "Translation Complete! total_characters_translated : " + str(total_characters_translated)
     log.info(log_text)
+
+
+if sys.flags.dev_mode:
+    print("translate.__init__()")

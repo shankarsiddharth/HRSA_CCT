@@ -106,6 +106,7 @@ class GoogleCloudTTS(object):
 
         input_text = audio_dialogue_data.text
 
+        # TODO: Potentially add type enum to check for character types instead of string checks
         # Get the voice config data for the character type
         character_type = audio_dialogue_data.character_type.lower()
         character_voice_config: CharacterVoiceConfig = scenario_voice_config.player

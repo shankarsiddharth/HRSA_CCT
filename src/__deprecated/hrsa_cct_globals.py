@@ -1,6 +1,14 @@
+import sys
+
+from app_file_system.app_file_system import AppFileSystem
+from app_file_system.app_file_system_constants import AppFileSystemConstants
 from app_logger.app_logger import AppLogger
 
 log = AppLogger()
+# HRSA File System Constants
+hfsc = AppFileSystemConstants()
+# HRSA File System
+hfs = AppFileSystem()
 
 # Global Variables
 default_language_code = "en-US"
@@ -40,3 +48,6 @@ option_display_text_regular_expression = r"\s*[A-Za-z0-9]+\s*[\.](.*)"
 app_data = dict()
 
 connect_to_cloud = False
+
+if sys.flags.dev_mode:
+    print("hrsa_cc_globals.__init__()")
