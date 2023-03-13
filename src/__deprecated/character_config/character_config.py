@@ -5,6 +5,7 @@ import dearpygui.dearpygui as dpg
 
 from __deprecated import hrsa_cct_constants, hrsa_cct_globals
 from __deprecated.configuration import hrsa_config, character_model_data
+from hrsa_data.scenario_data.scenario_config.scenario_config import ScenarioConfig
 
 model_data_list = []
 
@@ -29,7 +30,7 @@ trainer_model_detail_window = None
 
 loaded_texture = []
 
-app_config = None
+scenario_config: ScenarioConfig = None
 
 selected_patient_model_info_name = None
 selected_patient_model_info_gender = None
@@ -128,20 +129,20 @@ def _update_model_config(sender, app_data, user_data):
     detail_texture = _load_character_model_image(detail_texture)
 
     global patient_model_detail_window, student_model_detail_window, trainer_model_detail_window
-    global app_config
+    global scenario_config
     if user_data == 'Patient':
-        if app_config is not None:
-            app_config.patient_config.character_model_config.uid = uid
+        if scenario_config is not None:
+            scenario_config.patient_config.character_model_config.uid = uid
         dpg.delete_item(patient_model_detail_window, children_only=True)
         dpg.add_image(detail_texture, tag='detail_patient_' + uid, parent=patient_model_detail_window)
     elif user_data == 'MedicalStudent':
-        if app_config is not None:
-            app_config.medicalstudent_config.character_model_config.uid = uid
+        if scenario_config is not None:
+            scenario_config.medicalstudent_config.character_model_config.uid = uid
         dpg.delete_item(student_model_detail_window, children_only=True)
         dpg.add_image(detail_texture, tag='detail_student_' + uid, parent=student_model_detail_window)
     elif user_data == 'Trainer':
-        if app_config is not None:
-            app_config.trainer_config.character_model_config.uid = uid
+        if scenario_config is not None:
+            scenario_config.trainer_config.character_model_config.uid = uid
         dpg.delete_item(trainer_model_detail_window, children_only=True)
         dpg.add_image(detail_texture, tag='detail_trainer_' + uid, parent=trainer_model_detail_window)
 
@@ -235,29 +236,29 @@ def _callback_update_filter(sender, app_data, user_data):
 
 
 def _load_character_config_for_current_scenario(sender, app_data, user_data):
-    global app_config, scenario_config_json_file_path
+    global scenario_config, scenario_config_json_file_path
     scenario_config_json_file_path = app_data["file_path_name"]
     # file_path = "character_config/test_app_config.json"
-    global app_config
+    global scenario_config
     with open(scenario_config_json_file_path, "r", encoding="UTF-8") as app_config_file:
         row_data = app_config_file.read()
         row_config = json.loads(row_data)
-        app_config = hrsa_config.HRSAConfig(**row_config)
+        scenario_config = hrsa_config.HRSAConfig(**row_config)
 
-    _update_model_config(app_config.patient_config.character_model_config.uid, None, 'Patient')
-    _update_model_config(app_config.trainer_config.character_model_config.uid, None, 'Trainer')
-    _update_model_config(app_config.medicalstudent_config.character_model_config.uid, None, 'MedicalStudent')
+    _update_model_config(scenario_config.patient_config.character_model_config.uid, None, 'Patient')
+    _update_model_config(scenario_config.trainer_config.character_model_config.uid, None, 'Trainer')
+    _update_model_config(scenario_config.medicalstudent_config.character_model_config.uid, None, 'MedicalStudent')
 
 
 def _update_character_config_for_current_scenario():
     global scenario_config_json_file_path
     # file_path = "character_config/test_app_config.json"
-    global app_config
-    if app_config is None:
+    global scenario_config
+    if scenario_config is None:
         print("Character config for current scenario is none!")
         return
 
-    app_config_json = json.dumps(app_config.toJson(), indent=4)
+    app_config_json = json.dumps(scenario_config.toJson(), indent=4)
     print(app_config_json)
     with open(scenario_config_json_file_path, "w", encoding="UTF-8") as outfile:
         outfile.write(app_config_json)
