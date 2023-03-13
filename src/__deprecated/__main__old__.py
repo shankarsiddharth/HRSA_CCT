@@ -10,6 +10,7 @@ import hrsa_cct_constants
 import hrsa_cct_globals
 import translate
 from __deprecated import hrsa_cct_config, show_ink_files
+from __deprecated.cct_scenario_config import cct_scenario_config
 from __deprecated.transfer_to_device import transfer_to_device
 from character_config import character_config
 from dialogue_ui_config import dialogue_ui_config
@@ -186,6 +187,7 @@ def callback_on_copy_scenario_button_clicked():
     patient_info_ui.set_scenario_path(scenario_path_destination)
     dialogue_ui_config.set_scenario_path(scenario_path_destination)
     character_config.set_scenario_path(scenario_path_destination)
+    cct_scenario_config.set_scenario_path(scenario_path_destination)
 
 
 def save_init():
@@ -255,10 +257,11 @@ def main() -> None:
         patient_info_ui.init_ui()
 
         # Dialogue UI Config - Initialize
-        dialogue_ui_config.init_ui()
+        # dialogue_ui_config.init_ui()
 
         # Character Config - Initialize
-        character_config.init_ui()
+        # character_config.init_ui()
+        cct_scenario_config.init_ui()
 
         # Show Ink Files
         show_ink_files.init_ui()
