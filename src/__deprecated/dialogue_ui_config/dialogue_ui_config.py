@@ -5,7 +5,6 @@ import dearpygui.dearpygui as dpg
 
 from __deprecated import hrsa_cct_constants, hrsa_cct_globals
 from __deprecated.configuration import hrsa_config
-from hrsa_data.scenario_data.scenario_config.scenario_config import ScenarioConfig
 
 # GUI Element Tags
 
@@ -18,7 +17,7 @@ DUC_OPEN_FILE_DIALOG: str = 'DUC_OPEN_FILE_DIALOG'
 scenario_config_json_file_path = ""
 duc_scenario_path = ""
 
-scenario_config: ScenarioConfig = ScenarioConfig()
+duc_color_setting: hrsa_config.HRSAConfig = None
 duc_unlimited_question_timer_mark = None
 duc_question_timer_input_text = None
 
@@ -60,8 +59,8 @@ def _callback_update_player_subtitle_text_color(sender, app_data, user_data):
     rgb_color = tuple(rgb_color)
     hex_color = '#%02x%02x%02x' % rgb_color
     # print(rgb_color, hex_color)
-    global scenario_config
-    scenario_config.player_config.ui_config.subtitle_config.text_color = hex_color
+    global duc_color_setting
+    duc_color_setting.player_config.ui_config.subtitle_config.text_color = hex_color
 
 
 def _callback_update_medicalstudent_subtitle_text_color(sender, app_data, user_data):
@@ -69,8 +68,8 @@ def _callback_update_medicalstudent_subtitle_text_color(sender, app_data, user_d
     rgb_color = tuple(rgb_color)
     hex_color = '#%02x%02x%02x' % rgb_color
     # print(rgb_color, hex_color)
-    global scenario_config
-    scenario_config.medicalstudent_config.ui_config.subtitle_config.text_color = hex_color
+    global duc_color_setting
+    duc_color_setting.medicalstudent_config.ui_config.subtitle_config.text_color = hex_color
 
 
 def _callback_update_patient_subtitle_text_color(sender, app_data, user_data):
@@ -78,8 +77,8 @@ def _callback_update_patient_subtitle_text_color(sender, app_data, user_data):
     rgb_color = tuple(rgb_color)
     hex_color = '#%02x%02x%02x' % rgb_color
     # print(rgb_color, hex_color)
-    global scenario_config
-    scenario_config.patient_config.ui_config.subtitle_config.text_color = hex_color
+    global duc_color_setting
+    duc_color_setting.patient_config.ui_config.subtitle_config.text_color = hex_color
 
 
 def _callback_update_trainer_subtitle_text_color(sender, app_data, user_data):
@@ -87,8 +86,8 @@ def _callback_update_trainer_subtitle_text_color(sender, app_data, user_data):
     rgb_color = tuple(rgb_color)
     hex_color = '#%02x%02x%02x' % rgb_color
     # print(rgb_color, hex_color)
-    global scenario_config
-    scenario_config.trainer_config.ui_config.subtitle_config.text_color = hex_color
+    global duc_color_setting
+    duc_color_setting.trainer_config.ui_config.subtitle_config.text_color = hex_color
 
 
 def _load_default_color_set(sender, app_data, user_data):
@@ -97,8 +96,8 @@ def _load_default_color_set(sender, app_data, user_data):
 
 def _save_color_set(sender, app_data, user_data):
     global scenario_config_json_file_path
-    global scenario_config
-    duc_color_setting_json = json.dumps(scenario_config.toJson(), indent=4)
+    global duc_color_setting
+    duc_color_setting_json = json.dumps(duc_color_setting.toJson(), indent=4)
     with open(scenario_config_json_file_path, "w", encoding="UTF-8") as outfile:
         outfile.write(duc_color_setting_json)
 
@@ -122,31 +121,31 @@ def _init_dialog_color(color_setting: hrsa_config.HRSAConfig):
 
 
 def _set_question_timer(sender, app_data, user_data):
-    global scenario_config
-    if scenario_config is None:
+    global duc_color_setting
+    if duc_color_setting is None:
         print('Test process, should load the configuration file firstly.')
 
     global duc_unlimited_question_timer_mark, duc_question_timer_input_text
     if sender == duc_unlimited_question_timer_mark:
         if app_data:
             dpg.hide_item(duc_question_timer_input_text)
-            scenario_config.conversation_config.question_timer_in_seconds = 0
+            duc_color_setting.conversation_config.question_timer_in_seconds = 0
         else:
             dpg.show_item(duc_question_timer_input_text)
     else:
-        scenario_config.conversation_config.question_timer_in_seconds = dpg.get_value(duc_question_timer_input_text)
+        duc_color_setting.conversation_config.question_timer_in_seconds = dpg.get_value(duc_question_timer_input_text)
 
 
 def _callback_load_dialog_config_file(sender, app_data, user_data):
-    global scenario_config, scenario_config_json_file_path
+    global duc_color_setting, scenario_config_json_file_path
     scenario_config_json_file_path = app_data["file_path_name"]
     dpg.configure_item(DUC_SCENARIO_CONFIG_JSON_PATH_TEXT, default_value=str(scenario_config_json_file_path))
     with open(scenario_config_json_file_path, "r", encoding="UTF-8") as ui_config_file:
         row_data = ui_config_file.read()
         row_config = json.loads(row_data)
-        scenario_config = hrsa_config.HRSAConfig(**row_config)
-        _init_question_timer(scenario_config.conversation_config)
-        _init_dialog_color(scenario_config)
+        duc_color_setting = hrsa_config.HRSAConfig(**row_config)
+        _init_question_timer(duc_color_setting.conversation_config)
+        _init_dialog_color(duc_color_setting)
 
 
 def _select_scenario_config_file(sender, app_data, user_data):
