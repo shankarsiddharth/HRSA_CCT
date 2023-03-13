@@ -10,6 +10,7 @@ import hrsa_cct_constants
 import hrsa_cct_globals
 import translate
 from __deprecated import hrsa_cct_config
+from __deprecated.transfer_to_device import transfer_to_device
 from character_config import character_config
 from dialogue_ui_config import dialogue_ui_config
 from hrsa_cct_globals import log
@@ -258,6 +259,8 @@ def main() -> None:
 
         # Character Config - Initialize
         character_config.init_ui()
+
+        transfer_to_device.init_ui()
 
         with dpg.collapsing_header(label="Choose the Scenario Folder for Audio Generation", default_open=False):
             dpg.add_file_dialog(tag=audio_generation.FILE_DIALOG_FOR_SCENARIO_FOLDER, height=300, width=450, directory_selector=True, show=False,
