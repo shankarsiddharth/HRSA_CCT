@@ -2,7 +2,6 @@ import json
 import os
 
 import dearpygui.dearpygui as dpg
-from adbutils import adb
 
 from __deprecated import hrsa_cct_constants, hrsa_cct_globals
 from __deprecated.configuration import hrsa_config, character_model_data
@@ -43,8 +42,6 @@ selected_student_model_info_ethnicity = None
 selected_trainer_model_info_name = None
 selected_trainer_model_info_gender = None
 selected_trainer_model_info_ethnicity = None
-
-target_devices = []
 
 SCU_SCENARIO_CONFIG_JSON_PATH_TEXT: str = 'SCU_SCENARIO_CONFIG_JSON_PATH_TEXT'
 SCU_OPEN_FILE_DIALOG: str = 'SCU_OPEN_FILE_DIALOG'
@@ -287,38 +284,6 @@ def _select_target_device(sender, app_data, user_data):
         target_devices.append(user_data)
 
 
-def _toggle_media_transfer(sender, app_data, user_data):
-    global target_devices
-    if len(target_devices) <= 0:
-        print("No target devices selected!")
-    for info in target_devices:
-        try:
-            device = adb.device(serial=info.serial)
-            if user_data:
-                device.shell("svc usb setFunctions mtp")
-                device = adb.device(serial=info.serial)  # need reconnect
-                device.shell("svc usb setScreenUnlockedFunctions mtp")
-            else:
-                device.shell("svc usb setScreenUnlockedFunctions")
-                device = adb.device(serial=info.serial)  # need reconnect
-                device.shell("svc usb setFunctions")
-        except RuntimeError as e:
-            print(e)
-
-
-def _install_package_callback(messages):
-    print('Install package message ', messages)
-
-
-def _install_latest_package(sender, app_data, user_data):
-    global target_devices
-    if len(target_devices) <= 0:
-        print("No target devices selected!")
-    for info in target_devices:
-        device = adb.device(serial=info.serial)
-        device.install('/home/uoubyy/Downloads/Netease.apk', silent=True, callback=_install_package_callback)
-
-
 def _select_scenario_config_file(sender, app_data, user_data):
     dpg.configure_item(SCU_OPEN_FILE_DIALOG, show=True)
 
@@ -414,17 +379,5 @@ def init_ui():
         _callback_update_filter(None, None, 'Patient')
         _callback_update_filter(None, None, 'MedicalStudent')
         _callback_update_filter(None, None, 'Trainer')
-
-        with dpg.collapsing_header(label="Transfer to Device", default_open=True, parent=hrsa_cct_constants.HRSA_CCT_TOOL):
-            dpg.add_text('Devices', indent=20)
-            connected_devices = adb.device_list()
-            for device in connected_devices:
-                print(device.serial, device.prop.model)
-                dpg.add_checkbox(label=device.serial, source="bool_value", callback=_select_target_device, user_data=device.serial)
-            if len(connected_devices) == 0:
-                dpg.add_text('No Device Connected!', indent=40)
-
-            dpg.add_button(label='Install Latest Package', callback=_install_latest_package, user_data=True)
-            dpg.add_button(label='Enable Media Transfer', callback=_toggle_media_transfer, user_data=True)
 
         dpg.add_button(label="Save Setting", show=True, callback=_update_character_config_for_current_scenario)
