@@ -9,7 +9,7 @@ import audio_generation
 import hrsa_cct_constants
 import hrsa_cct_globals
 import translate
-from __deprecated import hrsa_cct_config
+from __deprecated import hrsa_cct_config, show_ink_files
 from __deprecated.transfer_to_device import transfer_to_device
 from character_config import character_config
 from dialogue_ui_config import dialogue_ui_config
@@ -260,7 +260,8 @@ def main() -> None:
         # Character Config - Initialize
         character_config.init_ui()
 
-        transfer_to_device.init_ui()
+        # Show Ink Files
+        show_ink_files.init_ui()
 
         with dpg.collapsing_header(label="Choose the Scenario Folder for Audio Generation", default_open=False):
             dpg.add_file_dialog(tag=audio_generation.FILE_DIALOG_FOR_SCENARIO_FOLDER, height=300, width=450, directory_selector=True, show=False,
@@ -301,6 +302,9 @@ def main() -> None:
                 dpg.add_text(tag=translate.NEW_DATA_DIRECTORY_PATH_TEXT)
             dpg.add_button(tag=translate.TRANSLATE_TEXT_BUTTON, label="Translate Data", show=False, callback=translate.callback_on_translate_text_clicked)
             dpg.add_separator()
+
+        # Transfer to Device UI
+        transfer_to_device.init_ui()
 
     log.on_init_and_render_ui()
 

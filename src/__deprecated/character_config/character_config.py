@@ -310,7 +310,7 @@ def init_ui():
     #     dpg.add_mouse_move_handler(callback=_log)
     #     dpg.add_mouse_click_handler(callback=_mouse_click_callback)
 
-    with dpg.collapsing_header(label="Character Config", default_open=True, parent=hrsa_cct_constants.HRSA_CCT_TOOL):
+    with dpg.collapsing_header(label="Character Config", default_open=False, parent=hrsa_cct_constants.HRSA_CCT_TOOL):
         # TODO: UI Creation
         dpg.add_text(tag=SCU_SCENARIO_CONFIG_JSON_PATH_TEXT)
         with dpg.file_dialog(height=300, width=600, directory_selector=False, show=False,

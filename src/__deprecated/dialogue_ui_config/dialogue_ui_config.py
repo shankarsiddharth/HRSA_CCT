@@ -166,7 +166,7 @@ def _select_scenario_config_file(sender, app_data, user_data):
 
 
 def init_ui():
-    with dpg.collapsing_header(label="Dialogue UI Config", default_open=True, parent=hrsa_cct_constants.HRSA_CCT_TOOL):
+    with dpg.collapsing_header(label="Dialogue UI Config", default_open=False, parent=hrsa_cct_constants.HRSA_CCT_TOOL):
         # TODO: UI Creation
         dpg.add_text(tag=DUC_SCENARIO_CONFIG_JSON_PATH_TEXT)
         # file selection dialog start

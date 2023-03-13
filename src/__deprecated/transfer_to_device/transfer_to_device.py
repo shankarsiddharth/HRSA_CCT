@@ -51,7 +51,7 @@ def _callback_load_apk_file(sender, app_data, user_data):
 
 
 def init_ui():
-    with dpg.collapsing_header(label="Transfer to Device", default_open=True, parent=hrsa_cct_constants.HRSA_CCT_TOOL):
+    with dpg.collapsing_header(label="Transfer to Device", default_open=False, parent=hrsa_cct_constants.HRSA_CCT_TOOL):
         dpg.add_text('Devices', indent=20)
         connected_devices = adb.device_list()
         for device in connected_devices:
@@ -68,3 +68,5 @@ def init_ui():
                              callback=_callback_load_apk_file, tag=TOD_SELECT_APK_FILE_DIALOG, modal=True):
             dpg.add_file_extension(".apk", color=(255, 255, 0, 255))
         # file selection dialog end
+
+        dpg.add_separator()
