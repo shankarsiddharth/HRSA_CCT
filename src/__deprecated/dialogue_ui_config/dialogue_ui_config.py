@@ -3,7 +3,7 @@ import os
 
 import dearpygui.dearpygui as dpg
 
-from __deprecated import hrsa_cct_constants, hrsa_cct_globals
+from __deprecated import hrsa_cct_constants, hrsa_cct_globals, hrsa_cct_config
 from __deprecated.configuration import hrsa_config
 from hrsa_data.scenario_data.scenario_config.scenario_config import ScenarioConfig
 
@@ -153,7 +153,6 @@ def _select_scenario_config_file(sender, app_data, user_data):
     dpg.configure_item(DUC_OPEN_FILE_DIALOG, show=True)
 
 
-
 #
 # def _callback_load_scenario_config_file(sender, app_data, user_data):
 #     global duc_color_setting, scenario_config_json_file_path
@@ -166,6 +165,9 @@ def _select_scenario_config_file(sender, app_data, user_data):
 #     _init_dialog_color(duc_color_setting)
 #     _init_question_timer(duc_color_setting.conversation_config)
 
+def file_dialog_cancel_callback(sender, app_data, user_data):
+    pass
+
 
 def init_ui():
     with dpg.collapsing_header(label="Dialogue UI Config", default_open=False, parent=hrsa_cct_constants.HRSA_CCT_TOOL):
@@ -173,7 +175,9 @@ def init_ui():
         dpg.add_text(tag=DUC_SCENARIO_CONFIG_JSON_PATH_TEXT)
         # file selection dialog start
         with dpg.file_dialog(height=300, width=600, directory_selector=False, show=False,
-                             callback=_callback_load_dialog_config_file, tag=DUC_OPEN_FILE_DIALOG, modal=True):
+                             callback=_callback_load_dialog_config_file, tag=DUC_OPEN_FILE_DIALOG, modal=True,
+                             default_path=hrsa_cct_config.get_file_dialog_default_path(),
+                             cancel_callback=file_dialog_cancel_callback):
             dpg.add_file_extension(".json", color=(255, 255, 0, 255))
         # file selection dialog end
 

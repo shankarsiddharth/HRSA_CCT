@@ -10,18 +10,27 @@ import dearpygui.dearpygui as dpg
 from google.cloud import translate
 from google.oauth2 import service_account
 
+import hrsa_cct_config
 import hrsa_cct_constants
 import hrsa_cct_globals
 from hrsa_cct_globals import log
 
-credentials = service_account.Credentials.from_service_account_file(hrsa_cct_constants.GOOGLE_CLOUD_SERVICE_ACCOUNT_FILE_PATH)
-clientTranslate = translate.TranslationServiceClient(credentials=credentials)
+project_id = ''
+clientTranslate = None
 
-gc_project_id = ''
-with open(hrsa_cct_constants.GOOGLE_CLOUD_SERVICE_ACCOUNT_FILE_PATH, 'r', encoding='utf-8') as f:
-    data = json.load(f)
-    if gc_project_id == '':
-        project_id = data['project_id']
+
+def initialize_translate():
+    global project_id, clientTranslate
+    if hrsa_cct_config.is_google_cloud_credentials_file_found():
+        credentials = service_account.Credentials.from_service_account_file(hrsa_cct_config.get_google_cloud_credentials_file_path())
+        clientTranslate = translate.TranslationServiceClient(credentials=credentials)
+
+        gc_project_id = ''
+        with open(hrsa_cct_config.get_google_cloud_credentials_file_path(), 'r', encoding='utf-8') as f:
+            data = json.load(f)
+            if gc_project_id == '':
+                project_id = data['project_id']
+
 
 new_data_path = ""
 source_scenario_language_code_path = ""
@@ -102,6 +111,10 @@ def translate_text(text="I want to translate this text.", language="es"):
 
 
 def callback_on_translate_text_clicked():
+    if project_id == '':
+        log.error("Google Cloud Project ID is not set.")
+        return
+
     global total_characters_translated
     total_characters_translated = 0
     global total_characters_to_translate

@@ -6,9 +6,13 @@ from app_logger.app_logger import AppLogger
 
 log = AppLogger()
 # HRSA File System Constants
-hfsc = AppFileSystemConstants()
+hfsc: AppFileSystemConstants = AppFileSystemConstants()
 # HRSA File System
-hfs = AppFileSystem()
+hfs: AppFileSystem = AppFileSystem()
+# # HRSA Data File System Constants
+# hdfsc: HRSADataFileSystemConstants = HRSADataFileSystemConstants()
+# # HRSA Data File System
+# hdfs: HRSADataFileSystem = HRSADataFileSystem()
 
 # Global Variables
 default_language_code = "en-US"

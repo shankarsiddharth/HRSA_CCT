@@ -22,7 +22,7 @@ PATIENT_INFORMATION_JSON_FILE_NAME = "patient_information.json"
 SCENARIO_CONFIG_JSON_FILE_NAME = "scenario_config.json"
 MAX_DIALOGUE_TEXT_CHARACTER_COUNT = 275  # 300 / 250
 
-GOOGLE_CLOUD_SERVICE_ACCOUNT_FILE_PATH = hrsa_cct_config.sa_pk_file_path  # Path to Google Cloud Service Account JSON file
+# GOOGLE_CLOUD_SERVICE_ACCOUNT_FILE_PATH = hrsa_cct_config.GOOGLE_CLOUD_CREDENTIALS_FILE_PATH  # Path to Google Cloud Service Account JSON file
 
 if sys.flags.dev_mode:
     print("hrsa_cc_constants.__init__()")

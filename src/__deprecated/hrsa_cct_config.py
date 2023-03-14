@@ -2,19 +2,21 @@ import configparser
 import os
 import pathlib
 
+from __deprecated import hrsa_cct_globals
 from app_file_system.app_file_system import AppFileSystem
 from app_file_system.app_file_system_constants import AppFileSystemConstants
 from app_logger.app_logger import AppLogger
-
-sa_pk_file_path = ''
-user_hrsa_data_folder_path = ''
-is_sa_pk_file_found = False
-is_user_hrsa_data_folder_found = False
 
 cct_config = configparser.ConfigParser()
 cct_logger = AppLogger()
 cct_file_system = AppFileSystem()
 cct_file_system_constants = AppFileSystemConstants()
+
+__FILE_DIALOG_DEFAULT_PATH__ = ''
+__GOOGLE_CLOUD_CREDENTIALS_FILE_PATH__ = ''
+__USER_HRSA_DATA_FOLDER_PATH__ = ''
+__is_sa_pk_file_found__ = False
+__is_user_hrsa_data_folder_found__ = False
 
 root_folder_path = cct_file_system.get_root_folder_path()
 default_hrsa_data_folder_path = os.path.join(root_folder_path, cct_file_system_constants.HRSA_DATA_WORKSPACE_FOLDER_NAME)
@@ -25,25 +27,65 @@ dpg_ini_file_path = os.path.join(cct_config_folder_path, 'dpg.config.ini')
 gc_ini_file = pathlib.Path(cct_ini_file_path)
 
 
+def get_file_dialog_default_path():
+    return __FILE_DIALOG_DEFAULT_PATH__
+
+
+def update_file_dialog_default_path(file_dialog_default_path: str):
+    global __FILE_DIALOG_DEFAULT_PATH__
+    __FILE_DIALOG_DEFAULT_PATH__ = file_dialog_default_path
+
+
+def get_google_cloud_credentials_file_path():
+    return __GOOGLE_CLOUD_CREDENTIALS_FILE_PATH__
+
+
+def get_user_hrsa_data_folder_path():
+    return __USER_HRSA_DATA_FOLDER_PATH__
+
+
+def is_google_cloud_credentials_file_found():
+    return __is_sa_pk_file_found__
+
+
+def is_user_hrsa_data_folder_found():
+    return __is_user_hrsa_data_folder_found__
+
+
 def read_config_file():
-    global sa_pk_file_path, user_hrsa_data_folder_path, is_sa_pk_file_found, is_user_hrsa_data_folder_found
+    global __GOOGLE_CLOUD_CREDENTIALS_FILE_PATH__, __USER_HRSA_DATA_FOLDER_PATH__, __FILE_DIALOG_DEFAULT_PATH__
+    global __is_sa_pk_file_found__, __is_user_hrsa_data_folder_found__
     if gc_ini_file.exists():
         cct_config.read(cct_ini_file_path)
-        # Path to Service Account Key JSON File
-        sa_pk_file_path = cct_config['CONFIG']['SK_PK_JSON_FILE_PATH']
-        # Path to User HRSA Data Folder
-        user_hrsa_data_folder_path = cct_config['CONFIG']['USER_HRSA_DATA_FOLDER_PATH']
+        if cct_config.has_section('CONFIG'):
+            if cct_config.has_option('CONFIG', 'GOOGLE_CLOUD_CREDENTIALS_FILE_PATH'):
+                # Path to Service Account Key JSON File
+                __GOOGLE_CLOUD_CREDENTIALS_FILE_PATH__ = cct_config['CONFIG']['GOOGLE_CLOUD_CREDENTIALS_FILE_PATH']
+            if cct_config.has_option('CONFIG', 'USER_HRSA_DATA_FOLDER_PATH'):
+                # Path to User HRSA Data Folder
+                __USER_HRSA_DATA_FOLDER_PATH__ = cct_config['CONFIG']['USER_HRSA_DATA_FOLDER_PATH']
+                __FILE_DIALOG_DEFAULT_PATH__ = __USER_HRSA_DATA_FOLDER_PATH__
     else:
         # Path to Service Account Key JSON File
-        sa_pk_file_path = os.path.join(cct_config_folder_path, cct_file_system_constants.DEFAULT_CONFIG_SERVICE_PROVIDERS_GOOGLE_CLOUD_SERVICE_ACCOUNT_FILE_NAME)
+        __GOOGLE_CLOUD_CREDENTIALS_FILE_PATH__ = os.path.join(cct_config_folder_path,
+                                                              cct_file_system_constants.DEFAULT_CONFIG_SERVICE_PROVIDERS_GOOGLE_CLOUD_SERVICE_ACCOUNT_FILE_NAME)
 
-    sa_pk_file = pathlib.Path(sa_pk_file_path)
-    if sa_pk_file.exists():
-        is_sa_pk_file_found = True
+    if __GOOGLE_CLOUD_CREDENTIALS_FILE_PATH__ != '':
+        sa_pk_file = pathlib.Path(__GOOGLE_CLOUD_CREDENTIALS_FILE_PATH__)
+        if sa_pk_file.exists():
+            __is_sa_pk_file_found__ = True
 
-    user_hrsa_data_folder = pathlib.Path(user_hrsa_data_folder_path)
-    if user_hrsa_data_folder.exists():
-        is_user_hrsa_data_folder_found = True
+    if __USER_HRSA_DATA_FOLDER_PATH__ != '':
+        user_hrsa_data_folder = pathlib.Path(__USER_HRSA_DATA_FOLDER_PATH__)
+        if user_hrsa_data_folder.exists():
+            __is_user_hrsa_data_folder_found__ = True
+
+    if not __is_sa_pk_file_found__:
+        __GOOGLE_CLOUD_CREDENTIALS_FILE_PATH__ = ''
+        hrsa_cct_globals.log.error("Google Cloud Service Account Key JSON file not found. Please select the file.")
+    if not __is_user_hrsa_data_folder_found__:
+        __FILE_DIALOG_DEFAULT_PATH__ = root_folder_path
+        hrsa_cct_globals.log.error("User HRSA Data Folder not found. Please select the folder.")
 
 
 def save_config_file():
@@ -54,12 +96,29 @@ def save_config_file():
     else:
         cct_config.read(cct_ini_file_path)
 
-    if sa_pk_file_path != '':
-        cct_config['CONFIG']['SK_PK_JSON_FILE_PATH'] = sa_pk_file_path
-    if user_hrsa_data_folder_path != '':
-        cct_config['CONFIG']['USER_HRSA_DATA_FOLDER_PATH'] = user_hrsa_data_folder_path
+    if __GOOGLE_CLOUD_CREDENTIALS_FILE_PATH__ != '':
+        cct_config['CONFIG']['GOOGLE_CLOUD_CREDENTIALS_FILE_PATH'] = __GOOGLE_CLOUD_CREDENTIALS_FILE_PATH__
+    if __USER_HRSA_DATA_FOLDER_PATH__ != '':
+        cct_config['CONFIG']['USER_HRSA_DATA_FOLDER_PATH'] = __USER_HRSA_DATA_FOLDER_PATH__
     with open(cct_ini_file_path, 'w') as configfile:
         cct_config.write(configfile)
+
+
+def update_google_cloud_credentials_file_path(json_file_path):
+    global __GOOGLE_CLOUD_CREDENTIALS_FILE_PATH__, __is_sa_pk_file_found__
+    __is_sa_pk_file_found__ = True
+    __GOOGLE_CLOUD_CREDENTIALS_FILE_PATH__ = json_file_path
+    save_config_file()
+    read_config_file()
+
+
+def update_user_hrsa_data_folder_path(folder_path):
+    global __USER_HRSA_DATA_FOLDER_PATH__, __FILE_DIALOG_DEFAULT_PATH__
+    global __is_user_hrsa_data_folder_found__
+    __is_user_hrsa_data_folder_found__ = True
+    __USER_HRSA_DATA_FOLDER_PATH__ = folder_path
+    __FILE_DIALOG_DEFAULT_PATH__ = __USER_HRSA_DATA_FOLDER_PATH__
+    save_config_file()
 
 
 read_config_file()

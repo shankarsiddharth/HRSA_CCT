@@ -3,7 +3,7 @@ import os.path
 
 import dearpygui.dearpygui as dpg
 
-from __deprecated import hrsa_cct_constants, hrsa_cct_globals
+from __deprecated import hrsa_cct_constants, hrsa_cct_globals, hrsa_cct_config
 
 # GUI Element Tags
 PIU_PATIENT_FIRST_NAME_INPUT_TEXT: str = "PIU_PATIENT_FIRST_NAME_INPUT_TEXT"
@@ -447,6 +447,10 @@ def _callback_export_patient_info(sender, app_data, user_data):
     _callback_save_patient_into_to_file(None, app_data=dict(file_path_name=patient_information_json_file_path))
 
 
+def file_dialog_cancel_callback(sender, app_data, user_data):
+    pass
+
+
 def init_ui():
     global problem_tab, sdoh_problem_tab, medication_tab, allergy_tab, family_health_history_tab
     global patient_info
@@ -459,11 +463,15 @@ def init_ui():
         dpg.add_text(tag=PIU_SCENARIO_PATIENT_INFO_JSON_PATH_TEXT)
 
         with dpg.file_dialog(height=300, width=600, directory_selector=False, show=False,
-                             callback=_callback_load_patient_info_file, tag="PIU_OPEN_FILE_DIALOG", modal=True):
+                             callback=_callback_load_patient_info_file, tag="PIU_OPEN_FILE_DIALOG", modal=True,
+                             default_path=hrsa_cct_config.get_file_dialog_default_path(),
+                             cancel_callback=file_dialog_cancel_callback):
             dpg.add_file_extension(".json", color=(255, 255, 0, 255))
 
         with dpg.file_dialog(height=300, width=600, directory_selector=False, show=False,
-                             callback=_callback_save_patient_into_to_file, tag="PIU_SAVE_FILE_DIALOG", modal=True):
+                             callback=_callback_save_patient_into_to_file, tag="PIU_SAVE_FILE_DIALOG", modal=True,
+                             default_path=hrsa_cct_config.get_file_dialog_default_path(),
+                             cancel_callback=file_dialog_cancel_callback):
             dpg.add_file_extension(".json", color=(255, 255, 0, 255))
 
         # with dpg.window(height=100, width=350, label="Warning", modal=True, show=False,

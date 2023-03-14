@@ -1,6 +1,3 @@
-import json
-import os
-
 import dearpygui.dearpygui as dpg
 from adbutils import adb
 
@@ -8,7 +5,7 @@ from __deprecated import hrsa_cct_constants
 
 target_devices = []
 
-TOD_SELECT_APK_FILE_DIALOG: str = 'TOD_SELECT_APK_FILE_DIALOG'
+TTD_SELECT_APK_FILE_DIALOG: str = 'TTD_SELECT_APK_FILE_DIALOG'
 
 
 def _select_target_device(sender, app_data, user_data):
@@ -38,7 +35,7 @@ def _toggle_media_transfer(sender, app_data, user_data):
 
 
 def _install_latest_package(sender, app_data, user_data):
-    dpg.configure_item(TOD_SELECT_APK_FILE_DIALOG, show=True)
+    dpg.configure_item(TTD_SELECT_APK_FILE_DIALOG, show=True)
 
 
 def _callback_load_apk_file(sender, app_data, user_data):
@@ -48,6 +45,10 @@ def _callback_load_apk_file(sender, app_data, user_data):
     for info in target_devices:
         device = adb.device(serial=info.serial)
         device.install(app_data["file_path_name"], silent=True)
+
+
+def file_dialog_cancel_callback(sender, app_data, user_data):
+    pass
 
 
 def init_ui():
@@ -65,7 +66,8 @@ def init_ui():
 
         # file selection dialog start
         with dpg.file_dialog(height=300, width=600, directory_selector=False, show=False,
-                             callback=_callback_load_apk_file, tag=TOD_SELECT_APK_FILE_DIALOG, modal=True):
+                             callback=_callback_load_apk_file, tag=TTD_SELECT_APK_FILE_DIALOG, modal=True,
+                             cancel_callback=file_dialog_cancel_callback):
             dpg.add_file_extension(".apk", color=(255, 255, 0, 255))
         # file selection dialog end
 

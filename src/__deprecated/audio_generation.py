@@ -7,22 +7,31 @@ import sys
 
 import dearpygui.dearpygui as dpg
 from google.cloud import texttospeech
+from google.cloud.texttospeech_v1 import ListVoicesResponse
 from google.oauth2 import service_account
 
+import hrsa_cct_config
 import hrsa_cct_constants
 import hrsa_cct_globals
 from hrsa_cct_globals import log, hfsc, hfs
 
-# Google Cloud Configuration Data
-# Get Credentials from JSON file
-path_string = os.path.abspath(hrsa_cct_constants.GOOGLE_CLOUD_SERVICE_ACCOUNT_FILE_PATH)
-print(path_string)
-credentials = service_account.Credentials.from_service_account_file(path_string)
-# Instantiates a client
-client = texttospeech.TextToSpeechClient(credentials=credentials)
+voices = ListVoicesResponse()
+client = None
 
-# TODO: Error Handling / Add a function and a function call to cache the data from service on each application run
-voices = client.list_voices()
+
+def initialize_audio_generation():
+    global voices, client
+    # Google Cloud Configuration Data
+    # Get Credentials from JSON file
+    if hrsa_cct_config.is_google_cloud_credentials_file_found():
+        path_string = os.path.abspath(hrsa_cct_config.get_google_cloud_credentials_file_path())
+        print(path_string)
+        credentials = service_account.Credentials.from_service_account_file(path_string)
+        # Instantiates a client
+        client = texttospeech.TextToSpeechClient(credentials=credentials)
+        # TODO: Error Handling / Add a function and a function call to cache the data from service on each application run
+        voices = client.list_voices()
+
 
 scenario_language_code_folder_path = ""
 scenario_path_root = ""
