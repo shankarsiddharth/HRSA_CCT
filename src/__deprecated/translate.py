@@ -22,14 +22,24 @@ clientTranslate = None
 def initialize_translate():
     global project_id, clientTranslate
     if hrsa_cct_config.is_google_cloud_credentials_file_found():
-        credentials = service_account.Credentials.from_service_account_file(hrsa_cct_config.get_google_cloud_credentials_file_path())
-        clientTranslate = translate.TranslationServiceClient(credentials=credentials)
+        try:
+            credentials = service_account.Credentials.from_service_account_file(hrsa_cct_config.get_google_cloud_credentials_file_path())
+            clientTranslate = translate.TranslationServiceClient(credentials=credentials)
 
-        gc_project_id = ''
-        with open(hrsa_cct_config.get_google_cloud_credentials_file_path(), 'r', encoding='utf-8') as f:
-            data = json.load(f)
-            if gc_project_id == '':
-                project_id = data['project_id']
+            gc_project_id = ''
+            with open(hrsa_cct_config.get_google_cloud_credentials_file_path(), 'r', encoding='utf-8') as f:
+                data = json.load(f)
+                if gc_project_id == '':
+                    project_id = data['project_id']
+        except Exception as e:
+            log.error(str(e))
+            if "401" in str(e):
+                log.error("Error initializing Google Cloud Translate: Please check your Google Cloud credentials JSON file.")
+            elif "503" in str(e):
+                log.error("Error initializing Google Cloud Translate: Please check your internet connection.")
+                log.error("Also, make sure that the firewall is not blocking the connection to Google Cloud APIs.")
+            else:
+                log.error("Error initializing Google Cloud Translate: Please check your Google Cloud credentials JSON file.")
 
 
 new_data_path = ""
@@ -233,10 +243,14 @@ def callback_on_translate_text_clicked():
         # log.trace(data)
         file_ink.close()
         for dialogue_text_list_element in dialogue_text_list:
-            translated_text = translate_text(text=dialogue_text_list_element, language=selected_language)
-            log.info("Translated Text: " + translated_text)
-            total_characters_translated = total_characters_translated + len(dialogue_text_list_element)
-            data = data.replace(dialogue_text_list_element, translated_text)
+            try:
+                translated_text = translate_text(text=dialogue_text_list_element, language=selected_language)
+                log.info("Translated Text: " + translated_text)
+                total_characters_translated = total_characters_translated + len(dialogue_text_list_element)
+                data = data.replace(dialogue_text_list_element, translated_text)
+            except Exception as e:
+                log.error(str(e))
+                log.error("Error Occurred while translating text: " + dialogue_text_list_element)
         with open(new_file_path, "w", encoding="utf-8") as file:
             file.write(data)
     log_text = "Translation Complete! total_characters_translated : " + str(total_characters_translated)

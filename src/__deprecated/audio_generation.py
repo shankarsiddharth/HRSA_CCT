@@ -24,13 +24,23 @@ def initialize_audio_generation():
     # Google Cloud Configuration Data
     # Get Credentials from JSON file
     if hrsa_cct_config.is_google_cloud_credentials_file_found():
-        path_string = os.path.abspath(hrsa_cct_config.get_google_cloud_credentials_file_path())
-        print(path_string)
-        credentials = service_account.Credentials.from_service_account_file(path_string)
-        # Instantiates a client
-        client = texttospeech.TextToSpeechClient(credentials=credentials)
-        # TODO: Error Handling / Add a function and a function call to cache the data from service on each application run
-        voices = client.list_voices()
+        try:
+            path_string = os.path.abspath(hrsa_cct_config.get_google_cloud_credentials_file_path())
+            print(path_string)
+            credentials = service_account.Credentials.from_service_account_file(path_string)
+            # Instantiates a client
+            client = texttospeech.TextToSpeechClient(credentials=credentials)
+            # TODO: Error Handling / Add a function and a function call to cache the data from service on each application run
+            voices = client.list_voices()
+        except Exception as e:
+            log.error(str(e))
+            if "401" in str(e):
+                log.error("Error while initializing Google Cloud Text-to-Speech Client: - Please check if the Google Cloud Credentials JSON file is valid")
+            elif "503" in str(e):
+                log.error("Error while initializing Google Cloud Translate: Please check your internet connection.")
+                log.error("Also, make sure that the firewall is not blocking the connection to Google Cloud APIs.")
+            else:
+                log.error("Error while initializing Google Cloud Text-to-Speech Client: Please check your Google Cloud credentials JSON file.")
 
 
 scenario_language_code_folder_path = ""
@@ -458,16 +468,20 @@ def generate_audio_gc_tts(dialogue_text, audio_file_path, language_code, in_gend
     log.info("Sending Google Cloud TTS Request....")
     # Perform the text-to-speech request on the text input with the selected
     # voice parameters and audio file type
-    response = client.synthesize_speech(
-        input=synthesis_input, voice=voice, audio_config=audio_config
-    )
+    try:
+        response = client.synthesize_speech(
+            input=synthesis_input, voice=voice, audio_config=audio_config
+        )
 
-    # The response's audio_content is binary.
-    with open(audio_file_path, "wb") as output_audio_file:
-        # Write the response to the output file.
-        output_audio_file.write(response.audio_content)
-        log_text = "Audio File Written : " + audio_file_path
-        log.info(log_text)
+        # The response's audio_content is binary.
+        with open(audio_file_path, "wb") as output_audio_file:
+            # Write the response to the output file.
+            output_audio_file.write(response.audio_content)
+            log_text = "Audio File Written : " + audio_file_path
+            log.info(log_text)
+    except Exception as e:
+        log.error(str(e))
+        log.error("Google Cloud TTS Request Failed")
 
 
 if sys.flags.dev_mode:
