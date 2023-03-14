@@ -29,6 +29,9 @@ class AppFileSystem(object):
         self.__root_folder_path__ = self.alfs.get_root_folder_path()
         self.__user_home_folder_path__ = self.alfs.get_user_home_folder_path()
         self.__app_user_data_root_folder_path__ = self.alfs.get_app_user_data_root_folder_path()
+        self.default_app_icon_small_file_path = ''
+        self.default_app_icon_large_file_path = ''
+        self.__initialize_default_app_icon_file_paths__()
 
     def get_root_folder_path(self):
         return self.__root_folder_path__
@@ -79,6 +82,30 @@ class AppFileSystem(object):
         assets_images_avatars_folder_path = self.get_default_assets_images_avatars_folder_path()
         image_path = os.path.join(assets_images_avatars_folder_path, image_file_name)
         return image_path
+
+    def get_default_assets_images_icons_folder_path(self):
+        assets_images_folder_path = self.get_default_assets_images_folder_path()
+        default_assets_image_icon_folder_path = os.path.join(assets_images_folder_path, self.afsc.ASSETS_IMAGES_ICONS_FOLDER_NAME)
+        return default_assets_image_icon_folder_path
+
+    def get_default_assets_images_icons_app_folder_path(self):
+        assets_images_icons_folder_path = self.get_default_assets_images_icons_folder_path()
+        default_assets_image_icon_app_folder_path = os.path.join(assets_images_icons_folder_path, self.afsc.ASSETS_IMAGES_ICONS_APP_FOLDER_NAME)
+        return default_assets_image_icon_app_folder_path
+
+    def get_default_app_icon_small_file_path(self):
+        assets_images_icons_app_folder_path = self.get_default_assets_images_icons_app_folder_path()
+        default_app_icon_small_file_path = os.path.join(assets_images_icons_app_folder_path, self.afsc.ASSETS_IMAGES_ICONS_APP_DEFAULT_SMALL_ICON_FILE_NAME)
+        return default_app_icon_small_file_path
+
+    def get_default_app_icon_large_file_path(self):
+        assets_images_icons_app_folder_path = self.get_default_assets_images_icons_app_folder_path()
+        default_app_icon_large_file_path = os.path.join(assets_images_icons_app_folder_path, self.afsc.ASSETS_IMAGES_ICONS_APP_DEFAULT_LARGE_ICON_FILE_NAME)
+        return default_app_icon_large_file_path
+
+    def __initialize_default_app_icon_file_paths__(self):
+        self.default_app_icon_small_file_path = self.get_default_app_icon_small_file_path()
+        self.default_app_icon_large_file_path = self.get_default_app_icon_large_file_path()
 
     def get_default_config_cct_folder_path(self):
         config_folder_path = self.get_default_config_folder_path()

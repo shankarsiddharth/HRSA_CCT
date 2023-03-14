@@ -44,6 +44,11 @@ class AppFileSystemConstants(object):
         # Assets Images Folder & File Constants
         self.ASSETS_IMAGES_FOLDER_NAME = "images"
         self.ASSETS_IMAGES_AVATARS_FOLDER_NAME = "avatars"
+        # Assets Images Icons Folder & File Constants
+        self.ASSETS_IMAGES_ICONS_FOLDER_NAME = "icons"
+        self.ASSETS_IMAGES_ICONS_APP_FOLDER_NAME = "app"
+        self.ASSETS_IMAGES_ICONS_APP_DEFAULT_SMALL_ICON_FILE_NAME = "dpg.default.small.ico"
+        self.ASSETS_IMAGES_ICONS_APP_DEFAULT_LARGE_ICON_FILE_NAME = "dpg.default.large.ico"
 
         # region Binary Folder & File Constants
         self.BINARY_INKLECATE_FOLDER_NAME = "inklecate"
@@ -56,6 +61,10 @@ class AppFileSystemConstants(object):
         self.DEFAULT_WINDOWS_INKLECATE_EXECUTABLE_FILE_NAME = "inklecate.exe"
         self.DEFAULT_LINUX_INKLECATE_EXECUTABLE_FILE_NAME = "inklecate"
         self.DEFAULT_MACOS_INKLECATE_EXECUTABLE_NAME = "inklecate"
+
+        self.DEFAULT_WINDOWS_INKY_EXECUTABLE_FILE_NAME = "Inky.exe"
+        self.DEFAULT_LINUX_INKY_EXECUTABLE_FILE_NAME = "Inky"
+        self.DEFAULT_MACOS_INKY_EXECUTABLE_NAME = "Inky"
         # endregion Binary Folder & File Constants
 
         # Config CCT Folder & File Constants - CCT stands for "Content Creation Tool"

@@ -19,6 +19,7 @@ config/**private_key**.json
 
 # Ignore the Service Account JSON files in old config folder
 cctconfig/**/*.json
+cctconfig/cct.config.ini
 
 # Ignore Project Log folder
 [Ll][Oo][Gg][Ss]/**
