@@ -1,50 +1,50 @@
 {
-  "version": {
-    "major": 1,
-    "minor": 0,
-    "patch": 0
-  },
-  "player_config": {
-    "ui_config": {
-      "subtitle_config": {
-        "text_color": "#FFFFFF"
-      }
+    "version": {
+        "major": 1,
+        "minor": 0,
+        "patch": 0
     },
-    "character_model_config": {
-      "uid": "Male Medical Student"
-    }
-  },
-  "medicalstudent_config": {
-    "ui_config": {
-      "subtitle_config": {
-        "text_color": "#FF0000"
-      }
+    "player_config": {
+        "ui_config": {
+            "subtitle_config": {
+                "text_color": "#433E79FF"
+            }
+        },
+        "character_model_config": {
+            "uid": "Male Medical Student"
+        }
     },
-    "character_model_config": {
-      "uid": "MedStudent1"
-    }
-  },
-  "patient_config": {
-    "ui_config": {
-      "subtitle_config": {
-        "text_color": "#00ABFF"
-      }
+    "medicalstudent_config": {
+        "ui_config": {
+            "subtitle_config": {
+                "text_color": "#1BD21BFF"
+            }
+        },
+        "character_model_config": {
+            "uid": "MedStudent1"
+        }
     },
-    "character_model_config": {
-      "uid": "Patient1"
-    }
-  },
-  "trainer_config": {
-    "ui_config": {
-      "subtitle_config": {
-        "text_color": "#0CA600"
-      }
+    "patient_config": {
+        "ui_config": {
+            "subtitle_config": {
+                "text_color": "#EB133FFF"
+            }
+        },
+        "character_model_config": {
+            "uid": "Patient2"
+        }
     },
-    "character_model_config": {
-      "uid": "Trainer1"
+    "trainer_config": {
+        "ui_config": {
+            "subtitle_config": {
+                "text_color": "#A337CAFF"
+            }
+        },
+        "character_model_config": {
+            "uid": "Trainer1"
+        }
+    },
+    "conversation_config": {
+        "question_timer_in_seconds": 0
     }
-  },
-  "conversation_config": {
-    "question_timer_in_seconds": 120
-  }
 }

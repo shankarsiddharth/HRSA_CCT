@@ -153,6 +153,7 @@ def _select_scenario_config_file(sender, app_data, user_data):
     dpg.configure_item(DUC_OPEN_FILE_DIALOG, show=True)
 
 
+
 #
 # def _callback_load_scenario_config_file(sender, app_data, user_data):
 #     global duc_color_setting, scenario_config_json_file_path

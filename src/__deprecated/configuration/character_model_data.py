@@ -5,6 +5,11 @@ class CharacterModelMetaData(object):
         self.EthnicityType = EthnicityType
         self.PreviewLabel = PreviewLabel
 
+    def get_ethnicity_name(self):
+        if self.EthnicityType.startswith('k'):
+            return self.EthnicityType[len('k'):]
+        return self.EthnicityType
+
 
 class CharacterModelData(object):
     def __init__(self, uid, metaData):
