@@ -4,6 +4,7 @@ import os.path
 import dearpygui.dearpygui as dpg
 
 from __deprecated import hrsa_cct_constants, hrsa_cct_globals, hrsa_cct_config
+from hrsa_data.scenario_data.ehr.patient_information import PatientInformation
 
 # GUI Element Tags
 PIU_PATIENT_FIRST_NAME_INPUT_TEXT: str = "PIU_PATIENT_FIRST_NAME_INPUT_TEXT"
@@ -40,7 +41,7 @@ sdoh_problem_num = 0
 medication_num = 0
 allergy_num = 0
 family_health_history_num = 0
-patient_info = dict()
+patient_info: PatientInformation = PatientInformation()
 patient_info_saved = False
 piu_scenario_path = ""
 patient_information_json_file_path = ""
@@ -454,8 +455,8 @@ def file_dialog_cancel_callback(sender, app_data, user_data):
 def init_ui():
     global problem_tab, sdoh_problem_tab, medication_tab, allergy_tab, family_health_history_tab
     global patient_info
-    with open(os.path.abspath("./patient_info_ui/patient_information_template.json")) as patient_info_json:
-        patient_info = json.load(patient_info_json)
+    # with open(os.path.abspath("./patient_info_ui/patient_information_template.json")) as patient_info_json:
+    #     patient_info = json.load(patient_info_json)
 
     with dpg.collapsing_header(label="Patient Info UI", default_open=False, parent=hrsa_cct_constants.HRSA_CCT_TOOL):
         # TODO: Add a "Clear Data Button" that clears all the UI information
