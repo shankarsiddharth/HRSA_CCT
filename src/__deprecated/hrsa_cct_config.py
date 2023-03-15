@@ -2,6 +2,7 @@ import configparser
 import os
 import pathlib
 
+import hrsa_cct_constants as hcc
 from __deprecated import hrsa_cct_globals
 from app_file_system.app_file_system import AppFileSystem
 from app_file_system.app_file_system_constants import AppFileSystemConstants
@@ -20,9 +21,9 @@ __is_user_hrsa_data_folder_found__ = False
 
 root_folder_path = cct_file_system.get_root_folder_path()
 default_hrsa_data_folder_path = os.path.join(root_folder_path, cct_file_system_constants.HRSA_DATA_WORKSPACE_FOLDER_NAME)
-cct_config_folder_path = os.path.join(root_folder_path, 'cctconfig')
-cct_ini_file_path = os.path.join(cct_config_folder_path, 'cct.config.ini')
-dpg_ini_file_path = os.path.join(cct_config_folder_path, 'dpg.config.ini')
+cct_config_folder_path = os.path.join(root_folder_path, hcc.CCT_CONFIG_FOLDER_NAME)
+cct_ini_file_path = os.path.join(cct_config_folder_path, hcc.CCT_CONFIG_FILE_NAME)
+dpg_ini_file_path = os.path.join(cct_config_folder_path, hcc.DPG_CONFIG_FILE_NAME)
 
 gc_ini_file = pathlib.Path(cct_ini_file_path)
 
