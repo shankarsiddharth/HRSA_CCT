@@ -4,8 +4,9 @@ import os
 import dearpygui.dearpygui as dpg
 
 from __deprecated import hrsa_cct_constants, hrsa_cct_globals, hrsa_cct_config
-from __deprecated.configuration import hrsa_config, character_model_data
+from __deprecated.configuration import character_model_data
 from __deprecated.hrsa_cct_globals import hfs
+from hrsa_data.scenario_data.scenario_config.conversation_config import ConversationConfig
 from hrsa_data.scenario_data.scenario_config.scenario_config import ScenarioConfig
 
 model_data_list = []
@@ -277,7 +278,7 @@ def _callback_update_subtitle_text_color(sender, app_data, user_data):
         scenario_config.patient_config.ui_config.subtitle_config.text_color = hex_color
 
 
-def _init_question_timer(conversation_config: hrsa_config.ConversationConfig):
+def _init_question_timer(conversation_config: ConversationConfig):
     if conversation_config.question_timer_in_seconds == 0:
         dpg.hide_item(DUC_QUESTION_TIMER_INPUT_TEXT)
         dpg.set_value(DUC_UNLIMITED_QUESTION_TIMER_MARK, True)
@@ -287,15 +288,15 @@ def _init_question_timer(conversation_config: hrsa_config.ConversationConfig):
         dpg.set_value(DUC_UNLIMITED_QUESTION_TIMER_MARK, False)
 
 
-def _init_dialog_color(color_setting: hrsa_config.HRSAConfig):
+def _init_dialog_color(in_scenario_config: ScenarioConfig):
     dpg.set_value("DUC_PLAYER_SUBTITLE_TEXT_COLOR",
-                  _hex_to_rgb(color_setting.player_config.ui_config.subtitle_config.text_color))
+                  _hex_to_rgb(in_scenario_config.player_config.ui_config.subtitle_config.text_color))
     dpg.set_value("DUC_MEDICAL_STUDENT_SUBTITLE_TEXT_COLOR",
-                  _hex_to_rgb(color_setting.medicalstudent_config.ui_config.subtitle_config.text_color))
+                  _hex_to_rgb(in_scenario_config.medicalstudent_config.ui_config.subtitle_config.text_color))
     dpg.set_value("DUC_PATIENT_SUBTITLE_TEXT_COLOR",
-                  _hex_to_rgb(color_setting.patient_config.ui_config.subtitle_config.text_color))
+                  _hex_to_rgb(in_scenario_config.patient_config.ui_config.subtitle_config.text_color))
     dpg.set_value("DUC_TRAINER_SUBTITLE_TEXT_COLOR",
-                  _hex_to_rgb(color_setting.trainer_config.ui_config.subtitle_config.text_color))
+                  _hex_to_rgb(in_scenario_config.trainer_config.ui_config.subtitle_config.text_color))
 
 
 def _set_question_timer(sender, app_data, user_data):
@@ -418,7 +419,7 @@ def init_ui():
             _callback_update_filter(None, None, PATIENT_LABEL)
             _callback_update_filter(None, None, MEDICAL_STUDENT_LABEL)
             _callback_update_filter(None, None, TRAINER_LABEL)
-        # endregion Character Config End
+        # endregion Character Config
 
         # region Dialogue UI Config
         with dpg.collapsing_header(indent=25, tag=CCT_DIALOGUE_UI_CONFIG_COLLAPSING_HEADER,
