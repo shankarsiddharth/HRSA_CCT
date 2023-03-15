@@ -2,14 +2,14 @@
 # Project HRSA CCT
 
 # inklecate binary files
-bin/inklecate/Win64/*
+bin/inklecate/Win64/
 !bin/inklecate/Win64/README.md
 !bin/inklecate/inklecate_version.txt
 
 # Inky binary files
-bin/Inky/Win64/*
+bin/Inky/Win64/
 !bin/Inky/Win64/README.md
-!bin/Inky/inky_version.txt
+!bin/Inky/Inky_version.txt
 
 # Ignore Service Account JSON files
 config/service_providers/**/*.json
@@ -34,6 +34,9 @@ src/**/__misc/**
 # tests
 tests/**/*.json
 !tests/**/*_test.json
+
+# Ignore PyInstaller cutom intermidiate folder & files
+_pyi_temp/
 
 # ======================================================================================================================
 
