@@ -3,6 +3,8 @@ import pathlib
 import platform
 import shutil
 import sys
+import time
+from datetime import datetime
 
 import PyInstaller.__main__
 
@@ -14,6 +16,7 @@ from app_version import app_version
 PYINSTALLER_INTERMEDIATE_FOLDER_NAME = "_pyi_temp"
 PYINSTALLER_WORKPATH_FOLDER_NAME = "_pyi_build"
 PYINSTALLER_DIST_FOLDER_NAME = "_pyi_dist"
+PYINSTALLER_SPEC_FOLDER_NAME = "_pyi_spec"
 
 PROJECT_LICENSE_FILE_NAME = "LICENSE.md"
 
@@ -42,9 +45,8 @@ if pyinstaller_temp_folder.exists():
 if not pyinstaller_temp_folder.exists():
     pyinstaller_temp_folder.mkdir()
 
-# PyInstaller SPEC File Path
-spec_file_name = "hrsacct.deprecated.spec"
-pyinstaller_spec_file_path = os.path.join(project_folder_path, spec_file_name)
+# PyInstaller SPEC Folder Path
+pyinstaller_spec_folder_path = os.path.join(project_folder_path, PYINSTALLER_INTERMEDIATE_FOLDER_NAME, PYINSTALLER_SPEC_FOLDER_NAME)
 # PyInstaller Workpath / Build Folder Path
 pyinstaller_workpath_folder_path = os.path.join(project_folder_path, PYINSTALLER_INTERMEDIATE_FOLDER_NAME, PYINSTALLER_WORKPATH_FOLDER_NAME)
 # PyInstaller Dist Folder Path
@@ -72,7 +74,7 @@ if not version_folder.exists():
     version_folder.mkdir()
 
 # Create the Application Build folder
-application_name = "HRSACCT_OLD"
+application_name = "HRSACCT"
 build_platform = platform.system()
 
 if build_platform == "Windows":
@@ -106,7 +108,7 @@ main_script_path = os.path.join(src_folder_path, DEPRECATED_FOLDER_NAME, applica
 icon_path = afs.get_default_app_icon_large_file_path()
 icon_args_string = "--icon=" + icon_path
 # SPEC File Path
-spec_file_args_string = "--specpath=" + pyinstaller_spec_file_path
+spec_file_args_string = "--specpath=" + pyinstaller_spec_folder_path
 # Workpath / Build Folder Path
 workpath_args_string = "--workpath=" + pyinstaller_workpath_folder_path
 # Dist Folder Path
@@ -264,6 +266,21 @@ shutil.copytree(project_data_folder_path, build_data_folder_path)
 build_license_file_path = os.path.join(app_build_version_folder_path, PROJECT_LICENSE_FILE_NAME)
 project_license_file_path = os.path.join(project_folder_path, PROJECT_LICENSE_FILE_NAME)
 shutil.copy(project_license_file_path, build_license_file_path)
+
+# Create Build Version File
+BUILD_VERSION_FILE_NAME = "version"
+build_version_file_path = os.path.join(app_build_version_folder_path, BUILD_VERSION_FILE_NAME)
+build_version_file = pathlib.Path(build_version_file_path)
+# Delete the build version file if it exists
+if build_version_file.exists():
+    os.remove(build_version_file_path)
+# Create the build version file
+with open(build_version_file_path, "w") as version_file:
+    current_date_time = datetime.now()
+    date_time_string = current_date_time.strftime("Built on %B, %d, %Y (%A) at %I:%M:%S %p")
+    time_zone_string = time.strftime("%Z", time.localtime())
+    version_file_string = version_string + " - " + date_time_string + " " + time_zone_string
+    version_file.write(version_file_string)
 
 # Create a zip file of the Application Build folder
 zip_file_path = os.path.join(version_folder_path, application_name + ".zip")
