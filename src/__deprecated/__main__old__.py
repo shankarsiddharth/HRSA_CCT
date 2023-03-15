@@ -2,6 +2,7 @@ import json
 import os
 import shutil
 import sys
+from dataclasses import asdict
 
 import dearpygui.dearpygui as dpg
 
@@ -12,9 +13,11 @@ import translate
 from __deprecated import hrsa_cct_config, show_ink_files
 from __deprecated.cct_scenario_config import cct_scenario_config
 from __deprecated.transfer_to_device import transfer_to_device
+from app_version import app_version
 from character_config import character_config
 from dialogue_ui_config import dialogue_ui_config
 from hrsa_cct_globals import log
+from hrsa_data.scenario_data.scenario_information.scenario_information import ScenarioInformation
 from patient_info_ui import patient_info_ui
 
 # debug build parameters
@@ -27,13 +30,13 @@ print("sys.flags.dev_mode", sys.flags.dev_mode)
 # TODO: Split into modules and change the global data variable to function return values
 
 # DearPyGUI's Viewport Constants
+VIEWPORT_TITLE = "HRSA Content Creation Tool"
 VIEWPORT_WIDTH = 1200
 VIEWPORT_HEIGHT = 900  # 700
 
 # GUI Element Tags
 SCENARIO_NAME_INPUT_TEXT: str = "SCENARIO_NAME_INPUT_TEXT"
 SCENARIO_DESCRIPTION_INPUT_TEXT: str = "SCENARIO_DESCRIPTION_INPUT_TEXT"
-SCENARIO_DETAIL_INPUT_TEXT: str = "SCENARIO_DETAIL_INPUT_TEXT"
 CREATE_SCENARIO_INFORMATION_BUTTON: str = "CREATE_SCENARIO_INFORMATION_BUTTON"
 FILE_DIALOG: str = "FILE_DIALOG"
 FILE_DIALOG_FOR_DATA_FOLDER: str = "FILE_DIALOG_FOR_DATA_FOLDER"
@@ -179,13 +182,11 @@ def callback_on_show_file_dialog_clicked(item_tag):
 def callback_on_create_scenario_button_clicked() -> None:
     scenario_name = dpg.get_value(SCENARIO_NAME_INPUT_TEXT)
     scenario_description = dpg.get_value(SCENARIO_DESCRIPTION_INPUT_TEXT)
-    scenario_detail = dpg.get_value(SCENARIO_DETAIL_INPUT_TEXT)
-    scenario_information = dict()
-    scenario_information["name"] = scenario_name
-    scenario_information["localized_name"] = scenario_name
-    scenario_information["description"] = scenario_description
-    scenario_information["detail"] = scenario_detail
-    scenario_information_json_object = json.dumps(scenario_information, indent=4)
+    scenario_information: ScenarioInformation = ScenarioInformation()
+    scenario_information.name = scenario_name
+    scenario_information.localized_name = scenario_name
+    scenario_information.description = scenario_description
+    scenario_information_json_object = json.dumps(asdict(scenario_information), indent=4)
     create_scenario_folders(scenario_name, scenario_information_json_object)
 
 
@@ -252,7 +253,7 @@ def main() -> None:
         dpg.configure_app(manual_callback_management=True, docking=True, docking_space=True, load_init_file=hrsa_cct_config.dpg_ini_file_path)
 
     dpg.create_viewport(
-        title='HRSA Content Creation Tool', width=VIEWPORT_WIDTH, height=VIEWPORT_HEIGHT,
+        title=VIEWPORT_TITLE, width=VIEWPORT_WIDTH, height=VIEWPORT_HEIGHT,
         small_icon=hrsa_cct_globals.hfs.default_app_icon_small_file_path,
         large_icon=hrsa_cct_globals.hfs.default_app_icon_large_file_path,
     )
@@ -294,7 +295,6 @@ def main() -> None:
         with dpg.collapsing_header(label="Create Scenario", default_open=False):
             dpg.add_input_text(tag=SCENARIO_NAME_INPUT_TEXT, label="Scenario Name", default_value="")
             dpg.add_input_text(tag=SCENARIO_DESCRIPTION_INPUT_TEXT, label="Scenario Description", multiline=True, tab_input=False)
-            dpg.add_input_text(tag=SCENARIO_DETAIL_INPUT_TEXT, label="Scenario Detail", multiline=True, tab_input=False)
             dpg.add_button(tag=CREATE_SCENARIO_INFORMATION_BUTTON, label="Create Scenario Folder", callback=callback_on_create_scenario_button_clicked)
             dpg.add_separator()
 
@@ -399,6 +399,12 @@ def main() -> None:
 
 
 def check_hrsa_config_files():
+    global VIEWPORT_TITLE
+    version_file_string = hrsa_cct_config.get_version_file_string()
+    if version_file_string != '':
+        VIEWPORT_TITLE = f"{VIEWPORT_TITLE} - {version_file_string}"
+    else:
+        VIEWPORT_TITLE = f"{VIEWPORT_TITLE} - {app_version.APP_VERSION_STRING}"
     hrsa_cct_config.read_config_file()
     if hrsa_cct_config.is_google_cloud_credentials_file_found():
         audio_generation.initialize_audio_generation()

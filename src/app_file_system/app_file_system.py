@@ -196,6 +196,15 @@ class AppFileSystem(object):
 
     # endregion App User Data methods
 
+    # region Unity Project Data methods
+
+    def get_character_model_data_file_path(self):
+        default_data_folder_path = self.get_default_data_folder_path()
+        character_model_data_file_path = os.path.join(default_data_folder_path, self.afsc.CHARACTER_MODEL_DATA_FILE_NAME)
+        return character_model_data_file_path
+
+    # endregion Unity Project Data methods
+
     # region HRSA Data Workspace methods
 
     def __get_default_hrsa_data_workspace_folder_path__(self):

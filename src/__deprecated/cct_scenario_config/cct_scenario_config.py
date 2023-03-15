@@ -5,6 +5,7 @@ import dearpygui.dearpygui as dpg
 
 from __deprecated import hrsa_cct_constants, hrsa_cct_globals, hrsa_cct_config
 from __deprecated.configuration import hrsa_config, character_model_data
+from __deprecated.hrsa_cct_globals import hfs
 from hrsa_data.scenario_data.scenario_config.scenario_config import ScenarioConfig
 
 model_data_list = []
@@ -112,7 +113,9 @@ def _get_characters_of_type(conditions):
 
 def _load_character_config():
     global model_data_list
-    with open('character_config/CharacterModelData.json', 'r', encoding='UTF-8') as character_config_file:
+    character_model_data_file_path = hfs.get_character_model_data_file_path()
+    # with open('character_config/CharacterModelData.json', 'r', encoding='UTF-8') as character_config_file:
+    with open(character_model_data_file_path, 'r', encoding='UTF-8') as character_config_file:
         row_data = character_config_file.read()
         row_config = json.loads(row_data)
         file_version = row_config['version']

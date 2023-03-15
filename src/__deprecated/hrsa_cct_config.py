@@ -122,4 +122,17 @@ def update_user_hrsa_data_folder_path(folder_path):
     save_config_file()
 
 
+def get_version_file_string() -> str:
+    global root_folder_path
+    VERSION_FILE_NAME = 'version'
+    version_file_path = os.path.join(root_folder_path, VERSION_FILE_NAME)
+    version_file = pathlib.Path(version_file_path)
+    if version_file.exists():
+        with open(version_file_path, 'r') as version_file:
+            version_string = version_file.read()
+            return version_string
+    else:
+        return ''
+
+
 read_config_file()

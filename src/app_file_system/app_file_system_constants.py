@@ -116,3 +116,7 @@ class AppFileSystemConstants(object):
         # endregion Application Assets Images File Constants
 
         # endregion Constants
+
+        # region Unity Project Data File Constants
+        self.CHARACTER_MODEL_DATA_FILE_NAME = "CharacterModelData.json"
+        # endregion Unity Project Data File Constants
