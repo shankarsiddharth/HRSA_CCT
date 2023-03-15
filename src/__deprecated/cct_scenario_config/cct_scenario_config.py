@@ -16,8 +16,12 @@ loaded_texture = []
 
 scenario_config: ScenarioConfig = ScenarioConfig()
 
+CCT_SCENARIO_CONFIG_COLLAPSING_HEADER: str = 'CCT_SCENARIO_CONFIG_COLLAPSING_HEADER'
+CCT_CHARACTER_CONFIG_COLLAPSING_HEADER: str = 'CCT_CHARACTER_CONFIG_COLLAPSING_HEADER'
+CCT_DIALOGUE_UI_CONFIG_COLLAPSING_HEADER: str = 'CCT_DIALOGUE_UI_CONFIG_COLLAPSING_HEADER'
 SCU_SCENARIO_CONFIG_JSON_PATH_TEXT: str = 'SCU_SCENARIO_CONFIG_JSON_PATH_TEXT'
 SCU_OPEN_FILE_DIALOG: str = 'SCU_OPEN_FILE_DIALOG'
+CCT_SCENARIO_CONFIG_SAVE_SETTINGS_BUTTON: str = 'CCT_SCENARIO_CONFIG_SAVE_SETTINGS_BUTTON'
 
 PATIENT_LABEL: str = 'Patient'
 TRAINER_LABEL: str = 'Trainer'
@@ -71,6 +75,7 @@ def set_scenario_path(scenario_path):
     dpg.configure_item(SCU_SCENARIO_CONFIG_JSON_PATH_TEXT, default_value=scenario_config_json_file_path)
     _load_character_config_for_current_scenario(None, app_data=dict(file_path_name=scenario_config_json_file_path),
                                                 user_data=None)
+    _show_scenario_config_ui_sections()
 
 
 # region helper functions start
@@ -215,6 +220,12 @@ def _callback_update_filter(sender, app_data, user_data):
                                  user_data=user_data, background_color=[0])
 
 
+def _show_scenario_config_ui_sections():
+    dpg.configure_item(CCT_CHARACTER_CONFIG_COLLAPSING_HEADER, show=True)
+    dpg.configure_item(CCT_DIALOGUE_UI_CONFIG_COLLAPSING_HEADER, show=True)
+    dpg.configure_item(CCT_SCENARIO_CONFIG_SAVE_SETTINGS_BUTTON, show=True)
+
+
 def _load_character_config_for_current_scenario(sender, app_data, user_data):
     global scenario_config, scenario_config_json_file_path
     scenario_config_json_file_path = app_data["file_path_name"]
@@ -230,6 +241,8 @@ def _load_character_config_for_current_scenario(sender, app_data, user_data):
     _update_model_config(scenario_config.medicalstudent_config.character_model_config.uid, None, MEDICAL_STUDENT_LABEL)
     _init_question_timer(scenario_config.conversation_config)
     _init_dialog_color(scenario_config)
+
+    _show_scenario_config_ui_sections()
 
 
 def _update_current_scenario_config_file():
@@ -312,137 +325,140 @@ def init_ui():
     _load_character_config()
 
     dpg.add_texture_registry(label="Demo Texture Container", tag="static_texture_container")
-    # region Character Config Start
-    with dpg.collapsing_header(label="Character Config", default_open=False, parent=hrsa_cct_constants.HRSA_CCT_TOOL):
-        # TODO: UI Creation
+    with dpg.collapsing_header(tag=CCT_SCENARIO_CONFIG_COLLAPSING_HEADER, label="Scenario Config", default_open=False):
         dpg.add_text(tag=SCU_SCENARIO_CONFIG_JSON_PATH_TEXT)
         with dpg.file_dialog(height=300, width=600, directory_selector=False, show=False,
                              callback=_load_character_config_for_current_scenario, tag=SCU_OPEN_FILE_DIALOG,
                              modal=True, default_path=hrsa_cct_config.get_file_dialog_default_path(),
                              cancel_callback=file_dialog_cancel_callback):
             dpg.add_file_extension(".json", color=(255, 255, 0, 255))
-
         with dpg.group(horizontal=True):
             dpg.add_button(label="Select Scenario Config JSON File...",
                            callback=lambda: dpg.show_item(SCU_OPEN_FILE_DIALOG))
+        # region Character Config
+        with dpg.collapsing_header(indent=25, tag=CCT_CHARACTER_CONFIG_COLLAPSING_HEADER,
+                                   label="Character Config", default_open=False,
+                                   show=False):
+            # region Patient Config
+            dpg.add_text(PATIENT_LABEL, indent=20)
+            with dpg.group(horizontal=True, indent=20):
+                dpg.add_combo(('None', 'Male', 'Female'), label=GENDER_LABEL, default_value='None',
+                              tag=get_combo_tag(PATIENT_LABEL, GENDER_LABEL), callback=_callback_update_filter, width=200,
+                              user_data=PATIENT_LABEL)
+                dpg.add_combo(('None', 'White', 'Black', 'Hispanic'), label=ETHNICITY_LABEL,
+                              default_value='None', tag=get_combo_tag(PATIENT_LABEL, ETHNICITY_LABEL),
+                              callback=_callback_update_filter, width=200,
+                              user_data=PATIENT_LABEL)
+                dpg.add_button(label='Clear Filter', callback=_clear_filter, user_data=PATIENT_LABEL)
 
-        # region Patient Config start
-        dpg.add_text(PATIENT_LABEL, indent=20)
-        with dpg.group(horizontal=True, indent=20):
-            dpg.add_combo(('None', 'Male', 'Female'), label=GENDER_LABEL, default_value='None',
-                          tag=get_combo_tag(PATIENT_LABEL, GENDER_LABEL), callback=_callback_update_filter, width=200,
-                          user_data=PATIENT_LABEL)
-            dpg.add_combo(('None', 'White', 'Black', 'Hispanic'), label=ETHNICITY_LABEL,
-                          default_value='None', tag=get_combo_tag(PATIENT_LABEL, ETHNICITY_LABEL),
-                          callback=_callback_update_filter, width=200,
-                          user_data=PATIENT_LABEL)
-            dpg.add_button(label='Clear Filter', callback=_clear_filter, user_data=PATIENT_LABEL)
+            with dpg.group(horizontal=True):
+                dpg.add_child_window(width=500, height=225, tag=get_model_window_tag(PATIENT_LABEL))
+                dpg.add_child_window(width=225, height=225, tag=get_model_detail_window_tag(PATIENT_LABEL))
+                patient_model_info_window = dpg.add_child_window(width=225, height=225)
 
-        with dpg.group(horizontal=True):
-            dpg.add_child_window(width=500, height=225, tag=get_model_window_tag(PATIENT_LABEL))
-            dpg.add_child_window(width=225, height=225, tag=get_model_detail_window_tag(PATIENT_LABEL))
-            patient_model_info_window = dpg.add_child_window(width=225, height=225)
+            dpg.add_text('Name', parent=patient_model_info_window,
+                         tag=get_selected_model_property_tag(PATIENT_LABEL, 'Name'))
+            dpg.add_text(GENDER_LABEL, parent=patient_model_info_window,
+                         tag=get_selected_model_property_tag(PATIENT_LABEL, GENDER_LABEL))
+            dpg.add_text(ETHNICITY_LABEL, parent=patient_model_info_window,
+                         tag=get_selected_model_property_tag(PATIENT_LABEL, ETHNICITY_LABEL))
+            # endregion Patient Config
 
-        dpg.add_text('Name', parent=patient_model_info_window,
-                     tag=get_selected_model_property_tag(PATIENT_LABEL, 'Name'))
-        dpg.add_text(GENDER_LABEL, parent=patient_model_info_window,
-                     tag=get_selected_model_property_tag(PATIENT_LABEL, GENDER_LABEL))
-        dpg.add_text(ETHNICITY_LABEL, parent=patient_model_info_window,
-                     tag=get_selected_model_property_tag(PATIENT_LABEL, ETHNICITY_LABEL))
-        # region Patient Config end
+            # region Medical Student Config
+            dpg.add_text('Medical Student', indent=20)
+            with dpg.group(horizontal=True, indent=20):
+                dpg.add_combo(('None', 'Male', 'Female'), label=GENDER_LABEL, default_value='None',
+                              tag=get_combo_tag(MEDICAL_STUDENT_LABEL, GENDER_LABEL),
+                              callback=_callback_update_filter, width=200,
+                              user_data=MEDICAL_STUDENT_LABEL)
+                dpg.add_combo(('None', 'White', 'Black', 'Hispanic'), label=ETHNICITY_LABEL,
+                              default_value='None', tag=get_combo_tag(MEDICAL_STUDENT_LABEL, ETHNICITY_LABEL),
+                              callback=_callback_update_filter, width=200,
+                              user_data=MEDICAL_STUDENT_LABEL)
+                dpg.add_button(label='Clear Filter', callback=_clear_filter, user_data=MEDICAL_STUDENT_LABEL)
 
-        # region Medical Student Config start
-        dpg.add_text('Medical Student', indent=20)
-        with dpg.group(horizontal=True, indent=20):
-            dpg.add_combo(('None', 'Male', 'Female'), label=GENDER_LABEL, default_value='None',
-                          tag=get_combo_tag(MEDICAL_STUDENT_LABEL, GENDER_LABEL),
-                          callback=_callback_update_filter, width=200,
-                          user_data=MEDICAL_STUDENT_LABEL)
-            dpg.add_combo(('None', 'White', 'Black', 'Hispanic'), label=ETHNICITY_LABEL,
-                          default_value='None', tag=get_combo_tag(MEDICAL_STUDENT_LABEL, ETHNICITY_LABEL),
-                          callback=_callback_update_filter, width=200,
-                          user_data=MEDICAL_STUDENT_LABEL)
-            dpg.add_button(label='Clear Filter', callback=_clear_filter, user_data=MEDICAL_STUDENT_LABEL)
+            with dpg.group(horizontal=True):
+                dpg.add_child_window(width=500, height=225, tag=get_model_window_tag(MEDICAL_STUDENT_LABEL))
+                dpg.add_child_window(width=225, height=225, tag=get_model_detail_window_tag(MEDICAL_STUDENT_LABEL))
+                student_model_info_window = dpg.add_child_window(width=225, height=225)
 
-        with dpg.group(horizontal=True):
-            dpg.add_child_window(width=500, height=225, tag=get_model_window_tag(MEDICAL_STUDENT_LABEL))
-            dpg.add_child_window(width=225, height=225, tag=get_model_detail_window_tag(MEDICAL_STUDENT_LABEL))
-            student_model_info_window = dpg.add_child_window(width=225, height=225)
+            dpg.add_text('Name', parent=student_model_info_window,
+                         tag=get_selected_model_property_tag(MEDICAL_STUDENT_LABEL, 'Name'))
+            dpg.add_text(GENDER_LABEL, parent=student_model_info_window,
+                         tag=get_selected_model_property_tag(MEDICAL_STUDENT_LABEL, GENDER_LABEL))
+            dpg.add_text(ETHNICITY_LABEL, parent=student_model_info_window,
+                         tag=get_selected_model_property_tag(MEDICAL_STUDENT_LABEL, ETHNICITY_LABEL))
+            # endregion Medical Student Config
 
-        dpg.add_text('Name', parent=student_model_info_window,
-                     tag=get_selected_model_property_tag(MEDICAL_STUDENT_LABEL, 'Name'))
-        dpg.add_text(GENDER_LABEL, parent=student_model_info_window,
-                     tag=get_selected_model_property_tag(MEDICAL_STUDENT_LABEL, GENDER_LABEL))
-        dpg.add_text(ETHNICITY_LABEL, parent=student_model_info_window,
-                     tag=get_selected_model_property_tag(MEDICAL_STUDENT_LABEL, ETHNICITY_LABEL))
-        # region Medical Student Config end
+            # region Trainer Config
+            dpg.add_text(TRAINER_LABEL, indent=20)
+            with dpg.group(horizontal=True, indent=20):
+                dpg.add_combo(('None', 'Male', 'Female'), label=GENDER_LABEL, default_value='None',
+                              tag=get_combo_tag(TRAINER_LABEL, GENDER_LABEL),
+                              callback=_callback_update_filter, width=200, user_data=TRAINER_LABEL)
+                dpg.add_combo(('None', 'White', 'Black', 'Hispanic'), label=ETHNICITY_LABEL,
+                              default_value='None', tag=get_combo_tag(TRAINER_LABEL, ETHNICITY_LABEL),
+                              callback=_callback_update_filter, width=200,
+                              user_data=TRAINER_LABEL)
+                dpg.add_button(label='Clear Filter', callback=_clear_filter, user_data=TRAINER_LABEL)
 
-        # region Trainer Config start
-        dpg.add_text(TRAINER_LABEL, indent=20)
-        with dpg.group(horizontal=True, indent=20):
-            dpg.add_combo(('None', 'Male', 'Female'), label=GENDER_LABEL, default_value='None',
-                          tag=get_combo_tag(TRAINER_LABEL, GENDER_LABEL),
-                          callback=_callback_update_filter, width=200, user_data=TRAINER_LABEL)
-            dpg.add_combo(('None', 'White', 'Black', 'Hispanic'), label=ETHNICITY_LABEL,
-                          default_value='None', tag=get_combo_tag(TRAINER_LABEL, ETHNICITY_LABEL),
-                          callback=_callback_update_filter, width=200,
-                          user_data=TRAINER_LABEL)
-            dpg.add_button(label='Clear Filter', callback=_clear_filter, user_data=TRAINER_LABEL)
+            with dpg.group(horizontal=True):
+                dpg.add_child_window(width=500, height=225, tag=get_model_window_tag(TRAINER_LABEL))
+                dpg.add_child_window(width=225, height=225, tag=get_model_detail_window_tag(TRAINER_LABEL))
+                trainer_model_info_window = dpg.add_child_window(width=225, height=225)
 
-        with dpg.group(horizontal=True):
-            dpg.add_child_window(width=500, height=225, tag=get_model_window_tag(TRAINER_LABEL))
-            dpg.add_child_window(width=225, height=225, tag=get_model_detail_window_tag(TRAINER_LABEL))
-            trainer_model_info_window = dpg.add_child_window(width=225, height=225)
+            dpg.add_text('Name', parent=trainer_model_info_window,
+                         tag=get_selected_model_property_tag(TRAINER_LABEL, 'Name'))
+            dpg.add_text(GENDER_LABEL, parent=trainer_model_info_window,
+                         tag=get_selected_model_property_tag(TRAINER_LABEL, GENDER_LABEL))
+            dpg.add_text(ETHNICITY_LABEL, parent=trainer_model_info_window,
+                         tag=get_selected_model_property_tag(TRAINER_LABEL, ETHNICITY_LABEL))
+            # endregion Trainer Config
 
-        dpg.add_text('Name', parent=trainer_model_info_window,
-                     tag=get_selected_model_property_tag(TRAINER_LABEL, 'Name'))
-        dpg.add_text(GENDER_LABEL, parent=trainer_model_info_window,
-                     tag=get_selected_model_property_tag(TRAINER_LABEL, GENDER_LABEL))
-        dpg.add_text(ETHNICITY_LABEL, parent=trainer_model_info_window,
-                     tag=get_selected_model_property_tag(TRAINER_LABEL, ETHNICITY_LABEL))
-        # region Trainer Config end
+            _callback_update_filter(None, None, PATIENT_LABEL)
+            _callback_update_filter(None, None, MEDICAL_STUDENT_LABEL)
+            _callback_update_filter(None, None, TRAINER_LABEL)
+        # endregion Character Config End
 
-        _callback_update_filter(None, None, PATIENT_LABEL)
-        _callback_update_filter(None, None, MEDICAL_STUDENT_LABEL)
-        _callback_update_filter(None, None, TRAINER_LABEL)
+        # region Dialogue UI Config
+        with dpg.collapsing_header(indent=25, tag=CCT_DIALOGUE_UI_CONFIG_COLLAPSING_HEADER,
+                                   label="Dialogue UI Config", default_open=False,
+                                   show=False):
+            dpg.add_color_edit(label="Player Subtitle Text Color",
+                               tag="DUC_PLAYER_SUBTITLE_TEXT_COLOR",
+                               callback=_callback_update_subtitle_text_color,
+                               user_data=PLAYER_LABEL,
+                               input_mode=dpg.mvColorEdit_input_rgb)
 
-        dpg.add_button(label="Save Setting", show=True, callback=_update_current_scenario_config_file)
-    # region Character Config End
+            dpg.add_color_edit(label="Medical Student Subtitle Text Color",
+                               tag="DUC_MEDICAL_STUDENT_SUBTITLE_TEXT_COLOR",
+                               callback=_callback_update_subtitle_text_color,
+                               user_data=MEDICAL_STUDENT_LABEL,
+                               input_mode=dpg.mvColorEdit_input_rgb)
 
-    # region Dialogue UI Config Start
-    with dpg.collapsing_header(label="Dialogue UI Config", default_open=False,
-                               parent=hrsa_cct_constants.HRSA_CCT_TOOL):
-        dpg.add_color_edit(label="Player Subtitle Text Color",
-                           tag="DUC_PLAYER_SUBTITLE_TEXT_COLOR",
-                           callback=_callback_update_subtitle_text_color,
-                           user_data=PLAYER_LABEL,
-                           input_mode=dpg.mvColorEdit_input_rgb)
+            dpg.add_color_edit(label="Patient Subtitle Text Color",
+                               tag="DUC_PATIENT_SUBTITLE_TEXT_COLOR",
+                               callback=_callback_update_subtitle_text_color,
+                               user_data=PATIENT_LABEL,
+                               input_mode=dpg.mvColorEdit_input_rgb)
 
-        dpg.add_color_edit(label="Medical Student Subtitle Text Color",
-                           tag="DUC_MEDICAL_STUDENT_SUBTITLE_TEXT_COLOR",
-                           callback=_callback_update_subtitle_text_color,
-                           user_data=MEDICAL_STUDENT_LABEL,
-                           input_mode=dpg.mvColorEdit_input_rgb)
+            dpg.add_color_edit(label="Trainer Subtitle Text Color",
+                               tag="DUC_TRAINER_SUBTITLE_TEXT_COLOR",
+                               callback=_callback_update_subtitle_text_color,
+                               user_data=TRAINER_LABEL,
+                               input_mode=dpg.mvColorEdit_input_rgb)
 
-        dpg.add_color_edit(label="Patient Subtitle Text Color",
-                           tag="DUC_PATIENT_SUBTITLE_TEXT_COLOR",
-                           callback=_callback_update_subtitle_text_color,
-                           user_data=PATIENT_LABEL,
-                           input_mode=dpg.mvColorEdit_input_rgb)
+            dpg.add_text("Question Timer", indent=20)
+            with dpg.group(horizontal=True, indent=20):
+                dpg.add_checkbox(label="Unlimited Timer", source="bool_value", tag=DUC_UNLIMITED_QUESTION_TIMER_MARK,
+                                 callback=_set_question_timer)
+                dpg.add_input_text(label="Question Timer in Seconds", width=100, decimal=True, default_value='60',
+                                   tag=DUC_QUESTION_TIMER_INPUT_TEXT,
+                                   callback=_set_question_timer)
 
-        dpg.add_color_edit(label="Trainer Subtitle Text Color",
-                           tag="DUC_TRAINER_SUBTITLE_TEXT_COLOR",
-                           callback=_callback_update_subtitle_text_color,
-                           user_data=TRAINER_LABEL,
-                           input_mode=dpg.mvColorEdit_input_rgb)
+            # dpg.add_button(label="Save Setting", show=True, callback=_update_current_scenario_config_file)
+        # endregion Dialogue UI Config
 
-        dpg.add_text("Question Timer", indent=20)
-        with dpg.group(horizontal=True, indent=20):
-            dpg.add_checkbox(label="Unlimited Timer", source="bool_value", tag=DUC_UNLIMITED_QUESTION_TIMER_MARK,
-                             callback=_set_question_timer)
-            dpg.add_input_text(label="Question Timer in Seconds", width=100, decimal=True, default_value='60',
-                               tag=DUC_QUESTION_TIMER_INPUT_TEXT,
-                               callback=_set_question_timer)
-
-        dpg.add_button(label="Save Setting", show=True, callback=_update_current_scenario_config_file)
-    # region Dialogue UI Config End
+        dpg.add_button(tag=CCT_SCENARIO_CONFIG_SAVE_SETTINGS_BUTTON, label="Save Setting",
+                       parent=CCT_SCENARIO_CONFIG_COLLAPSING_HEADER, show=False, callback=_update_current_scenario_config_file)
+        dpg.add_separator()
