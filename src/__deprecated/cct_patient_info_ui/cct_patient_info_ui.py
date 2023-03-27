@@ -45,12 +45,10 @@ def set_scenario_path(scenario_path):
 def _load_patient_info_file(file_path_name: str):
     global patient_info, patient_information_json_file_path
     patient_information_json_file_path = file_path_name
+    # Load the patient information from the JSON file
     patient_info = PatientInformation.load_from_json_file(patient_information_json_file_path)
-    # with open(patient_information_json_file_path, 'r', encoding='UTF-8') as patient_info_json:
-    #     patient_info = json.load(patient_info_json)
 
     header_name = patient_demographics_header_name
-    # fields_name = [name for name in dir(PatientDemographics) if not name.startswith('__')]
     fields_name = vars(PatientDemographics())
     for field_name in fields_name:
         field_value = getattr(patient_info.patient_demographics, field_name)
@@ -59,8 +57,14 @@ def _load_patient_info_file(file_path_name: str):
     header_name = problems_list_header_name
     header_tag = _get_header_tag(header_name)
     dpg.delete_item(header_tag, children_only=True)
-    for problem_id, _ in enumerate(patient_info.problems.problems):
-        _add_problem_ui(problem_id)
+    for family_history_id, _ in enumerate(patient_info.problems.problems):
+        _add_problem_ui(family_history_id)
+
+    header_name = sdoh_problems_list_header_name
+    header_tag = _get_header_tag(header_name)
+    dpg.delete_item(header_tag, children_only=True)
+    for family_history_id, _ in enumerate(patient_info.problems.sdoh_problems_health_concerns):
+        _add_sdoh_problem_ui(family_history_id)
 
     header_name = medications_list_header_name
     header_tag = _get_header_tag(header_name)
@@ -75,14 +79,18 @@ def _load_patient_info_file(file_path_name: str):
         _add_allergy_ui(allergy_id)
 
     header_name = vital_signs_header_name
-    # fields_name = [name for name in dir(VitalSigns) if not name.startswith('__')]
     fields_name = vars(VitalSigns())
     for field_name in fields_name:
         field_value = getattr(patient_info.vital_signs, field_name)
         dpg.set_value(_get_ui_object_tag(header_name, field_name), field_value)
 
+    header_name = family_health_history_list_name
+    header_tag = _get_header_tag(header_name)
+    dpg.delete_item(header_tag, children_only=True)
+    for family_history_id, _ in enumerate(patient_info.family_health_history.family_health_history):
+        _add_family_health_history_ui(family_history_id)
+
     header_name = social_health_history_header_name
-    # fields_name = [name for name in dir(SocialHealthHistory) if not name.startswith('__')]
     fields_name = vars(SocialHealthHistory())
     for field_name in fields_name:
         field_value = getattr(patient_info.social_health_history, field_name)
@@ -206,7 +214,7 @@ def _callback_delete_sdoh_problem(sender, app_data, user_data):
 
     patient_info.problems.sdoh_problems_health_concerns = patient_info.problems.sdoh_problems_health_concerns[:-1]
     sdoh_problem_id = len(patient_info.problems.sdoh_problems_health_concerns)
-    header_name = problems_list_header_name
+    header_name = sdoh_problems_list_header_name
     dpg.delete_item(_get_ui_child_object_tag(header_name, 'title', sdoh_problem_id))
     dpg.delete_item(_get_ui_child_object_tag(header_name, 'problem', sdoh_problem_id))
     dpg.delete_item(_get_ui_child_object_tag(header_name, 'date_of_diagnosis', sdoh_problem_id))
@@ -337,12 +345,11 @@ def _add_family_health_history_ui(family_health_history_id: int):
                        callback=_callback_update_family_health_history)
 
 
-
 def _callback_delete_family_health_history(sender, app_data, user_data):
     global patient_info
     if len(patient_info.family_health_history.family_health_history) <= 0:
         return
-    
+
     patient_info.family_health_history.family_health_history = patient_info.family_health_history.family_health_history[:-1]
     family_health_history_id = len(patient_info.family_health_history.family_health_history)
     header_name = family_health_history_list_name
@@ -357,24 +364,19 @@ def _callback_update_family_health_history(sender, app_data, user_data):
 
 def _callback_update_patient_vital_signs(sender, app_data, user_data):
     global patient_info
-    header_name = patient_demographics_header_name
     node_name = user_data['node_name']
     setattr(patient_info.vital_signs, node_name, app_data)
 
 
 def _callback_update_social_health_history(sender, app_data, user_data):
     global patient_info
-    header_name = social_health_history_header_name
     node_name = user_data['node_name']
     setattr(patient_info.social_health_history, node_name, app_data)
 
 
 def _callback_export_patient_info(sender, app_data, user_data):
     global patient_info
-    # patient_info_json = json.dumps(patient_info, indent=4)
-    #
-    # with open(patient_information_json_file_path, 'w', encoding='UTF-8') as outfile:
-    #     outfile.write(patient_info_json)
+    # Save the patient information to a JSON file
     PatientInformation.save_to_json_file(patient_info, patient_information_json_file_path)
 
 
@@ -480,13 +482,12 @@ def init_ui():
                 pass
         # endregion Problems
 
-        # TODO: SDOH Problems Health Concerns
         # region SDOH Problems Health Concerns
         header_name = sdoh_problems_header_name
         with dpg.collapsing_header(label=header_name, tag=_get_header_tag(header_name), default_open=True, indent=20):
             with dpg.group(horizontal=True, indent=20):
-                dpg.add_button(label='Add Problem', callback=_callback_add_sdoh_problem)
-                dpg.add_button(label='Delete Problem', callback=_callback_delete_sdoh_problem)
+                dpg.add_button(label='Add SDOH Problem', callback=_callback_add_sdoh_problem)
+                dpg.add_button(label='Delete SDOH Problem', callback=_callback_delete_sdoh_problem)
             with dpg.group(tag=_get_header_tag(sdoh_problems_list_header_name), indent=20):
                 pass
         # endregion SDOH Problems Health Concerns
@@ -562,13 +563,12 @@ def init_ui():
                 callback=_callback_update_patient_vital_signs)
         # endregion Vital Signs
 
-        # TODO: Family Health History
         # region Family Health History
         header_name = family_health_history_name
         with dpg.collapsing_header(label=header_name, tag=_get_header_tag(header_name), default_open=True, indent=20):
             with dpg.group(horizontal=True, indent=20):
-                dpg.add_button(label='Add', callback=_callback_add_family_health_history)
-                dpg.add_button(label='Delete', callback=_callback_delete_family_health_history)
+                dpg.add_button(label='Add Family History', callback=_callback_add_family_health_history)
+                dpg.add_button(label='Delete Family History', callback=_callback_delete_family_health_history)
             with dpg.group(tag=_get_header_tag(family_health_history_list_name), indent=20):
                 pass
         # endregion Family Health History
