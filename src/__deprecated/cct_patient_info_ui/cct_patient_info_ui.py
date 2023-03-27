@@ -180,7 +180,7 @@ def _add_sdoh_problem_ui(sdoh_problem_id: int):
     header_name = sdoh_problems_list_header_name
     header_tag = _get_header_tag(header_name)
     global patient_info
-    problem = patient_info.problems.problems[sdoh_problem_id]
+    problem = patient_info.problems.sdoh_problems_health_concerns[sdoh_problem_id]
     dpg.add_text('Problem {0}: '.format(sdoh_problem_id + 1),
                  tag=_get_ui_child_object_tag(header_name, 'title', sdoh_problem_id),
                  user_data={'header_name': header_name, 'node_name': 'title', 'id': sdoh_problem_id},
