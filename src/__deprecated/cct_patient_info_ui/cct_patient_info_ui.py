@@ -20,11 +20,15 @@ PIU_SCENARIO_PATIENT_INFO_JSON_PATH_TEXT: str = 'PIU_SCENARIO_DIRECTORY_PATH_TEX
 patient_demographics_header_name = 'Patient Demographics'
 problems_header_name = 'Problems'
 problems_list_header_name = 'Problems List'
+sdoh_problems_header_name = 'SDOH Problems Health Concerns'
+sdoh_problems_list_header_name = 'SDOH Problems List'
 medications_header_name = 'Medications'
 medications_list_header_name = 'Medications List'
 allergies_intolerances_header_name = 'Allergies Intolerances'
 allergies_intolerances_list_header_name = 'Allergies Intolerances List'
 vital_signs_header_name = 'Vital Signs'
+family_health_history_name = 'Family Health History'
+family_health_history_list_name = 'Family Health History List'
 social_health_history_header_name = 'Social Health History'
 
 
@@ -165,6 +169,61 @@ def _callback_update_problem(sender, app_data, user_data):
     setattr(patient_info.problems.problems[problem_id], node_name, app_data)
 
 
+def _callback_add_sdoh_problem(sender, app_data, user_data):
+    global patient_info
+    patient_info.problems.sdoh_problems_health_concerns.append(Problem())
+    sdoh_problem_id = len(patient_info.problems.sdoh_problems_health_concerns) - 1
+    _add_sdoh_problem_ui(sdoh_problem_id)
+
+
+def _add_sdoh_problem_ui(sdoh_problem_id: int):
+    header_name = sdoh_problems_list_header_name
+    header_tag = _get_header_tag(header_name)
+    global patient_info
+    problem = patient_info.problems.problems[sdoh_problem_id]
+    dpg.add_text('Problem {0}: '.format(sdoh_problem_id + 1),
+                 tag=_get_ui_child_object_tag(header_name, 'title', sdoh_problem_id),
+                 user_data={'header_name': header_name, 'node_name': 'title', 'id': sdoh_problem_id},
+                 parent=header_tag, indent=20)
+    dpg.add_input_text(tag=_get_ui_child_object_tag(header_name, 'problem', sdoh_problem_id), label='Problem',
+                       user_data={'header_name': header_name, 'node_name': 'problem', 'id': sdoh_problem_id},
+                       default_value=problem.problem, parent=header_tag, indent=20, callback=_callback_update_sdoh_problem)
+    dpg.add_input_text(tag=_get_ui_child_object_tag(header_name, 'date_of_diagnosis', sdoh_problem_id),
+                       label='Date of Diagnosis', default_value=problem.date_of_diagnosis, parent=header_tag, indent=20,
+                       user_data={'header_name': header_name, 'node_name': 'date_of_diagnosis', 'id': sdoh_problem_id},
+                       callback=_callback_update_sdoh_problem)
+    dpg.add_input_text(tag=_get_ui_child_object_tag(header_name, 'date_of_resolution', sdoh_problem_id),
+                       user_data={'header_name': header_name, 'node_name': 'date_of_resolution', 'id': sdoh_problem_id},
+                       label='Date of Resolution', default_value=problem.date_of_resolution, parent=header_tag,
+                       indent=20,
+                       callback=_callback_update_sdoh_problem)
+
+
+def _callback_delete_sdoh_problem(sender, app_data, user_data):
+    global patient_info
+    if len(patient_info.problems.sdoh_problems_health_concerns) <= 0:
+        return
+
+    patient_info.problems.sdoh_problems_health_concerns = patient_info.problems.sdoh_problems_health_concerns[:-1]
+    sdoh_problem_id = len(patient_info.problems.sdoh_problems_health_concerns)
+    header_name = problems_list_header_name
+    dpg.delete_item(_get_ui_child_object_tag(header_name, 'title', sdoh_problem_id))
+    dpg.delete_item(_get_ui_child_object_tag(header_name, 'problem', sdoh_problem_id))
+    dpg.delete_item(_get_ui_child_object_tag(header_name, 'date_of_diagnosis', sdoh_problem_id))
+    dpg.delete_item(_get_ui_child_object_tag(header_name, 'date_of_resolution', sdoh_problem_id))
+
+
+def _callback_update_sdoh_problem(sender, app_data, user_data):
+    global patient_info
+    node_name = user_data['node_name']
+    sdoh_problem_id = user_data['id']
+
+    if sdoh_problem_id >= len(patient_info.problems.sdoh_problems_health_concerns):
+        return
+
+    setattr(patient_info.problems.sdoh_problems_health_concerns[sdoh_problem_id], node_name, app_data)
+
+
 def _callback_add_medication(sender, app_data, user_data):
     global patient_info
     patient_info.medications.medications.append('')
@@ -236,8 +295,12 @@ def _add_allergy_ui(allergy_id: int):
 
 
 def _callback_update_allergy(sender, app_data, user_data):
-    # TODO: implement
-    pass
+    global patient_info
+    node_name = user_data['node_name']
+    allergy_id = user_data['allergy_id']
+    if allergy_id >= len(patient_info.allergies_intolerances.substances):
+        return
+    setattr(patient_info.allergies_intolerances.substances[allergy_id], node_name, app_data)
 
 
 def _callback_delete_allergy(sender, app_data, user_data):
@@ -254,6 +317,42 @@ def _callback_delete_allergy(sender, app_data, user_data):
     dpg.delete_item(_get_ui_child_object_tag(header_name, 'substance_medication', allergy_id))
     dpg.delete_item(_get_ui_child_object_tag(header_name, 'substance_drug_class', allergy_id))
     dpg.delete_item(_get_ui_child_object_tag(header_name, 'reaction', allergy_id))
+
+
+def _callback_add_family_health_history(sender, app_data, user_data):
+    global patient_info
+    patient_info.family_health_history.family_health_history.append('')
+    family_health_history_id = len(patient_info.family_health_history.family_health_history) - 1
+    _add_family_health_history_ui(family_health_history_id)
+
+
+def _add_family_health_history_ui(family_health_history_id: int):
+    header_name = family_health_history_list_name
+    header_tag = _get_header_tag(header_name)
+    global patient_info
+    family_health_history = patient_info.family_health_history.family_health_history[family_health_history_id]
+    dpg.add_input_text(tag=_get_ui_child_object_tag(header_name, 'family_health_history', family_health_history_id),
+                       user_data={'header_name': header_name, 'node_name': 'family_health_history', 'id': family_health_history_id},
+                       default_value=family_health_history, parent=header_tag, indent=20,
+                       callback=_callback_update_family_health_history)
+
+
+
+def _callback_delete_family_health_history(sender, app_data, user_data):
+    global patient_info
+    if len(patient_info.family_health_history.family_health_history) <= 0:
+        return
+    
+    patient_info.family_health_history.family_health_history = patient_info.family_health_history.family_health_history[:-1]
+    family_health_history_id = len(patient_info.family_health_history.family_health_history)
+    header_name = family_health_history_list_name
+    dpg.delete_item(_get_ui_child_object_tag(header_name, 'family_health_history', family_health_history_id))
+
+
+def _callback_update_family_health_history(sender, app_data, user_data):
+    global patient_info
+    family_health_history_id = user_data['id']
+    patient_info.family_health_history.family_health_history[family_health_history_id] = app_data
 
 
 def _callback_update_patient_vital_signs(sender, app_data, user_data):
@@ -382,6 +481,15 @@ def init_ui():
         # endregion Problems
 
         # TODO: SDOH Problems Health Concerns
+        # region SDOH Problems Health Concerns
+        header_name = sdoh_problems_header_name
+        with dpg.collapsing_header(label=header_name, tag=_get_header_tag(header_name), default_open=True, indent=20):
+            with dpg.group(horizontal=True, indent=20):
+                dpg.add_button(label='Add Problem', callback=_callback_add_sdoh_problem)
+                dpg.add_button(label='Delete Problem', callback=_callback_delete_sdoh_problem)
+            with dpg.group(tag=_get_header_tag(sdoh_problems_list_header_name), indent=20):
+                pass
+        # endregion SDOH Problems Health Concerns
 
         # region Medications
         header_name = medications_header_name
@@ -455,6 +563,15 @@ def init_ui():
         # endregion Vital Signs
 
         # TODO: Family Health History
+        # region Family Health History
+        header_name = family_health_history_name
+        with dpg.collapsing_header(label=header_name, tag=_get_header_tag(header_name), default_open=True, indent=20):
+            with dpg.group(horizontal=True, indent=20):
+                dpg.add_button(label='Add', callback=_callback_add_family_health_history)
+                dpg.add_button(label='Delete', callback=_callback_delete_family_health_history)
+            with dpg.group(tag=_get_header_tag(family_health_history_list_name), indent=20):
+                pass
+        # endregion Family Health History
 
         # region Social Health History
         header_name = social_health_history_header_name
