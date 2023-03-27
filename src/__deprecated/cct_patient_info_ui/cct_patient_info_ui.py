@@ -1,4 +1,3 @@
-import json
 import os.path
 
 import dearpygui.dearpygui as dpg
@@ -18,6 +17,16 @@ patient_information_json_file_path = ''
 
 PIU_SCENARIO_PATIENT_INFO_JSON_PATH_TEXT: str = 'PIU_SCENARIO_DIRECTORY_PATH_TEXT'
 
+patient_demographics_header_name = 'Patient Demographics'
+problems_header_name = 'Problems'
+problems_list_header_name = 'Problems List'
+medications_header_name = 'Medications'
+medications_list_header_name = 'Medications List'
+allergies_intolerances_header_name = 'Allergies Intolerances'
+allergies_intolerances_list_header_name = 'Allergies Intolerances List'
+vital_signs_header_name = 'Vital Signs'
+social_health_history_header_name = 'Social Health History'
+
 
 def set_scenario_path(scenario_path):
     global piu_scenario_path, patient_information_json_file_path
@@ -32,41 +41,45 @@ def set_scenario_path(scenario_path):
 def _load_patient_info_file(file_path_name: str):
     global patient_info, patient_information_json_file_path
     patient_information_json_file_path = file_path_name
-    with open(patient_information_json_file_path, 'r', encoding='UTF-8') as patient_info_json:
-        patient_info = json.load(patient_info_json)
+    patient_info = PatientInformation.load_from_json_file(patient_information_json_file_path)
+    # with open(patient_information_json_file_path, 'r', encoding='UTF-8') as patient_info_json:
+    #     patient_info = json.load(patient_info_json)
 
-    header_name = 'Patient Demographics'
-    fields_name = [name for name in dir(PatientDemographics) if not name.startswith('__')]
+    header_name = patient_demographics_header_name
+    # fields_name = [name for name in dir(PatientDemographics) if not name.startswith('__')]
+    fields_name = vars(PatientDemographics())
     for field_name in fields_name:
         field_value = getattr(patient_info.patient_demographics, field_name)
         dpg.set_value(_get_ui_object_tag(header_name, field_name), field_value)
 
-    header_name = 'Problems'
+    header_name = problems_list_header_name
     header_tag = _get_header_tag(header_name)
     dpg.delete_item(header_tag, children_only=True)
-    for problem_id, _ in patient_info.problems.problems:
+    for problem_id, _ in enumerate(patient_info.problems.problems):
         _add_problem_ui(problem_id)
 
-    header_name = 'Medications'
+    header_name = medications_list_header_name
     header_tag = _get_header_tag(header_name)
     dpg.delete_item(header_tag, children_only=True)
-    for medication_id, _ in patient_info.medications.medications:
+    for medication_id, _ in enumerate(patient_info.medications.medications):
         _add_medication_ui(medication_id)
 
-    header_name = 'Allergies Intolerances'
+    header_name = allergies_intolerances_list_header_name
     header_tag = _get_header_tag(header_name)
     dpg.delete_item(header_tag, children_only=True)
-    for allergy_id, _ in patient_info.allergies_intolerances.substances:
+    for allergy_id, _ in enumerate(patient_info.allergies_intolerances.substances):
         _add_allergy_ui(allergy_id)
 
-    header_name = 'Vital Signs'
-    fields_name = [name for name in dir(VitalSigns) if not name.startswith('__')]
+    header_name = vital_signs_header_name
+    # fields_name = [name for name in dir(VitalSigns) if not name.startswith('__')]
+    fields_name = vars(VitalSigns())
     for field_name in fields_name:
         field_value = getattr(patient_info.vital_signs, field_name)
         dpg.set_value(_get_ui_object_tag(header_name, field_name), field_value)
 
-    header_name = 'Social Health History'
-    fields_name = [name for name in dir(SocialHealthHistory) if not name.startswith('__')]
+    header_name = social_health_history_header_name
+    # fields_name = [name for name in dir(SocialHealthHistory) if not name.startswith('__')]
+    fields_name = vars(SocialHealthHistory())
     for field_name in fields_name:
         field_value = getattr(patient_info.social_health_history, field_name)
         dpg.set_value(_get_ui_object_tag(header_name, field_name), field_value)
@@ -105,7 +118,7 @@ def _callback_add_problem(sender, app_data, user_data):
 
 
 def _add_problem_ui(problem_id: int):
-    header_name = 'Problems'
+    header_name = problems_list_header_name
     header_tag = _get_header_tag(header_name)
     global patient_info
     problem = patient_info.problems.problems[problem_id]
@@ -134,7 +147,7 @@ def _callback_delete_problem(sender, app_data, user_data):
 
     patient_info.problems.problems = patient_info.problems.problems[:-1]
     problem_id = len(patient_info.problems.problems)
-    header_name = 'Problems'
+    header_name = problems_list_header_name
     dpg.delete_item(_get_ui_child_object_tag(header_name, 'title', problem_id))
     dpg.delete_item(_get_ui_child_object_tag(header_name, 'problem', problem_id))
     dpg.delete_item(_get_ui_child_object_tag(header_name, 'date_of_diagnosis', problem_id))
@@ -160,10 +173,10 @@ def _callback_add_medication(sender, app_data, user_data):
 
 
 def _add_medication_ui(medication_id: int):
-    header_name = 'Medications'
+    header_name = medications_list_header_name
     header_tag = _get_header_tag(header_name)
     global patient_info
-    medication = patient_info.medications[medication_id]
+    medication = patient_info.medications.medications[medication_id]
     dpg.add_input_text(tag=_get_ui_child_object_tag(header_name, 'medication', medication_id),
                        label='Medication {0}'.format(medication_id + 1),
                        user_data={'header_name': header_name, 'node_name': 'medication', 'id': medication_id},
@@ -178,7 +191,7 @@ def _callback_update_medication(sender, app_data, user_data):
     if medication_id >= len(patient_info.medications.medications):
         return
 
-    setattr(patient_info.medications.medications[medication_id], node_name, app_data)
+    patient_info.medications.medications[medication_id] = app_data
 
 
 def _callback_delete_medication(sender, app_data, user_data):
@@ -186,7 +199,7 @@ def _callback_delete_medication(sender, app_data, user_data):
     patient_info.medications.medications = patient_info.medications.medications[:-1]
     medication_id = len(patient_info.medications.medications)
 
-    header_name = 'Medications'
+    header_name = medications_list_header_name
     dpg.delete_item(_get_ui_child_object_tag(header_name, 'medication', medication_id))
 
 
@@ -198,7 +211,7 @@ def _callback_add_allergy(sender, app_data, user_data):
 
 
 def _add_allergy_ui(allergy_id: int):
-    header_name = 'Allergies Intolerances'
+    header_name = allergies_intolerances_list_header_name
     header_tag = _get_header_tag(header_name)
     global patient_info
     allergy = patient_info.allergies_intolerances.substances[allergy_id]
@@ -223,6 +236,7 @@ def _add_allergy_ui(allergy_id: int):
 
 
 def _callback_update_allergy(sender, app_data, user_data):
+    # TODO: implement
     pass
 
 
@@ -235,7 +249,7 @@ def _callback_delete_allergy(sender, app_data, user_data):
     patient_info.allergies_intolerances.substances = patient_info.allergies_intolerances.substances[:-1]
     allergy_id = len(patient_info.allergies_intolerances.substances)
 
-    header_name = 'Allergies Intolerances'
+    header_name = allergies_intolerances_list_header_name
     dpg.delete_item(_get_ui_child_object_tag(header_name, 'title', allergy_id))
     dpg.delete_item(_get_ui_child_object_tag(header_name, 'substance_medication', allergy_id))
     dpg.delete_item(_get_ui_child_object_tag(header_name, 'substance_drug_class', allergy_id))
@@ -244,24 +258,25 @@ def _callback_delete_allergy(sender, app_data, user_data):
 
 def _callback_update_patient_vital_signs(sender, app_data, user_data):
     global patient_info
-    header_name = 'Patient Demographics'
+    header_name = patient_demographics_header_name
     node_name = user_data['node_name']
     setattr(patient_info.vital_signs, node_name, app_data)
 
 
 def _callback_update_social_health_history(sender, app_data, user_data):
     global patient_info
-    header_name = 'Social Health History'
+    header_name = social_health_history_header_name
     node_name = user_data['node_name']
     setattr(patient_info.social_health_history, node_name, app_data)
 
 
 def _callback_export_patient_info(sender, app_data, user_data):
     global patient_info
-    patient_info_json = json.dumps(patient_info, indent=4)
-
-    with open(patient_information_json_file_path, 'w', encoding='UTF-8') as outfile:
-        outfile.write(patient_info_json)
+    # patient_info_json = json.dumps(patient_info, indent=4)
+    #
+    # with open(patient_information_json_file_path, 'w', encoding='UTF-8') as outfile:
+    #     outfile.write(patient_info_json)
+    PatientInformation.save_to_json_file(patient_info, patient_information_json_file_path)
 
 
 def init_ui():
@@ -271,7 +286,7 @@ def init_ui():
         dpg.add_text(tag=PIU_SCENARIO_PATIENT_INFO_JSON_PATH_TEXT)
 
         # region Patient Demographics
-        header_name = 'Patient Demographics'
+        header_name = patient_demographics_header_name
         with dpg.collapsing_header(label=header_name, tag=_get_header_tag(header_name), default_open=True, indent=20):
             dpg.add_input_text(tag=_get_ui_object_tag(header_name, 'first_name'), label='First Name',
                                user_data={'header_name': header_name, 'node_name': 'first_name'},
@@ -357,31 +372,39 @@ def init_ui():
         # endregion Patient Demographics
 
         # region Problems
-        header_name = 'Problems'
+        header_name = problems_header_name
         with dpg.collapsing_header(label=header_name, tag=_get_header_tag(header_name), default_open=True, indent=20):
             with dpg.group(horizontal=True, indent=20):
                 dpg.add_button(label='Add Problem', callback=_callback_add_problem)
                 dpg.add_button(label='Delete Problem', callback=_callback_delete_problem)
+            with dpg.group(tag=_get_header_tag(problems_list_header_name), indent=20):
+                pass
         # endregion Problems
 
+        # TODO: SDOH Problems Health Concerns
+
         # region Medications
-        header_name = 'Medications'
+        header_name = medications_header_name
         with dpg.collapsing_header(label=header_name, tag=_get_header_tag(header_name), default_open=True, indent=20):
             with dpg.group(horizontal=True, indent=20):
                 dpg.add_button(label='Add Medication', callback=_callback_add_medication)
                 dpg.add_button(label='Delete Medication', callback=_callback_delete_medication)
+            with dpg.group(tag=_get_header_tag(medications_list_header_name), indent=20):
+                pass
         # endregion Medications
 
         # region Allergies Intolerances
-        header_name = 'Allergies Intolerances'
+        header_name = allergies_intolerances_header_name
         with dpg.collapsing_header(label=header_name, tag=_get_header_tag(header_name), default_open=True, indent=20):
             with dpg.group(horizontal=True, indent=20):
                 dpg.add_button(label='Add Allergy', callback=_callback_add_allergy)
                 dpg.add_button(label='Delete Allergy', callback=_callback_delete_allergy)
+            with dpg.group(tag=_get_header_tag(allergies_intolerances_list_header_name), indent=20):
+                pass
         # endregion Allergies Intolerances
 
         # region Vital Signs
-        header_name = 'Vital Signs'
+        header_name = vital_signs_header_name
         with dpg.collapsing_header(label=header_name, tag=_get_header_tag(header_name), default_open=True, indent=20):
             dpg.add_input_text(tag=_get_ui_object_tag(header_name, 'systolic_blood_pressure'),
                                label='Systolic Blood Pressure',
@@ -431,8 +454,10 @@ def init_ui():
                 callback=_callback_update_patient_vital_signs)
         # endregion Vital Signs
 
+        # TODO: Family Health History
+
         # region Social Health History
-        header_name = 'Social Health History'
+        header_name = social_health_history_header_name
         with dpg.collapsing_header(label=header_name, tag=_get_header_tag(header_name), default_open=True, indent=20):
             dpg.add_input_text(tag=_get_ui_object_tag(header_name, 'social_history_observation'),
                                label='Social History Observation',
