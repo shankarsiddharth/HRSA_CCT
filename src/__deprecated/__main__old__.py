@@ -16,7 +16,7 @@ from __deprecated.transfer_to_device import transfer_to_device
 from app_version import app_version
 from hrsa_cct_globals import log
 from hrsa_data.scenario_data.scenario_information.scenario_information import ScenarioInformation
-from patient_info_ui import patient_info_ui
+from cct_patient_info_ui import cct_patient_info_ui
 
 # debug build parameters
 is_debug = True
@@ -216,7 +216,7 @@ def callback_on_copy_scenario_button_clicked():
 
     audio_generation.callback_on_scenario_folder_selected(audio_generation.FILE_DIALOG_FOR_SCENARIO_FOLDER, hrsa_cct_globals.app_data)
     translate.callback_on_source_scenario_folder_selected(translate.FILE_DIALOG_FOR_SOURCE_SCENARIO_FOLDER, hrsa_cct_globals.app_data)
-    patient_info_ui.set_scenario_path(scenario_path_destination)
+    cct_patient_info_ui.set_scenario_path(scenario_path_destination)
     cct_scenario_config.set_scenario_path(scenario_path_destination)
     show_ink_files.set_scenario_path(scenario_path_destination)
 
@@ -313,7 +313,7 @@ def main() -> None:
             dpg.add_separator()
 
         # Patient Info UI - Initialize
-        patient_info_ui.init_ui()
+        cct_patient_info_ui.init_ui()
 
         # Dialogue UI Config - Initialize
         # dialogue_ui_config.init_ui()
