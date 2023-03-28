@@ -48,17 +48,8 @@ SHOW_FILE_DIALOG_BUTTON_SCENARIO_DESTINATION_FOLDER: str = "SHOW_FILE_DIALOG_BUT
 SCENARIO_DIRECTORY_PATH_TEXT_DESTINATION: str = "SCENARIO_DIRECTORY_PATH_TEXT_DESTINATION"
 COPY_SCENARIO_INFORMATION_BUTTON: str = "COPY_SCENARIO_INFORMATION_BUTTON"
 
-# Global Variable
-scenario_path = ""
-scenario_path_source = ""
-scenario_path_destination = ""
-room_dialogue_data = dict()
-character_voice_config_data = dict()
-ink_file_path_list = []
-
 
 def create_scenario_folders(scenario_name, scenario_information_json_object) -> None:
-    global scenario_path
     # Scenario Folder
     scenario_path_root = os.path.join(hrsa_cct_config.get_user_hrsa_data_folder_path(), scenario_name)
     log.info("scenario_path_root: " + scenario_path_root)
@@ -68,28 +59,28 @@ def create_scenario_folders(scenario_name, scenario_information_json_object) -> 
     default_language_folder = os.path.join(scenario_path_root, hrsa_cct_globals.default_language_code)
     log.info("default_language_folder: " + default_language_folder)
     os.mkdir(default_language_folder)
-    scenario_path = os.path.abspath(default_language_folder)
+    hrsa_cct_globals.scenario_path = os.path.abspath(default_language_folder)
     # Scenario Information JSON
-    scenario_information_json_path = os.path.join(scenario_path, hrsa_cct_constants.SCENARIO_INFORMATION_JSON_FILE_NAME)
+    scenario_information_json_path = os.path.join(hrsa_cct_globals.scenario_path, hrsa_cct_constants.SCENARIO_INFORMATION_JSON_FILE_NAME)
     log.info("scenario_information_json_path: " + scenario_information_json_path)
     with open(scenario_information_json_path, "w", encoding="utf-8") as output_file:
         output_file.write(scenario_information_json_object)
     # Break Room
-    break_room_folder_path = os.path.join(scenario_path, hrsa_cct_constants.BREAK_ROOM_NAME)
+    break_room_folder_path = os.path.join(hrsa_cct_globals.scenario_path, hrsa_cct_constants.BREAK_ROOM_NAME)
     os.mkdir(break_room_folder_path)
     audio_folder = os.path.join(break_room_folder_path, hrsa_cct_constants.AUDIO_FOLDER_NAME)
     os.mkdir(audio_folder)
     file_path = os.path.join(break_room_folder_path, hrsa_cct_constants.DIALOGUE_INK_FILE_NAME)
     open(file_path, 'a').close()
     # Patient Room
-    patient_room_folder_path = os.path.join(scenario_path, hrsa_cct_constants.PATIENT_ROOM_NAME)
+    patient_room_folder_path = os.path.join(hrsa_cct_globals.scenario_path, hrsa_cct_constants.PATIENT_ROOM_NAME)
     os.mkdir(patient_room_folder_path)
     audio_folder = os.path.join(patient_room_folder_path, hrsa_cct_constants.AUDIO_FOLDER_NAME)
     os.mkdir(audio_folder)
     file_path = os.path.join(patient_room_folder_path, hrsa_cct_constants.DIALOGUE_INK_FILE_NAME)
     open(file_path, 'a').close()
     # Feedback Room
-    feedback_room_folder_path = os.path.join(scenario_path, hrsa_cct_constants.FEEDBACK_ROOM_NAME)
+    feedback_room_folder_path = os.path.join(hrsa_cct_globals.scenario_path, hrsa_cct_constants.FEEDBACK_ROOM_NAME)
     os.mkdir(feedback_room_folder_path)
     # Break Room Feedback
     break_room_feedback_folder_path = os.path.join(feedback_room_folder_path, hrsa_cct_constants.FEEDBACK_TYPE_BREAK_ROOM_NAME)
@@ -183,34 +174,31 @@ def callback_on_create_scenario_button_clicked() -> None:
 def callback_on_scenario_source_folder_selected(sender, app_data):
     log.debug("Sender: " + str(sender))
     log.debug("App Data: " + str(app_data))
-    global scenario_path_source
-    scenario_path_source = os.path.normpath(str(app_data['file_path_name']))
-    log.info("Source Scenario Path: " + scenario_path_source)
-    dpg.configure_item(SCENARIO_DIRECTORY_PATH_TEXT_SOURCE, default_value=scenario_path_source)
+    hrsa_cct_globals.scenario_path_source = os.path.normpath(str(app_data['file_path_name']))
+    log.info("Source Scenario Path: " + hrsa_cct_globals.scenario_path_source)
+    dpg.configure_item(SCENARIO_DIRECTORY_PATH_TEXT_SOURCE, default_value=hrsa_cct_globals.scenario_path_source)
 
 
 def callback_on_scenario_destination_folder_selected(sender, app_data):
     log.debug("Sender: " + str(sender))
     log.debug("App Data: " + str(app_data))
-    global scenario_path_destination
-    scenario_path_destination = os.path.normpath(str(app_data['file_path_name']))
-    log.info("Destination Scenario Path: " + scenario_path_destination)
-    dpg.configure_item(SCENARIO_DIRECTORY_PATH_TEXT_DESTINATION, default_value=scenario_path_destination)
+    hrsa_cct_globals.scenario_path_destination = os.path.normpath(str(app_data['file_path_name']))
+    log.info("Destination Scenario Path: " + hrsa_cct_globals.scenario_path_destination)
+    dpg.configure_item(SCENARIO_DIRECTORY_PATH_TEXT_DESTINATION, default_value=hrsa_cct_globals.scenario_path_destination)
 
 
 def callback_on_copy_scenario_button_clicked():
     dpg.configure_item(COPY_SCENARIO_INFORMATION_BUTTON, show=False)
-    global scenario_path_source, scenario_path_destination
-    shutil.copytree(scenario_path_source, scenario_path_destination, dirs_exist_ok=True,
+    shutil.copytree(hrsa_cct_globals.scenario_path_source, hrsa_cct_globals.scenario_path_destination, dirs_exist_ok=True,
                     ignore=shutil.ignore_patterns('*.mp3', '*.wav', 'scenario_information.json', 'feedback.json', 'dialogue.json', 'es-US'))
-    log.info("Scenario Folder Copy Complete from: " + scenario_path_source + "\tto: " + scenario_path_destination)
+    log.info("Scenario Folder Copy Complete from: " + hrsa_cct_globals.scenario_path_source + "\tto: " + hrsa_cct_globals.scenario_path_destination)
     dpg.configure_item(COPY_SCENARIO_INFORMATION_BUTTON, show=True)
 
     audio_generation.callback_on_scenario_folder_selected(audio_generation.FILE_DIALOG_FOR_SCENARIO_FOLDER, hrsa_cct_globals.app_data)
     translate.callback_on_source_scenario_folder_selected(translate.FILE_DIALOG_FOR_SOURCE_SCENARIO_FOLDER, hrsa_cct_globals.app_data)
-    cct_patient_info_ui.set_scenario_path(scenario_path_destination)
-    cct_scenario_config.set_scenario_path(scenario_path_destination)
-    show_ink_files.set_scenario_path(scenario_path_destination)
+    cct_patient_info_ui.set_scenario_path(hrsa_cct_globals.scenario_path_destination)
+    cct_scenario_config.set_scenario_path(hrsa_cct_globals.scenario_path_destination)
+    show_ink_files.set_scenario_path(hrsa_cct_globals.scenario_path_destination)
 
 
 def save_init():
