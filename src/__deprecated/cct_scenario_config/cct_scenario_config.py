@@ -3,7 +3,7 @@ import os
 
 import dearpygui.dearpygui as dpg
 
-from __deprecated import hrsa_cct_constants, hrsa_cct_globals, hrsa_cct_config
+from __deprecated import hrsa_cct_constants, hrsa_cct_globals, hrsa_cct_config, cct_ui_panels
 from __deprecated.configuration import character_model_data
 from __deprecated.hrsa_cct_globals import hfs
 from hrsa_data.scenario_data.scenario_config.conversation_config import ConversationConfig
@@ -17,7 +17,6 @@ loaded_texture = []
 
 scenario_config: ScenarioConfig = ScenarioConfig()
 
-CCT_SCENARIO_CONFIG_COLLAPSING_HEADER: str = 'CCT_SCENARIO_CONFIG_COLLAPSING_HEADER'
 CCT_CHARACTER_CONFIG_COLLAPSING_HEADER: str = 'CCT_CHARACTER_CONFIG_COLLAPSING_HEADER'
 CCT_DIALOGUE_UI_CONFIG_COLLAPSING_HEADER: str = 'CCT_DIALOGUE_UI_CONFIG_COLLAPSING_HEADER'
 SCU_SCENARIO_CONFIG_JSON_PATH_TEXT: str = 'SCU_SCENARIO_CONFIG_JSON_PATH_TEXT'
@@ -326,7 +325,7 @@ def init_ui():
     _load_character_config()
 
     dpg.add_texture_registry(label="Demo Texture Container", tag="static_texture_container")
-    with dpg.collapsing_header(tag=CCT_SCENARIO_CONFIG_COLLAPSING_HEADER, label="Scenario Config", default_open=False):
+    with dpg.collapsing_header(tag=cct_ui_panels.CCT_SCENARIO_CONFIG_COLLAPSING_HEADER, label="Scenario Config", default_open=False):
         dpg.add_text(tag=SCU_SCENARIO_CONFIG_JSON_PATH_TEXT)
         with dpg.file_dialog(height=300, width=600, directory_selector=False, show=False,
                              callback=_load_character_config_for_current_scenario, tag=SCU_OPEN_FILE_DIALOG,
@@ -461,5 +460,5 @@ def init_ui():
         # endregion Dialogue UI Config
 
         dpg.add_button(tag=CCT_SCENARIO_CONFIG_SAVE_SETTINGS_BUTTON, label="Save Setting",
-                       parent=CCT_SCENARIO_CONFIG_COLLAPSING_HEADER, show=False, callback=_update_current_scenario_config_file)
+                       parent=cct_ui_panels.CCT_SCENARIO_CONFIG_COLLAPSING_HEADER, show=False, callback=_update_current_scenario_config_file)
         dpg.add_separator()

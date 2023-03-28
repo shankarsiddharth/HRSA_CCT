@@ -10,13 +10,13 @@ import audio_generation
 import hrsa_cct_constants
 import hrsa_cct_globals
 import translate
-from __deprecated import hrsa_cct_config, show_ink_files
+from __deprecated import hrsa_cct_config, show_ink_files, cct_ui_panels
 from __deprecated.cct_scenario_config import cct_scenario_config
 from __deprecated.transfer_to_device import transfer_to_device
 from app_version import app_version
+from cct_patient_info_ui import cct_patient_info_ui
 from hrsa_cct_globals import log
 from hrsa_data.scenario_data.scenario_information.scenario_information import ScenarioInformation
-from cct_patient_info_ui import cct_patient_info_ui
 
 # debug build parameters
 is_debug = True
@@ -52,9 +52,6 @@ FILE_DIALOG_FOR_SCENARIO_FOLDER_DESTINATION: str = "FILE_DIALOG_FOR_SCENARIO_FOL
 SHOW_FILE_DIALOG_BUTTON_SCENARIO_DESTINATION_FOLDER: str = "SHOW_FILE_DIALOG_BUTTON_SCENARIO_DESTINATION_FOLDER"
 SCENARIO_DIRECTORY_PATH_TEXT_DESTINATION: str = "SCENARIO_DIRECTORY_PATH_TEXT_DESTINATION"
 COPY_SCENARIO_INFORMATION_BUTTON: str = "COPY_SCENARIO_INFORMATION_BUTTON"
-
-AUDIO_GENERATION_COLLAPSING_HEADER: str = "AUDIO_GENERATION_COLLAPSING_HEADER"
-TRANSLATE_COLLAPSING_HEADER: str = "TRANSLATE_COLLAPSING_HEADER"
 
 # Global Variable
 scenario_path = ""
@@ -149,13 +146,13 @@ def callback_on_google_cloud_credentials_file_selected(sender, app_data):
                            show=True)
         log.info('Google Cloud Credentials File Selected')
         dpg.configure_item(GOOGLE_CLOUD_CREDENTIALS_ERROR_TEXT, show=False)
-        dpg.configure_item(AUDIO_GENERATION_COLLAPSING_HEADER, show=True)
-        dpg.configure_item(TRANSLATE_COLLAPSING_HEADER, show=True)
+        dpg.configure_item(cct_ui_panels.AUDIO_GENERATION_COLLAPSING_HEADER, show=True)
+        dpg.configure_item(cct_ui_panels.TRANSLATE_COLLAPSING_HEADER, show=True)
     else:
         dpg.configure_item(GOOGLE_CLOUD_CREDENTIALS_FILE_PATH_TEXT, show=False)
         dpg.configure_item(GOOGLE_CLOUD_CREDENTIALS_ERROR_TEXT, show=True)
-        dpg.configure_item(AUDIO_GENERATION_COLLAPSING_HEADER, show=False)
-        dpg.configure_item(TRANSLATE_COLLAPSING_HEADER, show=False)
+        dpg.configure_item(cct_ui_panels.AUDIO_GENERATION_COLLAPSING_HEADER, show=False)
+        dpg.configure_item(cct_ui_panels.TRANSLATE_COLLAPSING_HEADER, show=False)
 
 
 def file_dialog_cancel_callback(sender, app_data, user_data):
@@ -288,13 +285,13 @@ def main() -> None:
                          show=(not hrsa_cct_config.is_user_hrsa_data_folder_found()))
             dpg.add_separator()
 
-        with dpg.collapsing_header(label="Create Scenario", default_open=False):
+        with dpg.collapsing_header(label="Create Scenario", tag=cct_ui_panels.CREATE_SCENARIO_COLLAPSING_HEADER, default_open=False):
             dpg.add_input_text(tag=SCENARIO_NAME_INPUT_TEXT, label="Scenario Name", default_value="")
             dpg.add_input_text(tag=SCENARIO_DESCRIPTION_INPUT_TEXT, label="Scenario Description", multiline=True, tab_input=False)
             dpg.add_button(tag=CREATE_SCENARIO_INFORMATION_BUTTON, label="Create Scenario Folder", callback=callback_on_create_scenario_button_clicked)
             dpg.add_separator()
 
-        with dpg.collapsing_header(label="Copy Scenario Content", default_open=False):
+        with dpg.collapsing_header(label="Copy Scenario Content", tag=cct_ui_panels.COPY_SCENARIO_COLLAPSING_HEADER, default_open=False):
             dpg.add_file_dialog(tag=FILE_DIALOG_FOR_SCENARIO_FOLDER_SOURCE, height=300, width=450, directory_selector=True, show=False,
                                 callback=callback_on_scenario_source_folder_selected,
                                 default_path=hrsa_cct_config.get_file_dialog_default_path(),
@@ -325,7 +322,7 @@ def main() -> None:
         # Show Ink Files
         show_ink_files.init_ui()
 
-        with dpg.collapsing_header(tag=AUDIO_GENERATION_COLLAPSING_HEADER,
+        with dpg.collapsing_header(tag=cct_ui_panels.AUDIO_GENERATION_COLLAPSING_HEADER,
                                    label="Choose the Scenario Folder for Audio Generation", default_open=False, show=hrsa_cct_config.is_google_cloud_credentials_file_found()):
             dpg.add_file_dialog(tag=audio_generation.FILE_DIALOG_FOR_SCENARIO_FOLDER, height=300, width=450, directory_selector=True, show=False,
                                 callback=audio_generation.callback_on_scenario_folder_selected,
@@ -350,7 +347,7 @@ def main() -> None:
             dpg.add_button(tag=audio_generation.GENERATE_AUDIO_BUTTON, label="Generate Audio", show=False, callback=audio_generation.callback_on_generate_audio_clicked)
             dpg.add_separator()
 
-        with dpg.collapsing_header(tag=TRANSLATE_COLLAPSING_HEADER,
+        with dpg.collapsing_header(tag=cct_ui_panels.TRANSLATE_COLLAPSING_HEADER,
                                    label="Choose a location to create the Translated Data Folder", default_open=False,
                                    show=hrsa_cct_config.is_google_cloud_credentials_file_found()):
             dpg.add_file_dialog(tag=translate.FILE_DIALOG_FOR_SOURCE_SCENARIO_FOLDER, height=300, width=450, directory_selector=True, show=False,

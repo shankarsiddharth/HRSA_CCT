@@ -2,7 +2,7 @@ import os.path
 
 import dearpygui.dearpygui as dpg
 
-from __deprecated import hrsa_cct_constants, hrsa_cct_globals
+from __deprecated import hrsa_cct_constants, hrsa_cct_globals, cct_ui_panels
 from hrsa_data.scenario_data.ehr.patient_demographics import PatientDemographics
 from hrsa_data.scenario_data.ehr.patient_information import PatientInformation
 from hrsa_data.scenario_data.ehr.problem import Problem
@@ -316,7 +316,6 @@ def _callback_update_allergy(sender, app_data, user_data):
     allergy_id = user_data['id']
     if allergy_id >= len(patient_info.allergies_intolerances.substances):
         return
-    print('allergy_id: {0}, node_name: {1}, app_data: {2}'.format(allergy_id, node_name, app_data))
     setattr(patient_info.allergies_intolerances.substances[allergy_id], node_name, app_data)
 
 
@@ -390,7 +389,7 @@ def _callback_export_patient_info(sender, app_data, user_data):
 
 
 def init_ui():
-    with dpg.collapsing_header(label='Patient Info UI', default_open=False, parent=hrsa_cct_constants.HRSA_CCT_TOOL):
+    with dpg.collapsing_header(label='Patient Info UI', tag=cct_ui_panels.CCT_PATIENT_INFO_COLLAPSING_HEADER, default_open=False):
         # TODO: Add a 'Clear Data Button' that clears all the UI information
 
         dpg.add_text(tag=PIU_SCENARIO_PATIENT_INFO_JSON_PATH_TEXT)

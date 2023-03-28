@@ -4,7 +4,7 @@ import threading
 
 import dearpygui.dearpygui as dpg
 
-from __deprecated import hrsa_cct_constants as hcc, hrsa_cct_globals as hcg, hrsa_cct_config
+from __deprecated import hrsa_cct_constants as hcc, hrsa_cct_globals as hcg, hrsa_cct_config, cct_ui_panels
 from __deprecated.hrsa_cct_globals import hfsc, hfs, log
 
 ink_file_process_threads = dict()
@@ -123,7 +123,7 @@ def file_dialog_cancel_callback(sender, app_data):
 
 
 def init_ui():
-    with dpg.collapsing_header(label="Ink Files", default_open=False):
+    with dpg.collapsing_header(label="Ink Files", tag=cct_ui_panels.SHOW_INK_FILES_COLLAPSING_HEADER, default_open=False):
         dpg.add_file_dialog(tag=SIF_FILE_DIALOG_FOR_SCENARIO_FOLDER, height=300, width=450, directory_selector=True, show=False,
                             callback=_callback_on_scenario_folder_selected,
                             default_path=hrsa_cct_config.get_file_dialog_default_path(),
