@@ -53,5 +53,7 @@ app_data = dict()
 
 connect_to_cloud = False
 
+is_debug: bool = sys.flags.dev_mode
+
 if sys.flags.dev_mode:
     print("hrsa_cc_globals.__init__()")

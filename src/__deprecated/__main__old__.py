@@ -1,7 +1,6 @@
 import json
 import os
 import shutil
-import sys
 from dataclasses import asdict
 
 import dearpygui.dearpygui as dpg
@@ -10,7 +9,7 @@ import audio_generation
 import hrsa_cct_constants
 import hrsa_cct_globals
 import translate
-from __deprecated import hrsa_cct_config, show_ink_files, cct_ui_panels
+from __deprecated import hrsa_cct_config, show_ink_files, cct_ui_panels, cct_workflow_ui, cct_scenario_ui
 from __deprecated.cct_scenario_config import cct_scenario_config
 from __deprecated.transfer_to_device import transfer_to_device
 from app_version import app_version
@@ -19,12 +18,8 @@ from hrsa_cct_globals import log
 from hrsa_data.scenario_data.scenario_information.scenario_information import ScenarioInformation
 
 # debug build parameters
-is_debug = True
+is_debug: bool = hrsa_cct_globals.is_debug
 
-print("sys.flags.dev_mode", sys.flags.dev_mode)
-
-# logger = dpg_logger.mvLogger()
-# logger.log("mv Logger Started")
 # TODO: Split into modules and change the global data variable to function return values
 
 # DearPyGUI's Viewport Constants
@@ -156,9 +151,9 @@ def callback_on_google_cloud_credentials_file_selected(sender, app_data):
 
 
 def file_dialog_cancel_callback(sender, app_data, user_data):
-    log.debug("Sender: " + str(sender))
-    log.debug("App Data: " + str(app_data))
-    log.debug("User Data: " + str(user_data))
+    # log.debug("Sender: " + str(sender))
+    # log.debug("App Data: " + str(app_data))
+    # log.debug("User Data: " + str(user_data))
     pass
 
 
@@ -254,10 +249,14 @@ def main() -> None:
     dpg.set_exit_callback(callback=__exit_callback__)
 
     with dpg.window(label="HRSA CCT", tag=hrsa_cct_constants.HRSA_CCT_TOOL, width=VIEWPORT_WIDTH, height=VIEWPORT_HEIGHT, no_title_bar=True, no_close=True):
-        if is_debug:
-            dpg.add_button(label="Save Init", callback=save_init)
-            dpg.add_checkbox(label="Connect to Cloud", tag="connect_to_cloud", default_value=hrsa_cct_globals.connect_to_cloud,
-                             callback=callback_on_connect_to_cloud_checkbox_clicked)
+        # region Debug UI
+        dpg.add_button(label="Save Init", callback=save_init, show=is_debug)
+        dpg.add_checkbox(label="Connect to Cloud", tag="connect_to_cloud", show=is_debug,
+                         default_value=hrsa_cct_globals.connect_to_cloud,
+                         callback=callback_on_connect_to_cloud_checkbox_clicked)
+        # endregion Debug UI
+
+        # region App Config UI
         with dpg.collapsing_header(label="Google Cloud Credentials File", default_open=True):
             with dpg.file_dialog(tag=FILE_DIALOG_FOR_GOOGLE_CLOUD_CREDENTIALS, directory_selector=False, height=300, width=450, show=False,
                                  callback=callback_on_google_cloud_credentials_file_selected,
@@ -284,7 +283,12 @@ def main() -> None:
             dpg.add_text(tag=DATA_DIRECTORY_ERROR_TEXT, default_value="HRSA Data Folder Not Found",
                          show=(not hrsa_cct_config.is_user_hrsa_data_folder_found()))
             dpg.add_separator()
+        # endregion App Config UI
 
+        # Choose Workflow UI - Initialize
+        cct_workflow_ui.init_ui()
+
+        # region Create Scenario UI
         with dpg.collapsing_header(label="Create Scenario", tag=cct_ui_panels.CREATE_SCENARIO_COLLAPSING_HEADER, default_open=False):
             dpg.add_input_text(tag=SCENARIO_NAME_INPUT_TEXT, label="Scenario Name", default_value="")
             dpg.add_input_text(tag=SCENARIO_DESCRIPTION_INPUT_TEXT, label="Scenario Description", multiline=True, tab_input=False)
@@ -308,20 +312,21 @@ def main() -> None:
             dpg.add_text(tag=SCENARIO_DIRECTORY_PATH_TEXT_DESTINATION)
             dpg.add_button(tag=COPY_SCENARIO_INFORMATION_BUTTON, label="Copy Scenario Folder", callback=callback_on_copy_scenario_button_clicked)
             dpg.add_separator()
+        # endregion Create Scenario UI
+
+        # Select Scenario UI - Initialize
+        cct_scenario_ui.init_ui()
 
         # Patient Info UI - Initialize
         cct_patient_info_ui.init_ui()
 
-        # Dialogue UI Config - Initialize
-        # dialogue_ui_config.init_ui()
-
-        # Character Config - Initialize
-        # character_config.init_ui()
+        # Scenario Config UI - Initialize
         cct_scenario_config.init_ui()
 
-        # Show Ink Files
+        # Show Ink Files UI - Initialize
         show_ink_files.init_ui()
 
+        # region Audio Generation UI
         with dpg.collapsing_header(tag=cct_ui_panels.AUDIO_GENERATION_COLLAPSING_HEADER,
                                    label="Choose the Scenario Folder for Audio Generation", default_open=False, show=hrsa_cct_config.is_google_cloud_credentials_file_found()):
             dpg.add_file_dialog(tag=audio_generation.FILE_DIALOG_FOR_SCENARIO_FOLDER, height=300, width=450, directory_selector=True, show=False,
@@ -346,7 +351,9 @@ def main() -> None:
                 dpg.add_button(tag=audio_generation.SAVE_AUDIO_SETTINGS_BUTTON, label="Save voice settings", show=True, callback=audio_generation.save_audio_settings)
             dpg.add_button(tag=audio_generation.GENERATE_AUDIO_BUTTON, label="Generate Audio", show=False, callback=audio_generation.callback_on_generate_audio_clicked)
             dpg.add_separator()
+        # endregion Audio Generation UI
 
+        # region Translate UI
         with dpg.collapsing_header(tag=cct_ui_panels.TRANSLATE_COLLAPSING_HEADER,
                                    label="Choose a location to create the Translated Data Folder", default_open=False,
                                    show=hrsa_cct_config.is_google_cloud_credentials_file_found()):
@@ -368,6 +375,7 @@ def main() -> None:
                 dpg.add_text(tag=translate.NEW_DATA_DIRECTORY_PATH_TEXT)
             dpg.add_button(tag=translate.TRANSLATE_TEXT_BUTTON, label="Translate Data", show=False, callback=translate.callback_on_translate_text_clicked)
             dpg.add_separator()
+        # endregion Translate UI
 
         # Transfer to Device UI
         transfer_to_device.init_ui()

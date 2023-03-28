@@ -1,7 +1,7 @@
 import dearpygui.dearpygui as dpg
 from adbutils import adb
 
-from __deprecated import hrsa_cct_constants
+from __deprecated import cct_ui_panels
 
 target_devices = []
 
@@ -52,7 +52,8 @@ def file_dialog_cancel_callback(sender, app_data, user_data):
 
 
 def init_ui():
-    with dpg.collapsing_header(label="Transfer to Device", default_open=False, parent=hrsa_cct_constants.HRSA_CCT_TOOL):
+    with dpg.collapsing_header(label="Transfer to Device", tag=cct_ui_panels.TRANSFER_TO_DEVICE_COLLAPSING_HEADER,
+                               default_open=False):
         dpg.add_text('Devices', indent=20)
         connected_devices = adb.device_list()
         for device in connected_devices:
