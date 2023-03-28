@@ -6,10 +6,15 @@ from text_translate.google_cloud.google_cloud_translate import GoogleCloudTransl
 from text_translate.google_cloud.google_cloud_translate_response_data import GoogleCloudTranslateResponseData
 
 
-def translate_patient_info():
+def translate_patient_info(file_path: str = None):
     # TODO: Translate patient info from one language to another.
     #   patient_info_es.json
-    patient_info: PatientInformation = PatientInformation.load_from_json_file('patient_information_test.json')
+    if file_path is None:
+        return
+    # TODO: [FIXME] Translation Fails if the content has empty strings
+    #   for example, in social_health_history...
+    #   if the dict key value is empty string, then the translation fails from that key onwards
+    patient_info: PatientInformation = PatientInformation.load_from_json_file(file_path)
 
     # translate problems
     gc_translate: GoogleCloudTranslate = GoogleCloudTranslate()
@@ -35,7 +40,6 @@ def translate_patient_info():
     patient_info.family_health_history.family_health_history = translated_family_health_history
 
     # translate social_health_history
-    # social_health_history_dict = patient_info.social_health_history.to_dict()
     social_health_history_dict = asdict(patient_info.social_health_history)
     gc_rd: GoogleCloudTranslateResponseData = gc_translate.translate_text(text_content_list=list(social_health_history_dict.values()),
                                                                           target_language_code='es',
@@ -44,8 +48,4 @@ def translate_patient_info():
     social_health_history_dict.update(zip(social_health_history_dict, social_health_history_values))
     patient_info.social_health_history = SocialHealthHistory.from_dict(social_health_history_dict)
 
-    patient_info.save_to_json_file(patient_info, 'patient_info_es.json')
-
-
-if __name__ == '__main__':
-    translate_patient_info()
+    patient_info.save_to_json_file(patient_info, file_path)

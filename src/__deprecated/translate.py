@@ -14,6 +14,8 @@ import hrsa_cct_config
 import hrsa_cct_constants
 import hrsa_cct_globals
 from hrsa_cct_globals import log
+from hrsa_data.scenario_data.scenario_information.scenario_information import ScenarioInformation
+from patient_info_translate import patient_info_translate
 
 project_id = ''
 clientTranslate = None
@@ -147,32 +149,18 @@ def callback_on_translate_text_clicked():
                                                   hrsa_cct_constants.DIALOGUE_INK_JSON_FILE_NAME,
                                                   hrsa_cct_constants.FEEDBACK_INK_JSON_FILE_NAME),
                     dirs_exist_ok=True)
-    # get and process the scenario information file
+    # Translate the scenario information JSON file
     scenario_information_json_path = os.path.join(new_scenario_path_language_code, hrsa_cct_constants.SCENARIO_INFORMATION_JSON_FILE_NAME)
-    if os.path.exists(scenario_information_json_path):
-        scenario_information_file_content = ""
-        with open(scenario_information_json_path, "r", encoding="utf-8") as file:
-            scenario_information_file_content = file.read()
-        if len(str(scenario_information_file_content)) != 0:
-            scenario_information_json = json.loads(scenario_information_file_content)
-            scenario_localized_name = scenario_information_json['localized_name']
-            scenario_description = scenario_information_json['description']
-            scenario_detail = scenario_information_json['detail']
-            # translate scenario information file
-            localized_name_translated = translate_text(text=scenario_localized_name, language=selected_language)
-            description_translated = translate_text(text=scenario_description, language=selected_language)
-            detail_translated = translate_text(text=scenario_detail, language=selected_language)
-            scenario_information_json['localized_name'] = localized_name_translated
-            scenario_information_json['description'] = description_translated
-            scenario_information_json['detail'] = detail_translated
-            scenario_information_json_encoded = json.dumps(scenario_information_json, indent=4, ensure_ascii=False).encode("utf-8")
-            scenario_information_json_decoded_string = scenario_information_json_encoded.decode()
-            # save translated scenario information json file
-            with open(scenario_information_json_path, "w", encoding="utf-8") as output_file:
-                output_file.write(scenario_information_json_decoded_string)
-        else:
-            # TODO: Error log important file content missing
-            pass
+    scenario_information: ScenarioInformation = ScenarioInformation.load_from_json_file(scenario_information_json_path)
+    if len(str(scenario_information.localized_name)) != 0:
+        scenario_information.localized_name = translate_text(text=scenario_information.localized_name, language=selected_language)
+    if len(str(scenario_information.description)) != 0:
+        scenario_information.description = translate_text(text=scenario_information.description, language=selected_language)
+    ScenarioInformation.save_to_json_file(scenario_information, scenario_information_json_path)
+    # Translate the patient information JSON file
+    patient_information_json_path = os.path.join(new_scenario_path_language_code, hrsa_cct_constants.PATIENT_INFORMATION_JSON_FILE_NAME)
+    if os.path.exists(patient_information_json_path):
+        patient_info_translate.translate_patient_info(patient_information_json_path)
     else:
         # TODO: Error log important file missing
         pass
