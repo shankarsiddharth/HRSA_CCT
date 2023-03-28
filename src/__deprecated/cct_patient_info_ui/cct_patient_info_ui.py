@@ -138,17 +138,20 @@ def _add_problem_ui(problem_id: int):
                  tag=_get_ui_child_object_tag(header_name, 'title', problem_id),
                  user_data={'header_name': header_name, 'node_name': 'title', 'id': problem_id},
                  parent=header_tag, indent=20)
-    dpg.add_input_text(tag=_get_ui_child_object_tag(header_name, 'problem', problem_id), label='Problem',
+    dpg.add_input_text(tag=_get_ui_child_object_tag(header_name, 'problem', problem_id),
+                       label='Problem',
                        user_data={'header_name': header_name, 'node_name': 'problem', 'id': problem_id},
-                       default_value=problem.problem, parent=header_tag, indent=20, callback=_callback_update_problem)
+                       default_value=problem.problem, parent=header_tag, indent=20,
+                       callback=_callback_update_problem)
     dpg.add_input_text(tag=_get_ui_child_object_tag(header_name, 'date_of_diagnosis', problem_id),
-                       label='Date of Diagnosis', default_value=problem.date_of_diagnosis, parent=header_tag, indent=20,
+                       label='Date of Diagnosis',
                        user_data={'header_name': header_name, 'node_name': 'date_of_diagnosis', 'id': problem_id},
+                       default_value=problem.date_of_diagnosis, parent=header_tag, indent=20,
                        callback=_callback_update_problem)
     dpg.add_input_text(tag=_get_ui_child_object_tag(header_name, 'date_of_resolution', problem_id),
+                       label='Date of Resolution',
                        user_data={'header_name': header_name, 'node_name': 'date_of_resolution', 'id': problem_id},
-                       label='Date of Resolution', default_value=problem.date_of_resolution, parent=header_tag,
-                       indent=20,
+                       default_value=problem.date_of_resolution, parent=header_tag, indent=20,
                        callback=_callback_update_problem)
 
 
@@ -188,22 +191,25 @@ def _add_sdoh_problem_ui(sdoh_problem_id: int):
     header_name = sdoh_problems_list_header_name
     header_tag = _get_header_tag(header_name)
     global patient_info
-    problem = patient_info.problems.sdoh_problems_health_concerns[sdoh_problem_id]
+    sdoh_problem = patient_info.problems.sdoh_problems_health_concerns[sdoh_problem_id]
     dpg.add_text('Problem {0}: '.format(sdoh_problem_id + 1),
                  tag=_get_ui_child_object_tag(header_name, 'title', sdoh_problem_id),
                  user_data={'header_name': header_name, 'node_name': 'title', 'id': sdoh_problem_id},
                  parent=header_tag, indent=20)
-    dpg.add_input_text(tag=_get_ui_child_object_tag(header_name, 'problem', sdoh_problem_id), label='Problem',
+    dpg.add_input_text(tag=_get_ui_child_object_tag(header_name, 'problem', sdoh_problem_id),
+                       label='Problem',
                        user_data={'header_name': header_name, 'node_name': 'problem', 'id': sdoh_problem_id},
-                       default_value=problem.problem, parent=header_tag, indent=20, callback=_callback_update_sdoh_problem)
+                       default_value=sdoh_problem.problem, parent=header_tag, indent=20,
+                       callback=_callback_update_sdoh_problem)
     dpg.add_input_text(tag=_get_ui_child_object_tag(header_name, 'date_of_diagnosis', sdoh_problem_id),
-                       label='Date of Diagnosis', default_value=problem.date_of_diagnosis, parent=header_tag, indent=20,
+                       label='Date of Diagnosis',
                        user_data={'header_name': header_name, 'node_name': 'date_of_diagnosis', 'id': sdoh_problem_id},
+                       default_value=sdoh_problem.date_of_diagnosis, parent=header_tag, indent=20,
                        callback=_callback_update_sdoh_problem)
     dpg.add_input_text(tag=_get_ui_child_object_tag(header_name, 'date_of_resolution', sdoh_problem_id),
+                       label='Date of Resolution',
                        user_data={'header_name': header_name, 'node_name': 'date_of_resolution', 'id': sdoh_problem_id},
-                       label='Date of Resolution', default_value=problem.date_of_resolution, parent=header_tag,
-                       indent=20,
+                       default_value=sdoh_problem.date_of_resolution, parent=header_tag, indent=20,
                        callback=_callback_update_sdoh_problem)
 
 
@@ -247,7 +253,8 @@ def _add_medication_ui(medication_id: int):
     dpg.add_input_text(tag=_get_ui_child_object_tag(header_name, 'medication', medication_id),
                        label='Medication {0}'.format(medication_id + 1),
                        user_data={'header_name': header_name, 'node_name': 'medication', 'id': medication_id},
-                       default_value=medication, parent=header_tag, indent=20, callback=_callback_update_medication)
+                       default_value=medication, parent=header_tag, indent=20,
+                       callback=_callback_update_medication)
 
 
 def _callback_update_medication(sender, app_data, user_data):
@@ -290,24 +297,26 @@ def _add_allergy_ui(allergy_id: int):
                        label='Substance Medication',
                        user_data={'header_name': header_name, 'node_name': 'substance_medication', 'id': allergy_id},
                        default_value=allergy.substance_medication, parent=header_tag, indent=20,
-                       callback=_callback_update_problem)
+                       callback=_callback_update_allergy)
     dpg.add_input_text(tag=_get_ui_child_object_tag(header_name, 'substance_drug_class', allergy_id),
-                       label='Substance Drug Class', default_value=allergy.substance_drug_class, parent=header_tag,
-                       indent=20,
+                       label='Substance Drug Class',
                        user_data={'header_name': header_name, 'node_name': 'substance_drug_class', 'id': allergy_id},
-                       callback=_callback_update_problem)
+                       default_value=allergy.substance_drug_class, parent=header_tag, indent=20,
+                       callback=_callback_update_allergy)
     dpg.add_input_text(tag=_get_ui_child_object_tag(header_name, 'reaction', allergy_id),
+                       label='Reaction',
                        user_data={'header_name': header_name, 'node_name': 'reaction', 'id': allergy_id},
-                       label='Reaction', default_value=allergy.reaction, parent=header_tag, indent=20,
+                       default_value=allergy.reaction, parent=header_tag, indent=20,
                        callback=_callback_update_allergy)
 
 
 def _callback_update_allergy(sender, app_data, user_data):
     global patient_info
     node_name = user_data['node_name']
-    allergy_id = user_data['allergy_id']
+    allergy_id = user_data['id']
     if allergy_id >= len(patient_info.allergies_intolerances.substances):
         return
+    print('allergy_id: {0}, node_name: {1}, app_data: {2}'.format(allergy_id, node_name, app_data))
     setattr(patient_info.allergies_intolerances.substances[allergy_id], node_name, app_data)
 
 
