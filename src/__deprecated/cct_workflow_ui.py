@@ -24,7 +24,7 @@ if hrsa_cct_globals.is_debug:
 def _set_visibility_for_all_ui(is_visible: bool = False):
     dpg.configure_item(cct_ui_panels.CREATE_SCENARIO_COLLAPSING_HEADER, show=is_visible)
     dpg.configure_item(cct_ui_panels.COPY_SCENARIO_COLLAPSING_HEADER, show=is_visible)
-    dpg.configure_item(cct_ui_panels.SELCET_SCENARIO_COLLAPSING_HEADER, show=is_visible)
+    dpg.configure_item(cct_ui_panels.SELECT_SCENARIO_COLLAPSING_HEADER, show=is_visible)
     dpg.configure_item(cct_ui_panels.CCT_PATIENT_INFO_COLLAPSING_HEADER, show=is_visible)
     dpg.configure_item(cct_ui_panels.CCT_SCENARIO_CONFIG_COLLAPSING_HEADER, show=is_visible)
     dpg.configure_item(cct_ui_panels.SHOW_INK_FILES_COLLAPSING_HEADER, show=is_visible)

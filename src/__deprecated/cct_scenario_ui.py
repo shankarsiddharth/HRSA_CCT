@@ -9,6 +9,6 @@ def get_scenario_list():
 
 
 def init_ui():
-    with dpg.collapsing_header(label="Select Scenario", tag=cct_ui_panels.SELCET_SCENARIO_COLLAPSING_HEADER,
+    with dpg.collapsing_header(label="Select Scenario", tag=cct_ui_panels.SELECT_SCENARIO_COLLAPSING_HEADER,
                                default_open=False):
         dpg.add_separator()
