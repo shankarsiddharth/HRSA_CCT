@@ -14,8 +14,11 @@ WORKFLOW_OPTION_LIST: list = [
     TRANSFER_SCENARIO_TO_DEVICE_OPTION
 ]
 
+DEFAULT_WORKFLOW_OPTION: str = CREATE_SCENARIO_BY_COPYING_EXISTING_OPTION
+
 if hrsa_cct_globals.is_debug:
     WORKFLOW_OPTION_LIST.append(SHOW_ALL_MODULES)
+    DEFAULT_WORKFLOW_OPTION: str = SHOW_ALL_MODULES
 
 
 def _set_visibility_for_all_ui(is_visible: bool = False):
@@ -66,9 +69,15 @@ def callback_on_choose_workflow_radio_button_clicked(sender, app_data, user_data
         show_all_modules_ui()
 
 
+def initialize_default_workflow_ui():
+    # Set the default workflow
+    default_workflow = dpg.get_value(CHOOSE_WORKFLOW_RADIO_BUTTON)
+    callback_on_choose_workflow_radio_button_clicked(None, default_workflow, None)
+
+
 def init_ui():
     # Choose Workflow UI
     with dpg.collapsing_header(label="Choose Workflow", default_open=True):
         dpg.add_radio_button(items=WORKFLOW_OPTION_LIST, horizontal=True,
-                             tag=CHOOSE_WORKFLOW_RADIO_BUTTON, default_value=WORKFLOW_OPTION_LIST[0], callback=callback_on_choose_workflow_radio_button_clicked)
+                             tag=CHOOSE_WORKFLOW_RADIO_BUTTON, default_value=DEFAULT_WORKFLOW_OPTION, callback=callback_on_choose_workflow_radio_button_clicked)
         dpg.add_separator()

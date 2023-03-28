@@ -382,6 +382,9 @@ def main() -> None:
 
     log.on_init_and_render_ui()
 
+    # Show Default Workflow UI
+    cct_workflow_ui.initialize_default_workflow_ui()
+
     dpg.setup_dearpygui()
     dpg.show_viewport()
     if is_debug:
