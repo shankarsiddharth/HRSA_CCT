@@ -46,7 +46,8 @@ def _load_patient_info_file(file_path_name: str):
     global patient_info, patient_information_json_file_path
     patient_information_json_file_path = file_path_name
     # Load the patient information from the JSON file
-    patient_info = PatientInformation.load_from_json_file(patient_information_json_file_path)
+    if file_path_name != '':
+        patient_info = PatientInformation.load_from_json_file(patient_information_json_file_path)
 
     header_name = patient_demographics_header_name
     fields_name = vars(PatientDemographics())
@@ -605,5 +606,6 @@ def init_ui():
                                default_value='', indent=20, callback=_callback_update_social_health_history)
         # endregion Social Health History
 
-        dpg.add_button(label='Save Patient Information', indent=20,
-                       callback=_callback_export_patient_info)
+        dpg.add_button(label='Save Patient Information', callback=_callback_export_patient_info)
+
+    _load_patient_info_file(file_path_name="")

@@ -337,7 +337,7 @@ def init_ui():
                            callback=lambda: dpg.show_item(SCU_OPEN_FILE_DIALOG))
         # region Character Config
         with dpg.collapsing_header(indent=25, tag=CCT_CHARACTER_CONFIG_COLLAPSING_HEADER,
-                                   label="Character Config", default_open=False,
+                                   label="Character Config", default_open=True,
                                    show=False):
             # region Patient Config
             dpg.add_text(PATIENT_LABEL, indent=20)
@@ -422,7 +422,7 @@ def init_ui():
 
         # region Dialogue UI Config
         with dpg.collapsing_header(indent=25, tag=CCT_DIALOGUE_UI_CONFIG_COLLAPSING_HEADER,
-                                   label="Dialogue UI Config", default_open=False,
+                                   label="Dialogue UI Config", default_open=True,
                                    show=False):
             dpg.add_color_edit(label="Player Subtitle Text Color",
                                tag="DUC_PLAYER_SUBTITLE_TEXT_COLOR",
