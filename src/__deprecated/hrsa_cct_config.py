@@ -135,4 +135,17 @@ def get_version_file_string() -> str:
         return ''
 
 
+def get_scenario_list():
+    global __USER_HRSA_DATA_FOLDER_PATH__
+    if __USER_HRSA_DATA_FOLDER_PATH__ != '':
+        user_hrsa_data_folder = pathlib.Path(__USER_HRSA_DATA_FOLDER_PATH__)
+        if user_hrsa_data_folder.exists():
+            scenario_list = []
+            for scenario_folder in user_hrsa_data_folder.iterdir():
+                if scenario_folder.is_dir():
+                    scenario_list.append(scenario_folder.name)
+            return scenario_list
+    return list()
+
+
 read_config_file()
