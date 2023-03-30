@@ -25,11 +25,9 @@ def _set_visibility_for_all_ui(is_visible: bool = False):
     dpg.configure_item(cct_ui_panels.CREATE_SCENARIO_COLLAPSING_HEADER, show=is_visible)
     dpg.configure_item(cct_ui_panels.COPY_SCENARIO_COLLAPSING_HEADER, show=is_visible)
     dpg.configure_item(cct_ui_panels.SELECT_SCENARIO_COLLAPSING_HEADER, show=is_visible)
-    dpg.configure_item(cct_ui_panels.CCT_PATIENT_INFO_COLLAPSING_HEADER, show=is_visible)
-    dpg.configure_item(cct_ui_panels.CCT_SCENARIO_CONFIG_COLLAPSING_HEADER, show=is_visible)
-    dpg.configure_item(cct_ui_panels.SHOW_INK_FILES_COLLAPSING_HEADER, show=is_visible)
-    dpg.configure_item(cct_ui_panels.AUDIO_GENERATION_COLLAPSING_HEADER, show=is_visible)
-    dpg.configure_item(cct_ui_panels.TRANSLATE_COLLAPSING_HEADER, show=is_visible)
+
+    set_edit_ui_visibility(is_visible)
+
     dpg.configure_item(cct_ui_panels.TRANSFER_TO_DEVICE_COLLAPSING_HEADER, show=is_visible)
 
 
@@ -47,12 +45,12 @@ def show_create_scenario_by_copying_existing_scenario_ui():
     dpg.configure_item(cct_ui_panels.COPY_SCENARIO_COLLAPSING_HEADER, show=True)
 
 
-def show_edit_ui_for_current_scenario():
-    dpg.configure_item(cct_ui_panels.CCT_PATIENT_INFO_COLLAPSING_HEADER, show=True)
-    dpg.configure_item(cct_ui_panels.CCT_SCENARIO_CONFIG_COLLAPSING_HEADER, show=True)
-    dpg.configure_item(cct_ui_panels.SHOW_INK_FILES_COLLAPSING_HEADER, show=True)
-    dpg.configure_item(cct_ui_panels.AUDIO_GENERATION_COLLAPSING_HEADER, show=True)
-    dpg.configure_item(cct_ui_panels.TRANSLATE_COLLAPSING_HEADER, show=True)
+def set_edit_ui_visibility(is_visible: bool = False):
+    dpg.configure_item(cct_ui_panels.CCT_PATIENT_INFO_COLLAPSING_HEADER, show=is_visible)
+    dpg.configure_item(cct_ui_panels.CCT_SCENARIO_CONFIG_COLLAPSING_HEADER, show=is_visible)
+    dpg.configure_item(cct_ui_panels.SHOW_INK_FILES_COLLAPSING_HEADER, show=is_visible)
+    dpg.configure_item(cct_ui_panels.AUDIO_GENERATION_COLLAPSING_HEADER, show=is_visible)
+    dpg.configure_item(cct_ui_panels.TRANSLATE_COLLAPSING_HEADER, show=is_visible)
 
 
 def show_transfer_to_device_ui():
@@ -61,10 +59,8 @@ def show_transfer_to_device_ui():
 
 
 def show_edit_existing_scenario_ui():
-    show_all_modules_ui()
-    dpg.configure_item(cct_ui_panels.CREATE_SCENARIO_COLLAPSING_HEADER, show=False)
-    dpg.configure_item(cct_ui_panels.COPY_SCENARIO_COLLAPSING_HEADER, show=False)
-    dpg.configure_item(cct_ui_panels.TRANSFER_TO_DEVICE_COLLAPSING_HEADER, show=False)
+    hide_all_modules_ui()
+    dpg.configure_item(cct_ui_panels.SELECT_SCENARIO_COLLAPSING_HEADER, show=True)
 
 
 def callback_on_choose_workflow_radio_button_clicked(sender, app_data, user_data):

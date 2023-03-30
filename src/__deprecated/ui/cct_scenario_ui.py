@@ -31,7 +31,7 @@ def set_current_scenario_path(scenario_path: str):
     update_selected_scenario_text_ui()
     update_globals_app_data()
     load_scenario_content(hrsa_cct_globals.app_data["file_path_name"])
-    cct_workflow_ui.show_edit_ui_for_current_scenario()
+    cct_workflow_ui.set_edit_ui_visibility(True)
 
 
 def load_scenario_content(scenario_path: str):
@@ -51,11 +51,15 @@ def refresh_scenario_list():
     else:
         scenario_list = list()
 
+    scenario_list.insert(0, hrsa_cct_globals.default_selected_scenario)
     dpg.configure_item(CSU_SELECT_SCENARIO_LISTBOX, items=scenario_list)
 
 
 def update_selected_scenario_text_ui():
+    global current_scenario_name
     text_to_display = CSU_SELECT_SCENARIO_TEXT + " (Selected: " + current_scenario_name + ")"
+    if current_scenario_name == hrsa_cct_globals.default_selected_scenario:
+        text_to_display = CSU_SELECT_SCENARIO_TEXT + " (Selected: None)"
     dpg.configure_item(CSU_SELECTED_SCENARIO_TEXT_TAG, default_value=text_to_display)
 
 
@@ -69,8 +73,13 @@ def callback_on_scenario_selected(sender, app_data, user_data):
     current_scenario_name = dpg.get_value(CSU_SELECT_SCENARIO_LISTBOX)
 
     update_selected_scenario_text_ui()
-    update_globals_app_data()
-    load_scenario_content(hrsa_cct_globals.app_data["file_path_name"])
+
+    if current_scenario_name != hrsa_cct_globals.default_selected_scenario:
+        update_globals_app_data()
+        load_scenario_content(hrsa_cct_globals.app_data["file_path_name"])
+        cct_workflow_ui.set_edit_ui_visibility(True)
+    else:
+        cct_workflow_ui.set_edit_ui_visibility(False)
 
 
 def callback_on_scenario_folder_button_clicked(sender, app_data, user_data):
@@ -105,5 +114,3 @@ def init_ui():
 
 def init_data():
     refresh_scenario_list()
-    if len(scenario_list) > 0:
-        callback_on_scenario_selected(None, None, None)
