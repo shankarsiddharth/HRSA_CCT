@@ -169,6 +169,9 @@ def callback_on_create_scenario_button_clicked() -> None:
 
 def on_create_scenario_button_clicked() -> bool:
     scenario_name = dpg.get_value(SCENARIO_NAME_INPUT_TEXT)
+    if scenario_name == "":
+        log.error("Scenario Name is Empty")
+        return False
     scenario_description = dpg.get_value(SCENARIO_DESCRIPTION_INPUT_TEXT)
     scenario_information: ScenarioInformation = ScenarioInformation()
     scenario_information.name = scenario_name
@@ -217,6 +220,7 @@ def callback_on_create_scenario_by_copy_button_clicked():
     if hrsa_cct_globals.scenario_path_source is None \
             or hrsa_cct_globals.scenario_path_source == "" \
             or len(hrsa_cct_globals.scenario_path_source) == 0:
+        log.error("Please, Select Source Scenario Folder and Try Again")
         return None
     is_scenario_created = on_create_scenario_button_clicked()
     if is_scenario_created:
