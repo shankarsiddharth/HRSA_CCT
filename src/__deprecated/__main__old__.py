@@ -8,7 +8,7 @@ import dearpygui.dearpygui as dpg
 import hrsa_cct_constants
 import hrsa_cct_globals
 from __deprecated import hrsa_cct_config, cct_ui_panels
-from __deprecated.transfer_to_device import transfer_to_device
+from __deprecated.ui import transfer_to_device_ui
 from __deprecated.ui import cct_patient_info_ui, cct_scenario_config_ui, cct_workflow_ui, cct_scenario_ui, audio_generation_ui, translate_ui, show_ink_files_ui
 from app_version import app_version
 from hrsa_cct_globals import log
@@ -384,7 +384,7 @@ def main() -> None:
         # endregion Translate UI
 
         # Transfer to Device UI
-        transfer_to_device.init_ui()
+        transfer_to_device_ui.init_ui()
 
     log.on_init_and_render_ui()
 
