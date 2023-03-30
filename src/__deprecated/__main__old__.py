@@ -169,10 +169,11 @@ def callback_on_create_scenario_button_clicked() -> None:
 
 def on_create_scenario_button_clicked() -> bool:
     scenario_name = dpg.get_value(SCENARIO_NAME_INPUT_TEXT)
-    if scenario_name == "":
-        log.error("Scenario Name is Empty")
-        return False
     scenario_description = dpg.get_value(SCENARIO_DESCRIPTION_INPUT_TEXT)
+    if scenario_name == "" or scenario_description == "":
+        log.error("Scenario Name or Scenario Description cannot be Empty")
+        return False
+
     scenario_information: ScenarioInformation = ScenarioInformation()
     scenario_information.name = scenario_name
     scenario_information.localized_name = scenario_name
