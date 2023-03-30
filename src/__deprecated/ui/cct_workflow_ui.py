@@ -42,8 +42,17 @@ def hide_all_modules_ui():
 
 
 def show_create_scenario_by_copying_existing_scenario_ui():
-    show_all_modules_ui()
-    dpg.configure_item(cct_ui_panels.TRANSFER_TO_DEVICE_COLLAPSING_HEADER, show=False)
+    hide_all_modules_ui()
+    dpg.configure_item(cct_ui_panels.CREATE_SCENARIO_COLLAPSING_HEADER, show=True)
+    dpg.configure_item(cct_ui_panels.COPY_SCENARIO_COLLAPSING_HEADER, show=True)
+
+
+def show_edit_ui_for_current_scenario():
+    dpg.configure_item(cct_ui_panels.CCT_PATIENT_INFO_COLLAPSING_HEADER, show=True)
+    dpg.configure_item(cct_ui_panels.CCT_SCENARIO_CONFIG_COLLAPSING_HEADER, show=True)
+    dpg.configure_item(cct_ui_panels.SHOW_INK_FILES_COLLAPSING_HEADER, show=True)
+    dpg.configure_item(cct_ui_panels.AUDIO_GENERATION_COLLAPSING_HEADER, show=True)
+    dpg.configure_item(cct_ui_panels.TRANSLATE_COLLAPSING_HEADER, show=True)
 
 
 def show_transfer_to_device_ui():
@@ -81,3 +90,4 @@ def init_ui():
         dpg.add_radio_button(items=WORKFLOW_OPTION_LIST, horizontal=True,
                              tag=CHOOSE_WORKFLOW_RADIO_BUTTON, default_value=DEFAULT_WORKFLOW_OPTION, callback=callback_on_choose_workflow_radio_button_clicked)
         dpg.add_separator()
+        dpg.add_spacer(height=20)
