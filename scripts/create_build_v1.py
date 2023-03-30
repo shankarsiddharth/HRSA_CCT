@@ -72,9 +72,10 @@ if version_folder.exists():
         shutil.rmtree(version_folder_path)
     except PermissionError as e:
         print("PermissionError: " + str(e), file=sys.stderr)
-        print("Background processes might be accessing this folder.", file=sys.stderr)
+        print('Application might be running in the background. If it is close it and try again.', file=sys.stderr)
+        print("Background processes might be accessing this file/folder.", file=sys.stderr)
         print("If the adb process is running in the background, then kill it and try again.", file=sys.stderr)
-        print("Make sure no other background processes are accessing this folder.", file=sys.stderr)
+        print("Make sure no other background processes/applications are accessing this file/folder.", file=sys.stderr)
         exit(1)
     except Exception as e:
         print("Exception: " + str(e), file=sys.stderr)
