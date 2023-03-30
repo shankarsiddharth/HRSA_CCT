@@ -23,7 +23,7 @@ if hrsa_cct_globals.is_debug:
 
 def _set_visibility_for_all_ui(is_visible: bool = False):
     dpg.configure_item(cct_ui_panels.CREATE_SCENARIO_COLLAPSING_HEADER, show=is_visible)
-    dpg.configure_item(cct_ui_panels.COPY_SCENARIO_COLLAPSING_HEADER, show=is_visible)
+    # dpg.configure_item(cct_ui_panels.COPY_SCENARIO_COLLAPSING_HEADER, show=is_visible)
     dpg.configure_item(cct_ui_panels.SELECT_SCENARIO_COLLAPSING_HEADER, show=is_visible)
 
     set_edit_ui_visibility(is_visible)
@@ -42,7 +42,7 @@ def hide_all_modules_ui():
 def show_create_scenario_by_copying_existing_scenario_ui():
     hide_all_modules_ui()
     dpg.configure_item(cct_ui_panels.CREATE_SCENARIO_COLLAPSING_HEADER, show=True)
-    dpg.configure_item(cct_ui_panels.COPY_SCENARIO_COLLAPSING_HEADER, show=True)
+    # dpg.configure_item(cct_ui_panels.COPY_SCENARIO_COLLAPSING_HEADER, show=True)
 
 
 def set_edit_ui_visibility(is_visible: bool = False):

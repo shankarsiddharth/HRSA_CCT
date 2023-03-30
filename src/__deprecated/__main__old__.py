@@ -46,12 +46,16 @@ SCENARIO_DIRECTORY_PATH_TEXT_DESTINATION: str = "SCENARIO_DIRECTORY_PATH_TEXT_DE
 COPY_SCENARIO_INFORMATION_BUTTON: str = "COPY_SCENARIO_INFORMATION_BUTTON"
 
 
-def create_scenario_folders(scenario_name, scenario_information_json_object) -> None:
+def create_scenario_folders(scenario_name, scenario_information_json_object) -> bool:
     # Scenario Folder
     scenario_path_root = os.path.join(hrsa_cct_config.get_user_hrsa_data_folder_path(), scenario_name)
     log.info("scenario_path_root: " + scenario_path_root)
     # TODO: Check if the a scenario name already exists and display error information to the user
-    os.mkdir(scenario_path_root)
+    try:
+        os.mkdir(scenario_path_root)
+    except FileExistsError:
+        log.error("Scenario folder already exists: " + scenario_name)
+        return False
     # Default Language Folder
     default_language_folder = os.path.join(scenario_path_root, hrsa_cct_globals.default_language_code)
     log.info("default_language_folder: " + default_language_folder)
@@ -96,7 +100,9 @@ def create_scenario_folders(scenario_name, scenario_information_json_object) -> 
     log.info("New Scenario Created. Scenario Name: " + scenario_name)
 
     hrsa_cct_globals.app_data = dict(file_path_name=scenario_path_root)
-    callback_on_scenario_destination_folder_selected(FILE_DIALOG_FOR_SCENARIO_FOLDER_DESTINATION, hrsa_cct_globals.app_data)
+    hrsa_cct_globals.scenario_path_destination = os.path.normpath(scenario_path_root)
+    # callback_on_scenario_destination_folder_selected(FILE_DIALOG_FOR_SCENARIO_FOLDER_DESTINATION, hrsa_cct_globals.app_data)
+    return True
 
 
 def callback_on_data_folder_selected(sender, app_data):
@@ -158,6 +164,10 @@ def callback_on_show_file_dialog_clicked(item_tag):
 
 
 def callback_on_create_scenario_button_clicked() -> None:
+    on_create_scenario_button_clicked()
+
+
+def on_create_scenario_button_clicked() -> bool:
     scenario_name = dpg.get_value(SCENARIO_NAME_INPUT_TEXT)
     scenario_description = dpg.get_value(SCENARIO_DESCRIPTION_INPUT_TEXT)
     scenario_information: ScenarioInformation = ScenarioInformation()
@@ -165,7 +175,7 @@ def callback_on_create_scenario_button_clicked() -> None:
     scenario_information.localized_name = scenario_name
     scenario_information.description = scenario_description
     scenario_information_json_object = json.dumps(asdict(scenario_information), indent=4)
-    create_scenario_folders(scenario_name, scenario_information_json_object)
+    return create_scenario_folders(scenario_name, scenario_information_json_object)
 
 
 def callback_on_scenario_source_folder_selected(sender, app_data):
@@ -179,12 +189,15 @@ def callback_on_scenario_source_folder_selected(sender, app_data):
 def callback_on_scenario_destination_folder_selected(sender, app_data):
     log.debug("Sender: " + str(sender))
     log.debug("App Data: " + str(app_data))
-    hrsa_cct_globals.scenario_path_destination = os.path.normpath(str(app_data['file_path_name']))
     log.info("Destination Scenario Path: " + hrsa_cct_globals.scenario_path_destination)
     dpg.configure_item(SCENARIO_DIRECTORY_PATH_TEXT_DESTINATION, default_value=hrsa_cct_globals.scenario_path_destination)
 
 
 def callback_on_copy_scenario_button_clicked():
+    on_copy_scenario_button_clicked()
+
+
+def on_copy_scenario_button_clicked():
     dpg.configure_item(COPY_SCENARIO_INFORMATION_BUTTON, show=False)
     shutil.copytree(hrsa_cct_globals.scenario_path_source, hrsa_cct_globals.scenario_path_destination, dirs_exist_ok=True,
                     ignore=shutil.ignore_patterns('*.mp3', '*.wav', 'scenario_information.json', 'feedback.json', 'dialogue.json', 'es-US'))
@@ -200,6 +213,16 @@ def callback_on_copy_scenario_button_clicked():
     # show_ink_files_ui.set_scenario_path(hrsa_cct_globals.scenario_path_destination)
 
 
+def callback_on_create_scenario_by_copy_button_clicked():
+    if hrsa_cct_globals.scenario_path_source is None \
+            or hrsa_cct_globals.scenario_path_source == "" \
+            or len(hrsa_cct_globals.scenario_path_source) == 0:
+        return None
+    is_scenario_created = on_create_scenario_button_clicked()
+    if is_scenario_created:
+        on_copy_scenario_button_clicked()
+
+
 def save_init():
     print("Saving Init File", hrsa_cct_config.dpg_ini_file_path)
     dpg.save_init_file(hrsa_cct_config.dpg_ini_file_path)
@@ -210,7 +233,7 @@ def callback_on_connect_to_cloud_checkbox_clicked(sender, app_data, user_data):
     print("Connect to Cloud: " + str(hrsa_cct_globals.connect_to_cloud))
 
 
-def __exit_callback__(self):
+def __exit_callback__(sender, app_data, user_data):
     # log.info("User clicked on the Close Window button.")
     # show_ink_files_ui.wait_for_all_ink_threads()
     log.close_ui()
@@ -279,10 +302,7 @@ def main() -> None:
         with dpg.collapsing_header(label="Create Scenario", tag=cct_ui_panels.CREATE_SCENARIO_COLLAPSING_HEADER, default_open=False):
             dpg.add_input_text(tag=SCENARIO_NAME_INPUT_TEXT, label="Scenario Name", default_value="")
             dpg.add_input_text(tag=SCENARIO_DESCRIPTION_INPUT_TEXT, label="Scenario Description", multiline=True, tab_input=False)
-            dpg.add_button(tag=CREATE_SCENARIO_INFORMATION_BUTTON, label="Create Scenario Folder", callback=callback_on_create_scenario_button_clicked)
-            dpg.add_separator()
-
-        with dpg.collapsing_header(label="Copy Scenario Content", tag=cct_ui_panels.COPY_SCENARIO_COLLAPSING_HEADER, default_open=False):
+            dpg.add_spacer(height=5)
             dpg.add_file_dialog(tag=FILE_DIALOG_FOR_SCENARIO_FOLDER_SOURCE, height=300, width=450, directory_selector=True, show=False,
                                 callback=callback_on_scenario_source_folder_selected,
                                 default_path=hrsa_cct_config.get_file_dialog_default_path(),
@@ -290,14 +310,8 @@ def main() -> None:
             dpg.add_button(tag=SHOW_FILE_DIALOG_BUTTON_SCENARIO_SOURCE_FOLDER, label="Select Source Scenario Folder",
                            callback=lambda s, a: callback_on_show_file_dialog_clicked(item_tag=FILE_DIALOG_FOR_SCENARIO_FOLDER_SOURCE))
             dpg.add_text(tag=SCENARIO_DIRECTORY_PATH_TEXT_SOURCE)
-            dpg.add_file_dialog(tag=FILE_DIALOG_FOR_SCENARIO_FOLDER_DESTINATION, height=300, width=450, directory_selector=True, show=False,
-                                callback=callback_on_scenario_destination_folder_selected,
-                                default_path=hrsa_cct_config.get_file_dialog_default_path(),
-                                cancel_callback=file_dialog_cancel_callback)
-            dpg.add_button(tag=SHOW_FILE_DIALOG_BUTTON_SCENARIO_DESTINATION_FOLDER, label="Select Destination Scenario Folder",
-                           callback=lambda s, a: callback_on_show_file_dialog_clicked(item_tag=FILE_DIALOG_FOR_SCENARIO_FOLDER_DESTINATION))
-            dpg.add_text(tag=SCENARIO_DIRECTORY_PATH_TEXT_DESTINATION)
-            dpg.add_button(tag=COPY_SCENARIO_INFORMATION_BUTTON, label="Copy Scenario Folder", callback=callback_on_copy_scenario_button_clicked)
+            dpg.add_spacer(height=5)
+            dpg.add_button(tag=COPY_SCENARIO_INFORMATION_BUTTON, label="Create Scenario", callback=callback_on_create_scenario_by_copy_button_clicked)
             dpg.add_separator()
         # endregion Create Scenario UI
 
