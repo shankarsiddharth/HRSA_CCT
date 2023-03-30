@@ -8,7 +8,7 @@ from datetime import datetime
 
 import PyInstaller.__main__
 
-from __deprecated import hrsa_cct_constants as hcc
+from __v1 import hrsa_cct_constants as hcc
 from app_file_system.app_file_system import AppFileSystem
 from app_file_system.app_file_system_constants import AppFileSystemConstants
 from app_version import app_version
@@ -21,7 +21,7 @@ PYINSTALLER_SPEC_FOLDER_NAME = "_pyi_spec"
 PROJECT_LICENSE_FILE_NAME = "LICENSE.md"
 
 SOURCE_FOLDER_NAME = "src"
-DEPRECATED_FOLDER_NAME = "__deprecated"
+DEPRECATED_FOLDER_NAME = "__v1"
 BUILD_FOLDER_NAME = "build"
 
 # Application Start-up Script Name

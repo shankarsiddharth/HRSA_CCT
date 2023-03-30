@@ -3,8 +3,8 @@ import os
 
 import dearpygui.dearpygui as dpg
 
-from __deprecated import hrsa_cct_constants, hrsa_cct_globals, hrsa_cct_config, cct_ui_panels, character_model_data
-from __deprecated.hrsa_cct_globals import hfs
+from __v1 import hrsa_cct_constants, hrsa_cct_globals, hrsa_cct_config, cct_ui_panels, character_model_data
+from __v1.hrsa_cct_globals import hfs
 from hrsa_data.scenario_data.scenario_config.conversation_config import ConversationConfig
 from hrsa_data.scenario_data.scenario_config.scenario_config import ScenarioConfig
 

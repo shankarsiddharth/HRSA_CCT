@@ -15,7 +15,7 @@ import hrsa_cct_constants
 import hrsa_cct_globals
 from hrsa_cct_globals import log
 from hrsa_data.scenario_data.scenario_information.scenario_information import ScenarioInformation
-from __deprecated import patient_info_translate
+from __v1 import patient_info_translate
 
 project_id = ''
 clientTranslate = None

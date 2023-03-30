@@ -3,8 +3,8 @@ import pathlib
 
 import dearpygui.dearpygui as dpg
 
-from __deprecated import cct_ui_panels, hrsa_cct_config, hrsa_cct_globals
-from __deprecated.ui import cct_patient_info_ui, cct_scenario_config_ui, audio_generation_ui, translate_ui, show_ink_files_ui, cct_workflow_ui
+from __v1 import cct_ui_panels, hrsa_cct_config, hrsa_cct_globals
+from __v1.ui import cct_patient_info_ui, cct_scenario_config_ui, audio_generation_ui, translate_ui, show_ink_files_ui, cct_workflow_ui
 
 CSU_SELECT_SCENARIO_FROM_LIST_COLLAPSING_HEADER: str = "CSU_SELECT_SCENARIO_FROM_LIST_COLLAPSING_HEADER"
 CSU_REFRESH_SCENARIO_LIST_BUTTON: str = "CSU_REFRESH_SCENARIO_LIST_BUTTON"

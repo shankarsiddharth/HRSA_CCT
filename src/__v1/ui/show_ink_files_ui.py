@@ -4,8 +4,8 @@ import threading
 
 import dearpygui.dearpygui as dpg
 
-from __deprecated import hrsa_cct_constants as hcc, hrsa_cct_globals as hcg, hrsa_cct_config, cct_ui_panels
-from __deprecated.hrsa_cct_globals import hfsc, hfs, log
+from __v1 import hrsa_cct_constants as hcc, hrsa_cct_globals as hcg, hrsa_cct_config, cct_ui_panels
+from __v1.hrsa_cct_globals import hfsc, hfs, log
 
 ink_file_process_threads = dict()
 thread_counter = 0

@@ -1,6 +1,6 @@
 import dearpygui.dearpygui as dpg
 
-from __deprecated import hrsa_cct_globals, cct_ui_panels
+from __v1 import hrsa_cct_globals, cct_ui_panels
 
 # Workflow Options - Constants
 CHOOSE_WORKFLOW_RADIO_BUTTON: str = "CHOOSE_WORKFLOW_RADIO_BUTTON"

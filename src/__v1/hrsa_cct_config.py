@@ -3,7 +3,7 @@ import os
 import pathlib
 
 import hrsa_cct_constants as hcc
-from __deprecated import hrsa_cct_globals
+from __v1 import hrsa_cct_globals
 from app_file_system.app_file_system import AppFileSystem
 from app_file_system.app_file_system_constants import AppFileSystemConstants
 from app_logger.app_logger import AppLogger

@@ -2,7 +2,7 @@ import os.path
 
 import dearpygui.dearpygui as dpg
 
-from __deprecated import hrsa_cct_constants, hrsa_cct_globals, cct_ui_panels, hrsa_cct_config
+from __v1 import hrsa_cct_constants, hrsa_cct_globals, cct_ui_panels, hrsa_cct_config
 from hrsa_data.scenario_data.ehr.patient_demographics import PatientDemographics
 from hrsa_data.scenario_data.ehr.patient_information import PatientInformation
 from hrsa_data.scenario_data.ehr.problem import Problem

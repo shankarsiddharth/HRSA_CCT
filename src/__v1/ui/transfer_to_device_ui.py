@@ -1,7 +1,7 @@
 import dearpygui.dearpygui as dpg
 from adbutils import adb
 
-from __deprecated import cct_ui_panels
+from __v1 import cct_ui_panels
 
 target_devices = []
 
