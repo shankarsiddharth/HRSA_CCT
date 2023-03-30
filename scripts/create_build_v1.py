@@ -68,7 +68,17 @@ version_folder_path = os.path.join(build_folder_path, version_string)
 version_folder = pathlib.Path(version_folder_path)
 # Delete the version folder if it exists
 if version_folder.exists():
-    shutil.rmtree(version_folder_path)
+    try:
+        shutil.rmtree(version_folder_path)
+    except PermissionError as e:
+        print("PermissionError: " + str(e), file=sys.stderr)
+        print("Background processes might be accessing this folder.", file=sys.stderr)
+        print("If the adb process is running in the background, then kill it and try again.", file=sys.stderr)
+        print("Make sure no other background processes are accessing this folder.", file=sys.stderr)
+        exit(1)
+    except Exception as e:
+        print("Exception: " + str(e), file=sys.stderr)
+        exit(1)
 # Create version folder if it does not exist
 if not version_folder.exists():
     version_folder.mkdir()
@@ -114,6 +124,7 @@ workpath_args_string = "--workpath=" + pyinstaller_workpath_folder_path
 # Dist Folder Path
 distpath_args_string = "--distpath=" + pyinstaller_dist_folder_path
 
+print("Building Application using PyInstaller...")
 try:
     PyInstaller.__main__.run(
         [
@@ -131,23 +142,28 @@ try:
     )
 
 except BaseException as e:
-    print(e)
+    print(e, file=sys.stderr)
+    exit(1)
+print("PyInstaller packaging completed.")
 
 # Copy the assets folder to the Application Build folder
+print("Copying assets folder to the Application Build folder...")
 build_assets_folder_path = os.path.join(app_build_version_folder_path, afsc.ASSETS_FOLDER_NAME)
 build_assets_folder = pathlib.Path(build_assets_folder_path)
 # Delete the assets folder if it exists
 if build_assets_folder.exists():
+    print("Deleting the existing assets folder...")
     shutil.rmtree(build_assets_folder_path)
 # Copy the source assets folder to the distribution assets folder
 project_assets_folder_path = os.path.join(project_folder_path, afsc.ASSETS_FOLDER_NAME)
 project_assets_folder = pathlib.Path(project_assets_folder_path)
 if not project_assets_folder.exists():
-    print("Project assets folder does not exist")
+    print("Project assets folder does not exist", file=sys.stderr)
     exit(1)
 shutil.copytree(project_assets_folder_path, build_assets_folder_path)
 
 # Create a binary directory in the Application Build folder
+print("Copying binaries to the Application Build folder...")
 build_binary_folder_path = os.path.join(app_build_version_folder_path, afsc.BINARY_FOLDER_NAME)
 build_binary_folder = pathlib.Path(build_binary_folder_path)
 # Delete the binary folder if it exists
@@ -158,10 +174,11 @@ if build_binary_folder.exists():
 #     build_binary_folder.mkdir()
 
 # Copy inklecate and Inky Binaries to the Application Build folder
+print("Copying inklecate and Inky binaries to the Application Build folder...")
 project_binary_folder_path = os.path.join(project_folder_path, afsc.BINARY_FOLDER_NAME)
 project_binary_folder = pathlib.Path(project_binary_folder_path)
 if not project_binary_folder.exists():
-    print("Project binary folder does not exist")
+    print("Project binary folder does not exist", file=sys.stderr)
     exit(1)
 # TODO : Change this to copy inklecate and Inky binaries only for the current platform
 shutil.copytree(project_binary_folder_path, build_binary_folder_path)
@@ -170,9 +187,10 @@ shutil.copytree(project_binary_folder_path, build_binary_folder_path)
 temp_executable_file_path = os.path.join(pyinstaller_dist_folder_path, application_executable_file_name)
 temp_executable_file = pathlib.Path(temp_executable_file_path)
 if not temp_executable_file.exists():
-    print("Executable file does not exist")
+    print("Executable file does not exist", file=sys.stderr)
     exit(1)
 # Copy the executable file to the binary folder
+print("Copying the executable file to the binary folder...")
 build_binary_executable_file_path = os.path.join(build_binary_folder_path, application_executable_file_name)
 shutil.copyfile(temp_executable_file_path, build_binary_executable_file_path)
 
@@ -184,50 +202,54 @@ elif build_platform == "Darwin":
     sys.exit("MacOS is not supported yet.")
 
 # Delete the project development files like readme, version files
+print("Deleting the project development files like readme, version files...")
 # region Windows Only
 # Delete inklecate Readme File
 DEFAULT_README_FILE_NAME = "README.md"
 build_binary_inklecate_readme_file_path = os.path.join(build_binary_folder_path, afsc.BINARY_INKLECATE_FOLDER_NAME, afsc.WINDOWS_BINARY_FOLDER_NAME, DEFAULT_README_FILE_NAME)
 build_binary_inklecate_readme_file = pathlib.Path(build_binary_inklecate_readme_file_path)
 if not build_binary_inklecate_readme_file.exists():
-    print("inklecate readme file does not exist in the build binary folder. Make sure the project binary folder has the readme file.")
+    print("inklecate readme file does not exist in the build binary folder. Make sure the project binary folder has the readme file.", file=sys.stderr)
     inklecate_fp = os.path.join(project_binary_folder_path, afsc.BINARY_INKLECATE_FOLDER_NAME, afsc.WINDOWS_BINARY_FOLDER_NAME, DEFAULT_README_FILE_NAME)
-    print("Please check the project readme file path: " + inklecate_fp)
+    print("Please check the project readme file path: " + inklecate_fp, file=sys.stderr)
     exit(1)
 os.remove(build_binary_inklecate_readme_file_path)
 # Delete Inky Readme File
 build_binary_inky_readme_file_path = os.path.join(build_binary_folder_path, afsc.BINARY_INKY_FOLDER_NAME, afsc.WINDOWS_BINARY_FOLDER_NAME, DEFAULT_README_FILE_NAME)
 build_binary_inky_readme_file = pathlib.Path(build_binary_inky_readme_file_path)
 if not build_binary_inky_readme_file.exists():
-    print("Inky readme file does not exist in the build binary folder. Make sure the project binary folder has the readme file.")
+    print("Inky readme file does not exist in the build binary folder. Make sure the project binary folder has the readme file.", file=sys.stderr)
     inky_fp = os.path.join(project_binary_folder_path, afsc.BINARY_INKY_FOLDER_NAME, afsc.WINDOWS_BINARY_FOLDER_NAME, DEFAULT_README_FILE_NAME)
-    print("Please check the project readme file path: " + inky_fp)
+    print("Please check the project readme file path: " + inky_fp, file=sys.stderr)
     exit(1)
 os.remove(build_binary_inky_readme_file_path)
 # endregion Windows Only
 
 # Delete inklecate Version File - All Platforms
+print("Deleting inklecate version file...")
 DEFAULT_INKLECATE_VERSION_FILE_NAME = "inklecate_version.txt"
 inky_version_file_path = os.path.join(build_binary_folder_path, afsc.BINARY_INKLECATE_FOLDER_NAME, DEFAULT_INKLECATE_VERSION_FILE_NAME)
 inky_version_file = pathlib.Path(inky_version_file_path)
 if not inky_version_file.exists():
-    print("Inklecate version file does not exist in the build binary folder. Make sure the project binary folder has the version file.")
+    print("Inklecate version file does not exist in the build binary folder. Make sure the project binary folder has the version file.", file=sys.stderr)
     inky_version_fp = os.path.join(project_binary_folder_path, afsc.BINARY_INKLECATE_FOLDER_NAME, DEFAULT_INKLECATE_VERSION_FILE_NAME)
-    print("Please check the project version file path: " + inky_version_fp)
+    print("Please check the project version file path: " + inky_version_fp, file=sys.stderr)
     exit(1)
 os.remove(inky_version_file_path)
 # Delete Inky Version File - All Platforms
+print("Deleting Inky version file...")
 DEFAULT_INKY_VERSION_FILE_NAME = "Inky_version.txt"
 inky_version_file_path = os.path.join(build_binary_folder_path, afsc.BINARY_INKY_FOLDER_NAME, DEFAULT_INKY_VERSION_FILE_NAME)
 inky_version_file = pathlib.Path(inky_version_file_path)
 if not inky_version_file.exists():
-    print("Inky version file does not exist in the build binary folder. Make sure the project binary folder has the version file.")
+    print("Inky version file does not exist in the build binary folder. Make sure the project binary folder has the version file.", file=sys.stderr)
     inky_version_fp = os.path.join(project_binary_folder_path, afsc.BINARY_INKY_FOLDER_NAME, DEFAULT_INKY_VERSION_FILE_NAME)
-    print("Please check the project version file path: " + inky_version_fp)
+    print("Please check the project version file path: " + inky_version_fp, file=sys.stderr)
     exit(1)
 os.remove(inky_version_file_path)
 
 # Copy cctconfig defaults folder to the Application Builds folder
+print("Copying cctconfig defaults folder to the Application Builds folder...")
 build_cctconfig_folder_path = os.path.join(app_build_version_folder_path, hcc.CCT_CONFIG_FOLDER_NAME)
 build_cctconfig_folder = pathlib.Path(build_cctconfig_folder_path)
 # Delete the config defaults folder if it exists
@@ -244,30 +266,34 @@ if build_dpg_config_file.exists():
 project_dpg_config_ini_file_path = os.path.join(project_folder_path, hcc.CCT_CONFIG_FOLDER_NAME, hcc.DPG_CONFIG_FILE_NAME)
 project_dpg_config_ini_file = pathlib.Path(project_dpg_config_ini_file_path)
 if not project_dpg_config_ini_file.exists():
-    print("Project cctconfig - dpg config ini file does not exist")
+    print("Project cctconfig - dpg config ini file does not exist", file=sys.stderr)
     exit(1)
 shutil.copyfile(project_dpg_config_ini_file_path, build_dpg_config_file_path)
 
 # Copy project data folder to the Application Build folder
+print("Copying project data folder to the Application Build folder...")
 build_data_folder_path = os.path.join(app_build_version_folder_path, afsc.DATA_FOLDER_NAME)
 build_data_folder = pathlib.Path(build_data_folder_path)
 # Delete the data defaults folder if it exists
 if build_data_folder.exists():
+    print("Deleting the data defaults folder...")
     shutil.rmtree(build_data_folder_path)
 # Copy the project data folder to the distribution/build data folder
 project_data_folder_path = os.path.join(project_folder_path, afsc.DATA_FOLDER_NAME)
 project_data_folder = pathlib.Path(project_data_folder_path)
 if not project_data_folder.exists():
-    print("Project data defaults folder does not exist")
+    print("Project data defaults folder does not exist", file=sys.stderr)
     exit(1)
 shutil.copytree(project_data_folder_path, build_data_folder_path)
 
 # Copy the license file to the Application Build folder
+print("Copying the license file to the Application Build folder...")
 build_license_file_path = os.path.join(app_build_version_folder_path, PROJECT_LICENSE_FILE_NAME)
 project_license_file_path = os.path.join(project_folder_path, PROJECT_LICENSE_FILE_NAME)
 shutil.copy(project_license_file_path, build_license_file_path)
 
 # Create Build Version File
+print("Creating Build Version File...")
 BUILD_VERSION_FILE_NAME = "version"
 build_version_file_path = os.path.join(app_build_version_folder_path, BUILD_VERSION_FILE_NAME)
 build_version_file = pathlib.Path(build_version_file_path)
@@ -283,6 +309,8 @@ with open(build_version_file_path, "w") as version_file:
     version_file.write(version_file_string)
 
 # Create a zip file of the Application Build folder
+print("Creating a zip file of the Application Build folder...")
+print("This operation may take some time...")
 zip_file_path = os.path.join(version_folder_path, application_name + ".zip")
 # Delete the zip file if it exists
 if os.path.exists(zip_file_path):
@@ -292,7 +320,7 @@ shutil.make_archive(app_build_version_folder_path, "zip", app_build_version_fold
 print("Zip File Created")
 
 print("====================================================================================================")
-print(version_string + " Build Successfully")
+print(version_string + " Build Completed Successfully")
 print("Build Folder: " + app_build_version_folder_path)
 print("Zip File: " + zip_file_path)
 print("====================================================================================================")
