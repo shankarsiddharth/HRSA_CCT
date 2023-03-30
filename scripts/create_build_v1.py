@@ -25,7 +25,7 @@ DEPRECATED_FOLDER_NAME = "__deprecated"
 BUILD_FOLDER_NAME = "build"
 
 # Application Start-up Script Name
-application_start_up_script_name = "__main__old__.py"
+application_start_up_script_name = "__main__v1__.py"
 
 afs: AppFileSystem = AppFileSystem()
 afsc: AppFileSystemConstants = AppFileSystemConstants()
