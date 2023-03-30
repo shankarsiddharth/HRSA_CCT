@@ -69,7 +69,7 @@ def callback_on_choose_workflow_radio_button_clicked(sender, app_data, user_data
         show_all_modules_ui()
 
 
-def initialize_default_workflow_ui():
+def init_data():
     # Set the default workflow
     default_workflow = dpg.get_value(CHOOSE_WORKFLOW_RADIO_BUTTON)
     callback_on_choose_workflow_radio_button_clicked(None, default_workflow, None)

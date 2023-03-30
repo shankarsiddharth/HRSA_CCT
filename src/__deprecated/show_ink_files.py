@@ -36,13 +36,16 @@ patient_room_feedback_ink_file_path: str = ''
 
 
 def set_scenario_path(scenario_path):
+    source_scenario_language_code_path = os.path.join(scenario_path, hcg.default_language_code)
+    dpg.configure_item(SIF_SCENARIO_DIRECTORY_PATH_TEXT, default_value=source_scenario_language_code_path)
     global break_room_dialogue_ink_file_path, patient_room_dialogue_ink_file_path, break_room_feedback_ink_file_path, patient_room_feedback_ink_file_path
-    break_room_dialogue_ink_file_path = os.path.join(scenario_path, hcc.BREAK_ROOM_NAME, hcc.DIALOGUE_INK_FILE_NAME)
-    patient_room_dialogue_ink_file_path = os.path.join(scenario_path, hcc.PATIENT_ROOM_NAME, hcc.DIALOGUE_INK_FILE_NAME)
-    break_room_feedback_ink_file_path = os.path.join(scenario_path, hcc.FEEDBACK_ROOM_NAME, hcc.FEEDBACK_TYPE_BREAK_ROOM_NAME,
+    break_room_dialogue_ink_file_path = os.path.join(source_scenario_language_code_path, hcc.BREAK_ROOM_NAME, hcc.DIALOGUE_INK_FILE_NAME)
+    patient_room_dialogue_ink_file_path = os.path.join(source_scenario_language_code_path, hcc.PATIENT_ROOM_NAME, hcc.DIALOGUE_INK_FILE_NAME)
+    break_room_feedback_ink_file_path = os.path.join(source_scenario_language_code_path, hcc.FEEDBACK_ROOM_NAME, hcc.FEEDBACK_TYPE_BREAK_ROOM_NAME,
                                                      hcc.FEEDBACK_INK_FILE_NAME)
-    patient_room_feedback_ink_file_path = os.path.join(scenario_path, hcc.FEEDBACK_ROOM_NAME, hcc.FEEDBACK_TYPE_PATIENT_ROOM_NAME,
+    patient_room_feedback_ink_file_path = os.path.join(source_scenario_language_code_path, hcc.FEEDBACK_ROOM_NAME, hcc.FEEDBACK_TYPE_PATIENT_ROOM_NAME,
                                                        hcc.FEEDBACK_INK_FILE_NAME)
+
     dpg.configure_item(SIF_BREAK_ROOM_DIALOGUE_INK_FILE_PATH_TEXT, default_value=break_room_dialogue_ink_file_path)
     dpg.configure_item(SIF_PATIENT_ROOM_DIALOGUE_INK_FILE_PATH_TEXT, default_value=patient_room_dialogue_ink_file_path)
     dpg.configure_item(SIF_BREAK_ROOM_FEEDBACK_INK_FILE_PATH_TEXT, default_value=break_room_feedback_ink_file_path)

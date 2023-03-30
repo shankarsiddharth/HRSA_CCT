@@ -17,6 +17,7 @@ patient_information_json_file_path = ''
 
 PIU_SCENARIO_PATIENT_INFO_JSON_PATH_TEXT: str = 'PIU_SCENARIO_DIRECTORY_PATH_TEXT'
 PIU_OPEN_FILE_DIALOG: str = 'PIU_OPEN_FILE_DIALOG'
+PIU_PATIENT_INFO_GROUP: str = 'PIU_PATIENT_INFO_GROUP'
 
 patient_demographics_header_name = 'Patient Demographics'
 problems_header_name = 'Problems'
@@ -41,6 +42,7 @@ def set_scenario_path(scenario_path):
     dpg.configure_item(PIU_SCENARIO_PATIENT_INFO_JSON_PATH_TEXT, default_value=patient_information_json_file_path)
     _load_patient_info_file(patient_information_json_file_path)
     print('set_scenario_path ', patient_information_json_file_path)
+    _toggle_patient_info_ui_sections(True)
 
 
 def _load_patient_info_file(file_path_name: str):
@@ -533,19 +535,13 @@ def _callback_export_patient_info(sender, app_data, user_data):
 
 
 def _toggle_patient_info_ui_sections(value: bool):
-    dpg.configure_item(_get_header_tag(patient_demographics_header_name), show=value)
-    dpg.configure_item(_get_header_tag(problems_header_name), show=value)
-    dpg.configure_item(_get_header_tag(sdoh_problems_header_name), show=value)
-    dpg.configure_item(_get_header_tag(medications_header_name), show=value)
-    dpg.configure_item(_get_header_tag(allergies_intolerances_header_name), show=value)
-    dpg.configure_item(_get_header_tag(vital_signs_header_name), show=value)
-    dpg.configure_item(_get_header_tag(family_health_history_name), show=value)
-    dpg.configure_item(_get_header_tag(social_health_history_header_name), show=value)
+    dpg.configure_item(PIU_PATIENT_INFO_GROUP, show=value)
 
 
 def file_dialog_confirm_callback(sender, app_data, user_data):
     file_path_name = app_data["file_path_name"]
     _load_patient_info_file(file_path_name)
+    dpg.configure_item(PIU_SCENARIO_PATIENT_INFO_JSON_PATH_TEXT, default_value=file_path_name)
     _toggle_patient_info_ui_sections(True)
 
 
@@ -569,226 +565,223 @@ def init_ui():
             dpg.add_button(label="Select Patient Info Config JSON File...",
                            callback=lambda: dpg.show_item(PIU_OPEN_FILE_DIALOG))
 
-        # region Patient Demographics
-        header_name = patient_demographics_header_name
-        with dpg.collapsing_header(label=header_name, tag=_get_header_tag(header_name), default_open=True, indent=20,
-                                   show=False):
-            dpg.add_input_text(tag=_get_ui_object_tag(header_name, 'first_name'), label='First Name',
-                               user_data={'header_name': header_name, 'node_name': 'first_name'},
-                               default_value='', indent=20, callback=_callback_update_patient_demographics)
-            dpg.add_input_text(tag=_get_ui_object_tag(header_name, 'last_name'), label='Last Name',
-                               user_data={'header_name': header_name, 'node_name': 'last_name'},
-                               default_value='', indent=20, callback=_callback_update_patient_demographics)
-            dpg.add_input_text(tag=_get_ui_object_tag(header_name, 'middle_name'), label='Middle Name',
-                               user_data={'header_name': header_name, 'node_name': 'middle_name'},
-                               default_value='', indent=20, callback=_callback_update_patient_demographics)
-            dpg.add_input_text(tag=_get_ui_object_tag(header_name, 'suffix'), label='Suffix',
-                               user_data={'header_name': header_name, 'node_name': 'suffix'},
-                               default_value='', indent=20, callback=_callback_update_patient_demographics)
-            dpg.add_input_text(tag=_get_ui_object_tag(header_name, 'previous_name'), label='Previous Name',
-                               user_data={'header_name': header_name, 'node_name': 'previous_name'},
-                               default_value='', indent=20, callback=_callback_update_patient_demographics)
-            dpg.add_input_text(tag=_get_ui_object_tag(header_name, 'date_of_birth'), label='Date of Birth',
-                               user_data={'header_name': header_name, 'node_name': 'date_of_birth'},
-                               default_value='', indent=20, callback=_callback_update_patient_demographics)
-            dpg.add_input_text(tag=_get_ui_object_tag(header_name, 'date_of_death'), label='Date of Death',
-                               user_data={'header_name': header_name, 'node_name': 'date_of_death'},
-                               default_value='', indent=20, callback=_callback_update_patient_demographics)
-            dpg.add_input_text(tag=_get_ui_object_tag(header_name, 'age'), label='Age',
-                               user_data={'header_name': header_name, 'node_name': 'age'},
-                               default_value='', indent=20, callback=_callback_update_patient_demographics)
-            dpg.add_input_text(tag=_get_ui_object_tag(header_name, 'race'), label='Race',
-                               user_data={'header_name': header_name, 'node_name': 'race'},
-                               default_value='', indent=20, callback=_callback_update_patient_demographics)
-            dpg.add_input_text(tag=_get_ui_object_tag(header_name, 'ethnicity'), label='Ethnicity',
-                               user_data={'header_name': header_name, 'node_name': 'ethnicity'},
-                               default_value='', indent=20, callback=_callback_update_patient_demographics)
-            dpg.add_input_text(tag=_get_ui_object_tag(header_name, 'tribal_affiliation'), label='Tribal Affiliation',
-                               user_data={'header_name': header_name, 'node_name': 'tribal_affiliation'},
-                               default_value='', indent=20, callback=_callback_update_patient_demographics)
-            dpg.add_input_text(tag=_get_ui_object_tag(header_name, 'sex_assigned_at_birth'),
-                               label='Sex Assigned at Birth',
-                               user_data={'header_name': header_name, 'node_name': 'sex_assigned_at_birth'},
-                               default_value='', indent=20, callback=_callback_update_patient_demographics)
-            dpg.add_input_text(tag=_get_ui_object_tag(header_name, 'sexual_orientation'), label='Sexual Orientation',
-                               user_data={'header_name': header_name, 'node_name': 'sexual_orientation'},
-                               default_value='', indent=20, callback=_callback_update_patient_demographics)
-            dpg.add_input_text(tag=_get_ui_object_tag(header_name, 'gender_identity'), label='Gender Identity',
-                               user_data={'header_name': header_name, 'node_name': 'gender_identity'},
-                               default_value='', indent=20, callback=_callback_update_patient_demographics)
-            dpg.add_input_text(tag=_get_ui_object_tag(header_name, 'preferred_language'), label='Preferred Language',
-                               user_data={'header_name': header_name, 'node_name': 'preferred_language'},
-                               default_value='', indent=20, callback=_callback_update_patient_demographics)
-            dpg.add_input_text(tag=_get_ui_object_tag(header_name, 'current_address'), label='Current Address',
-                               user_data={'header_name': header_name, 'node_name': 'current_address'},
-                               default_value='', indent=20, callback=_callback_update_patient_demographics)
-            dpg.add_input_text(tag=_get_ui_object_tag(header_name, 'previous_address'), label='Previous Address',
-                               user_data={'header_name': header_name, 'node_name': 'previous_address'},
-                               default_value='', indent=20, callback=_callback_update_patient_demographics)
-            dpg.add_input_text(tag=_get_ui_object_tag(header_name, 'phone_number'), label='Phone Number',
-                               user_data={'header_name': header_name, 'node_name': 'phone_number'},
-                               default_value='', indent=20, callback=_callback_update_patient_demographics)
-            dpg.add_input_text(tag=_get_ui_object_tag(header_name, 'phone_number_type'), label='Phone Number Type',
-                               user_data={'header_name': header_name, 'node_name': 'phone_number_type'},
-                               default_value='', indent=20, callback=_callback_update_patient_demographics)
-            dpg.add_input_text(tag=_get_ui_object_tag(header_name, 'email_address'), label='Email Address',
-                               user_data={'header_name': header_name, 'node_name': 'email_address'},
-                               default_value='', indent=20, callback=_callback_update_patient_demographics)
-            dpg.add_input_text(tag=_get_ui_object_tag(header_name, 'related_persons_name'),
-                               label='Related Persons Name',
-                               user_data={'header_name': header_name, 'node_name': 'related_persons_name'},
-                               default_value='', indent=20, callback=_callback_update_patient_demographics)
-            dpg.add_input_text(tag=_get_ui_object_tag(header_name, 'related_persons_relationship'),
-                               label='Related Persons Relationship',
-                               user_data={'header_name': header_name, 'node_name': 'related_persons_relationship'},
-                               default_value='', indent=20, callback=_callback_update_patient_demographics)
-            dpg.add_input_text(tag=_get_ui_object_tag(header_name, 'occupation'), label='Occupation',
-                               user_data={'header_name': header_name, 'node_name': 'occupation'},
-                               default_value='', indent=20, callback=_callback_update_patient_demographics)
-            dpg.add_input_text(tag=_get_ui_object_tag(header_name, 'occupation_history'), label='Occupation History',
-                               user_data={'header_name': header_name, 'node_name': 'occupation_history'},
-                               default_value='', indent=20, callback=_callback_update_patient_demographics)
-            dpg.add_input_text(tag=_get_ui_object_tag(header_name, 'chief_complaint'), label='Chief Complaint',
-                               user_data={'header_name': header_name, 'node_name': 'chief_complaint'},
-                               default_value='', indent=20, callback=_callback_update_patient_demographics)
-            dpg.add_input_text(tag=_get_ui_object_tag(header_name, 'insurance'), label='Insurance',
-                               user_data={'header_name': header_name, 'node_name': 'insurance'},
-                               default_value='', indent=20, callback=_callback_update_patient_demographics)
-        # endregion Patient Demographics
+        # region Patient Info UI Sections
+        with dpg.group(show=False, tag=PIU_PATIENT_INFO_GROUP):
+            # region Patient Demographics
+            header_name = patient_demographics_header_name
+            with dpg.collapsing_header(label=header_name, tag=_get_header_tag(header_name), default_open=True, indent=20):
+                dpg.add_input_text(tag=_get_ui_object_tag(header_name, 'first_name'), label='First Name',
+                                   user_data={'header_name': header_name, 'node_name': 'first_name'},
+                                   default_value='', indent=20, callback=_callback_update_patient_demographics)
+                dpg.add_input_text(tag=_get_ui_object_tag(header_name, 'last_name'), label='Last Name',
+                                   user_data={'header_name': header_name, 'node_name': 'last_name'},
+                                   default_value='', indent=20, callback=_callback_update_patient_demographics)
+                dpg.add_input_text(tag=_get_ui_object_tag(header_name, 'middle_name'), label='Middle Name',
+                                   user_data={'header_name': header_name, 'node_name': 'middle_name'},
+                                   default_value='', indent=20, callback=_callback_update_patient_demographics)
+                dpg.add_input_text(tag=_get_ui_object_tag(header_name, 'suffix'), label='Suffix',
+                                   user_data={'header_name': header_name, 'node_name': 'suffix'},
+                                   default_value='', indent=20, callback=_callback_update_patient_demographics)
+                dpg.add_input_text(tag=_get_ui_object_tag(header_name, 'previous_name'), label='Previous Name',
+                                   user_data={'header_name': header_name, 'node_name': 'previous_name'},
+                                   default_value='', indent=20, callback=_callback_update_patient_demographics)
+                dpg.add_input_text(tag=_get_ui_object_tag(header_name, 'date_of_birth'), label='Date of Birth',
+                                   user_data={'header_name': header_name, 'node_name': 'date_of_birth'},
+                                   default_value='', indent=20, callback=_callback_update_patient_demographics)
+                dpg.add_input_text(tag=_get_ui_object_tag(header_name, 'date_of_death'), label='Date of Death',
+                                   user_data={'header_name': header_name, 'node_name': 'date_of_death'},
+                                   default_value='', indent=20, callback=_callback_update_patient_demographics)
+                dpg.add_input_text(tag=_get_ui_object_tag(header_name, 'age'), label='Age',
+                                   user_data={'header_name': header_name, 'node_name': 'age'},
+                                   default_value='', indent=20, callback=_callback_update_patient_demographics)
+                dpg.add_input_text(tag=_get_ui_object_tag(header_name, 'race'), label='Race',
+                                   user_data={'header_name': header_name, 'node_name': 'race'},
+                                   default_value='', indent=20, callback=_callback_update_patient_demographics)
+                dpg.add_input_text(tag=_get_ui_object_tag(header_name, 'ethnicity'), label='Ethnicity',
+                                   user_data={'header_name': header_name, 'node_name': 'ethnicity'},
+                                   default_value='', indent=20, callback=_callback_update_patient_demographics)
+                dpg.add_input_text(tag=_get_ui_object_tag(header_name, 'tribal_affiliation'), label='Tribal Affiliation',
+                                   user_data={'header_name': header_name, 'node_name': 'tribal_affiliation'},
+                                   default_value='', indent=20, callback=_callback_update_patient_demographics)
+                dpg.add_input_text(tag=_get_ui_object_tag(header_name, 'sex_assigned_at_birth'),
+                                   label='Sex Assigned at Birth',
+                                   user_data={'header_name': header_name, 'node_name': 'sex_assigned_at_birth'},
+                                   default_value='', indent=20, callback=_callback_update_patient_demographics)
+                dpg.add_input_text(tag=_get_ui_object_tag(header_name, 'sexual_orientation'), label='Sexual Orientation',
+                                   user_data={'header_name': header_name, 'node_name': 'sexual_orientation'},
+                                   default_value='', indent=20, callback=_callback_update_patient_demographics)
+                dpg.add_input_text(tag=_get_ui_object_tag(header_name, 'gender_identity'), label='Gender Identity',
+                                   user_data={'header_name': header_name, 'node_name': 'gender_identity'},
+                                   default_value='', indent=20, callback=_callback_update_patient_demographics)
+                dpg.add_input_text(tag=_get_ui_object_tag(header_name, 'preferred_language'), label='Preferred Language',
+                                   user_data={'header_name': header_name, 'node_name': 'preferred_language'},
+                                   default_value='', indent=20, callback=_callback_update_patient_demographics)
+                dpg.add_input_text(tag=_get_ui_object_tag(header_name, 'current_address'), label='Current Address',
+                                   user_data={'header_name': header_name, 'node_name': 'current_address'},
+                                   default_value='', indent=20, callback=_callback_update_patient_demographics)
+                dpg.add_input_text(tag=_get_ui_object_tag(header_name, 'previous_address'), label='Previous Address',
+                                   user_data={'header_name': header_name, 'node_name': 'previous_address'},
+                                   default_value='', indent=20, callback=_callback_update_patient_demographics)
+                dpg.add_input_text(tag=_get_ui_object_tag(header_name, 'phone_number'), label='Phone Number',
+                                   user_data={'header_name': header_name, 'node_name': 'phone_number'},
+                                   default_value='', indent=20, callback=_callback_update_patient_demographics)
+                dpg.add_input_text(tag=_get_ui_object_tag(header_name, 'phone_number_type'), label='Phone Number Type',
+                                   user_data={'header_name': header_name, 'node_name': 'phone_number_type'},
+                                   default_value='', indent=20, callback=_callback_update_patient_demographics)
+                dpg.add_input_text(tag=_get_ui_object_tag(header_name, 'email_address'), label='Email Address',
+                                   user_data={'header_name': header_name, 'node_name': 'email_address'},
+                                   default_value='', indent=20, callback=_callback_update_patient_demographics)
+                dpg.add_input_text(tag=_get_ui_object_tag(header_name, 'related_persons_name'),
+                                   label='Related Persons Name',
+                                   user_data={'header_name': header_name, 'node_name': 'related_persons_name'},
+                                   default_value='', indent=20, callback=_callback_update_patient_demographics)
+                dpg.add_input_text(tag=_get_ui_object_tag(header_name, 'related_persons_relationship'),
+                                   label='Related Persons Relationship',
+                                   user_data={'header_name': header_name, 'node_name': 'related_persons_relationship'},
+                                   default_value='', indent=20, callback=_callback_update_patient_demographics)
+                dpg.add_input_text(tag=_get_ui_object_tag(header_name, 'occupation'), label='Occupation',
+                                   user_data={'header_name': header_name, 'node_name': 'occupation'},
+                                   default_value='', indent=20, callback=_callback_update_patient_demographics)
+                dpg.add_input_text(tag=_get_ui_object_tag(header_name, 'occupation_history'), label='Occupation History',
+                                   user_data={'header_name': header_name, 'node_name': 'occupation_history'},
+                                   default_value='', indent=20, callback=_callback_update_patient_demographics)
+                dpg.add_input_text(tag=_get_ui_object_tag(header_name, 'chief_complaint'), label='Chief Complaint',
+                                   user_data={'header_name': header_name, 'node_name': 'chief_complaint'},
+                                   default_value='', indent=20, callback=_callback_update_patient_demographics)
+                dpg.add_input_text(tag=_get_ui_object_tag(header_name, 'insurance'), label='Insurance',
+                                   user_data={'header_name': header_name, 'node_name': 'insurance'},
+                                   default_value='', indent=20, callback=_callback_update_patient_demographics)
+            # endregion Patient Demographics
 
-        # region Problems
-        header_name = problems_header_name
-        with dpg.collapsing_header(label=header_name, tag=_get_header_tag(header_name), default_open=True, indent=20,
-                                   show=False):
-            with dpg.group(horizontal=True, indent=20):
-                dpg.add_button(label='Add Problem', callback=_callback_add_problem)
-                dpg.add_button(label='Delete The Last Problem', callback=_callback_delete_last_problem)
-            with dpg.group(tag=_get_header_tag(problems_list_header_name), indent=20):
-                pass
-        # endregion Problems
+            # region Problems
+            header_name = problems_header_name
+            with dpg.collapsing_header(label=header_name, tag=_get_header_tag(header_name), default_open=True, indent=20):
+                with dpg.group(horizontal=True, indent=20):
+                    dpg.add_button(label='Add Problem', callback=_callback_add_problem)
+                    dpg.add_button(label='Delete The Last Problem', callback=_callback_delete_last_problem)
+                with dpg.group(tag=_get_header_tag(problems_list_header_name), indent=20):
+                    pass
+            # endregion Problems
 
-        # region SDOH Problems Health Concerns
-        header_name = sdoh_problems_header_name
-        with dpg.collapsing_header(label=header_name, tag=_get_header_tag(header_name), default_open=True, indent=20,
-                                   show=False):
-            with dpg.group(horizontal=True, indent=20):
-                dpg.add_button(label='Add SDOH Problem', callback=_callback_add_sdoh_problem)
-                dpg.add_button(label='Delete The Last SDOH Problem', callback=_callback_delete_last_sdoh_problem)
-            with dpg.group(tag=_get_header_tag(sdoh_problems_list_header_name), indent=20):
-                pass
-        # endregion SDOH Problems Health Concerns
+            # region SDOH Problems Health Concerns
+            header_name = sdoh_problems_header_name
+            with dpg.collapsing_header(label=header_name, tag=_get_header_tag(header_name), default_open=True, indent=20):
+                with dpg.group(horizontal=True, indent=20):
+                    dpg.add_button(label='Add SDOH Problem', callback=_callback_add_sdoh_problem)
+                    dpg.add_button(label='Delete The Last SDOH Problem', callback=_callback_delete_last_sdoh_problem)
+                with dpg.group(tag=_get_header_tag(sdoh_problems_list_header_name), indent=20):
+                    pass
+            # endregion SDOH Problems Health Concerns
 
-        # region Medications
-        header_name = medications_header_name
-        with dpg.collapsing_header(label=header_name, tag=_get_header_tag(header_name), default_open=True, indent=20,
-                                   show=False):
-            with dpg.group(horizontal=True, indent=20):
-                dpg.add_button(label='Add Medication', callback=_callback_add_medication)
-                dpg.add_button(label='Delete The Last Medication', callback=_callback_delete_last_medication)
-            with dpg.group(tag=_get_header_tag(medications_list_header_name), indent=20):
-                pass
-        # endregion Medications
+            # region Medications
+            header_name = medications_header_name
+            with dpg.collapsing_header(label=header_name, tag=_get_header_tag(header_name), default_open=True, indent=20):
+                with dpg.group(horizontal=True, indent=20):
+                    dpg.add_button(label='Add Medication', callback=_callback_add_medication)
+                    dpg.add_button(label='Delete The Last Medication', callback=_callback_delete_last_medication)
+                with dpg.group(tag=_get_header_tag(medications_list_header_name), indent=20):
+                    pass
+            # endregion Medications
 
-        # region Allergies Intolerances
-        header_name = allergies_intolerances_header_name
-        with dpg.collapsing_header(label=header_name, tag=_get_header_tag(header_name), default_open=True, indent=20,
-                                   show=False):
-            with dpg.group(horizontal=True, indent=20):
-                dpg.add_button(label='Add Allergy', callback=_callback_add_allergy)
-                dpg.add_button(label='Delete The Last Allergy', callback=_callback_delete_last_allergy)
-            with dpg.group(tag=_get_header_tag(allergies_intolerances_list_header_name), indent=20):
-                pass
-        # endregion Allergies Intolerances
+            # region Allergies Intolerances
+            header_name = allergies_intolerances_header_name
+            with dpg.collapsing_header(label=header_name, tag=_get_header_tag(header_name), default_open=True, indent=20):
+                with dpg.group(horizontal=True, indent=20):
+                    dpg.add_button(label='Add Allergy', callback=_callback_add_allergy)
+                    dpg.add_button(label='Delete The Last Allergy', callback=_callback_delete_last_allergy)
+                with dpg.group(tag=_get_header_tag(allergies_intolerances_list_header_name), indent=20):
+                    pass
+            # endregion Allergies Intolerances
 
-        # region Vital Signs
-        header_name = vital_signs_header_name
-        with dpg.collapsing_header(label=header_name, tag=_get_header_tag(header_name), default_open=True, indent=20,
-                                   show=False):
-            dpg.add_input_text(tag=_get_ui_object_tag(header_name, 'systolic_blood_pressure'),
-                               label='Systolic Blood Pressure',
-                               user_data={'header_name': header_name, 'node_name': 'systolic_blood_pressure'},
-                               default_value='', indent=20, callback=_callback_update_patient_vital_signs)
-            dpg.add_input_text(tag=_get_ui_object_tag(header_name, 'diastolic_blood_pressure'),
-                               label='Diastolic Blood_pressure',
-                               user_data={'header_name': header_name, 'node_name': 'diastolic_blood_pressure'},
-                               default_value='', indent=20, callback=_callback_update_patient_vital_signs)
-            dpg.add_input_text(tag=_get_ui_object_tag(header_name, 'heart_rate'), label='Heart Rate',
-                               user_data={'header_name': header_name, 'node_name': 'heart_rate'},
-                               default_value='', indent=20, callback=_callback_update_patient_vital_signs)
-            dpg.add_input_text(tag=_get_ui_object_tag(header_name, 'respiratory_rate'), label='Respiratory Rate',
-                               user_data={'header_name': header_name, 'node_name': 'respiratory_rate'},
-                               default_value='', indent=20, callback=_callback_update_patient_vital_signs)
-            dpg.add_input_text(tag=_get_ui_object_tag(header_name, 'body_temperature'), label='Body Temperature',
-                               user_data={'header_name': header_name, 'node_name': 'body_temperature'},
-                               default_value='', indent=20, callback=_callback_update_patient_vital_signs)
-            dpg.add_input_text(tag=_get_ui_object_tag(header_name, 'body_height'), label='Body Height',
-                               user_data={'header_name': header_name, 'node_name': 'body_height'},
-                               default_value='', indent=20, callback=_callback_update_patient_vital_signs)
-            dpg.add_input_text(tag=_get_ui_object_tag(header_name, 'body_weight'), label='Body Weight',
-                               user_data={'header_name': header_name, 'node_name': 'body_weight'},
-                               default_value='', indent=20, callback=_callback_update_patient_vital_signs)
-            dpg.add_input_text(tag=_get_ui_object_tag(header_name, 'pulse_oximetry'), label='Pulse Oximetry',
-                               user_data={'header_name': header_name, 'node_name': 'pulse_oximetry'},
-                               default_value='', indent=20, callback=_callback_update_patient_vital_signs)
-            dpg.add_input_text(tag=_get_ui_object_tag(header_name, 'inhaled_oxygen_concentration'),
-                               label='Inhaled Oxygen Concentration',
-                               user_data={'header_name': header_name, 'node_name': 'inhaled_oxygen_concentration'},
-                               default_value='', indent=20, callback=_callback_update_patient_vital_signs)
-            dpg.add_input_text(tag=_get_ui_object_tag(header_name, 'bmi_percentile_2_to_20_years'),
-                               label='BMI Percentile 2 to 20 years',
-                               user_data={'header_name': header_name, 'node_name': 'bmi_percentile_2_to_20_years'},
-                               default_value='', indent=20, callback=_callback_update_patient_vital_signs)
-            dpg.add_input_text(tag=_get_ui_object_tag(header_name, 'weight_for_length_percentile_birth_36_months'),
-                               label='Weight for Length Percentile birth 36 months', default_value='', indent=20,
-                               user_data={'header_name': header_name,
-                                          'node_name': 'weight_for_length_percentile_birth_36_months'},
-                               callback=_callback_update_patient_vital_signs)
-            dpg.add_input_text(
-                tag=_get_ui_object_tag(header_name, 'head_occipital_frontal_circumference_percentile_birth_36_months'),
-                label='Head Occipital frontal circumference percentile birth 36 months',
-                user_data={'header_name': header_name,
-                           'node_name': 'head_occipital_frontal_circumference_percentile_birth_36_months'},
-                default_value='', indent=20,
-                callback=_callback_update_patient_vital_signs)
-        # endregion Vital Signs
+            # region Vital Signs
+            header_name = vital_signs_header_name
+            with dpg.collapsing_header(label=header_name, tag=_get_header_tag(header_name), default_open=True, indent=20):
+                dpg.add_input_text(tag=_get_ui_object_tag(header_name, 'systolic_blood_pressure'),
+                                   label='Systolic Blood Pressure',
+                                   user_data={'header_name': header_name, 'node_name': 'systolic_blood_pressure'},
+                                   default_value='', indent=20, callback=_callback_update_patient_vital_signs)
+                dpg.add_input_text(tag=_get_ui_object_tag(header_name, 'diastolic_blood_pressure'),
+                                   label='Diastolic Blood_pressure',
+                                   user_data={'header_name': header_name, 'node_name': 'diastolic_blood_pressure'},
+                                   default_value='', indent=20, callback=_callback_update_patient_vital_signs)
+                dpg.add_input_text(tag=_get_ui_object_tag(header_name, 'heart_rate'), label='Heart Rate',
+                                   user_data={'header_name': header_name, 'node_name': 'heart_rate'},
+                                   default_value='', indent=20, callback=_callback_update_patient_vital_signs)
+                dpg.add_input_text(tag=_get_ui_object_tag(header_name, 'respiratory_rate'), label='Respiratory Rate',
+                                   user_data={'header_name': header_name, 'node_name': 'respiratory_rate'},
+                                   default_value='', indent=20, callback=_callback_update_patient_vital_signs)
+                dpg.add_input_text(tag=_get_ui_object_tag(header_name, 'body_temperature'), label='Body Temperature',
+                                   user_data={'header_name': header_name, 'node_name': 'body_temperature'},
+                                   default_value='', indent=20, callback=_callback_update_patient_vital_signs)
+                dpg.add_input_text(tag=_get_ui_object_tag(header_name, 'body_height'), label='Body Height',
+                                   user_data={'header_name': header_name, 'node_name': 'body_height'},
+                                   default_value='', indent=20, callback=_callback_update_patient_vital_signs)
+                dpg.add_input_text(tag=_get_ui_object_tag(header_name, 'body_weight'), label='Body Weight',
+                                   user_data={'header_name': header_name, 'node_name': 'body_weight'},
+                                   default_value='', indent=20, callback=_callback_update_patient_vital_signs)
+                dpg.add_input_text(tag=_get_ui_object_tag(header_name, 'pulse_oximetry'), label='Pulse Oximetry',
+                                   user_data={'header_name': header_name, 'node_name': 'pulse_oximetry'},
+                                   default_value='', indent=20, callback=_callback_update_patient_vital_signs)
+                dpg.add_input_text(tag=_get_ui_object_tag(header_name, 'inhaled_oxygen_concentration'),
+                                   label='Inhaled Oxygen Concentration',
+                                   user_data={'header_name': header_name, 'node_name': 'inhaled_oxygen_concentration'},
+                                   default_value='', indent=20, callback=_callback_update_patient_vital_signs)
+                dpg.add_input_text(tag=_get_ui_object_tag(header_name, 'bmi_percentile_2_to_20_years'),
+                                   label='BMI Percentile 2 to 20 years',
+                                   user_data={'header_name': header_name, 'node_name': 'bmi_percentile_2_to_20_years'},
+                                   default_value='', indent=20, callback=_callback_update_patient_vital_signs)
+                dpg.add_input_text(tag=_get_ui_object_tag(header_name, 'weight_for_length_percentile_birth_36_months'),
+                                   label='Weight for Length Percentile birth 36 months', default_value='', indent=20,
+                                   user_data={'header_name': header_name,
+                                              'node_name': 'weight_for_length_percentile_birth_36_months'},
+                                   callback=_callback_update_patient_vital_signs)
+                dpg.add_input_text(
+                    tag=_get_ui_object_tag(header_name, 'head_occipital_frontal_circumference_percentile_birth_36_months'),
+                    label='Head Occipital frontal circumference percentile birth 36 months',
+                    user_data={'header_name': header_name,
+                               'node_name': 'head_occipital_frontal_circumference_percentile_birth_36_months'},
+                    default_value='', indent=20,
+                    callback=_callback_update_patient_vital_signs)
+            # endregion Vital Signs
 
-        # region Family Health History
-        header_name = family_health_history_name
-        with dpg.collapsing_header(label=header_name, tag=_get_header_tag(header_name), default_open=True, indent=20,
-                                   show=False):
-            with dpg.group(horizontal=True, indent=20):
-                dpg.add_button(label='Add Family History', callback=_callback_add_family_health_history)
-                dpg.add_button(label='Delete The Last Family History',
-                               callback=_callback_delete_last_family_health_history)
-            with dpg.group(tag=_get_header_tag(family_health_history_list_name), indent=20):
-                pass
-        # endregion Family Health History
+            # region Family Health History
+            header_name = family_health_history_name
+            with dpg.collapsing_header(label=header_name, tag=_get_header_tag(header_name), default_open=True, indent=20):
+                with dpg.group(horizontal=True, indent=20):
+                    dpg.add_button(label='Add Family History', callback=_callback_add_family_health_history)
+                    dpg.add_button(label='Delete The Last Family History',
+                                   callback=_callback_delete_last_family_health_history)
+                with dpg.group(tag=_get_header_tag(family_health_history_list_name), indent=20):
+                    pass
+            # endregion Family Health History
 
-        # region Social Health History
-        header_name = social_health_history_header_name
-        with dpg.collapsing_header(label=header_name, tag=_get_header_tag(header_name), default_open=True, indent=20,
-                                   show=False):
-            dpg.add_input_text(tag=_get_ui_object_tag(header_name, 'social_history_observation'),
-                               label='Social History Observation',
-                               user_data={'header_name': header_name, 'node_name': 'social_history_observation'},
-                               default_value='', indent=20, callback=_callback_update_social_health_history)
-            dpg.add_input_text(tag=_get_ui_object_tag(header_name, 'alcohol_use'), label='Alcohol Use',
-                               user_data={'header_name': header_name, 'node_name': 'alcohol_use'},
-                               default_value='', indent=20, callback=_callback_update_social_health_history)
-            dpg.add_input_text(tag=_get_ui_object_tag(header_name, 'drug_use'),
-                               user_data={'header_name': header_name, 'node_name': 'drug_use'},
-                               label='Drug Use', default_value='', indent=20)
-            dpg.add_input_text(tag=_get_ui_object_tag(header_name, 'sexual_activity'), label='Sexual Activity',
-                               user_data={'header_name': header_name, 'node_name': 'sexual_activity'},
-                               default_value='', indent=20, callback=_callback_update_social_health_history)
-            dpg.add_input_text(tag=_get_ui_object_tag(header_name, 'refugee_status'), label='Refugee Status',
-                               user_data={'header_name': header_name, 'node_name': 'refugee_status'},
-                               default_value='', indent=20, callback=_callback_update_social_health_history)
-            dpg.add_input_text(tag=_get_ui_object_tag(header_name, 'congregate_living'), label='Congregate Living',
-                               user_data={'header_name': header_name, 'node_name': 'congregate_living'},
-                               default_value='', indent=20, callback=_callback_update_social_health_history)
-        # endregion Social Health History
+            # region Social Health History
+            header_name = social_health_history_header_name
+            with dpg.collapsing_header(label=header_name, tag=_get_header_tag(header_name), default_open=True, indent=20):
+                dpg.add_input_text(tag=_get_ui_object_tag(header_name, 'social_history_observation'),
+                                   label='Social History Observation',
+                                   user_data={'header_name': header_name, 'node_name': 'social_history_observation'},
+                                   default_value='', indent=20, callback=_callback_update_social_health_history)
+                dpg.add_input_text(tag=_get_ui_object_tag(header_name, 'alcohol_use'), label='Alcohol Use',
+                                   user_data={'header_name': header_name, 'node_name': 'alcohol_use'},
+                                   default_value='', indent=20, callback=_callback_update_social_health_history)
+                dpg.add_input_text(tag=_get_ui_object_tag(header_name, 'drug_use'),
+                                   user_data={'header_name': header_name, 'node_name': 'drug_use'},
+                                   label='Drug Use', default_value='', indent=20)
+                dpg.add_input_text(tag=_get_ui_object_tag(header_name, 'sexual_activity'), label='Sexual Activity',
+                                   user_data={'header_name': header_name, 'node_name': 'sexual_activity'},
+                                   default_value='', indent=20, callback=_callback_update_social_health_history)
+                dpg.add_input_text(tag=_get_ui_object_tag(header_name, 'refugee_status'), label='Refugee Status',
+                                   user_data={'header_name': header_name, 'node_name': 'refugee_status'},
+                                   default_value='', indent=20, callback=_callback_update_social_health_history)
+                dpg.add_input_text(tag=_get_ui_object_tag(header_name, 'congregate_living'), label='Congregate Living',
+                                   user_data={'header_name': header_name, 'node_name': 'congregate_living'},
+                                   default_value='', indent=20, callback=_callback_update_social_health_history)
+            # endregion Social Health History
 
-        dpg.add_button(label='Save Patient Information', callback=_callback_export_patient_info)
+            dpg.add_button(label='Save Patient Information', callback=_callback_export_patient_info)
+        # endregion Patient Information UI Sections
 
+
+def init_data():
     _load_patient_info_file(file_path_name="")

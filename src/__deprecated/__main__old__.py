@@ -194,11 +194,13 @@ def callback_on_copy_scenario_button_clicked():
     log.info("Scenario Folder Copy Complete from: " + hrsa_cct_globals.scenario_path_source + "\tto: " + hrsa_cct_globals.scenario_path_destination)
     dpg.configure_item(COPY_SCENARIO_INFORMATION_BUTTON, show=True)
 
-    audio_generation.callback_on_scenario_folder_selected(audio_generation.FILE_DIALOG_FOR_SCENARIO_FOLDER, hrsa_cct_globals.app_data)
-    translate.callback_on_source_scenario_folder_selected(translate.FILE_DIALOG_FOR_SOURCE_SCENARIO_FOLDER, hrsa_cct_globals.app_data)
-    cct_patient_info_ui.set_scenario_path(hrsa_cct_globals.scenario_path_destination)
-    cct_scenario_config.set_scenario_path(hrsa_cct_globals.scenario_path_destination)
-    show_ink_files.set_scenario_path(hrsa_cct_globals.scenario_path_destination)
+    cct_scenario_ui.load_scenario_content(hrsa_cct_globals.scenario_path_destination)
+
+    # audio_generation.callback_on_scenario_folder_selected(audio_generation.FILE_DIALOG_FOR_SCENARIO_FOLDER, hrsa_cct_globals.app_data)
+    # translate.callback_on_source_scenario_folder_selected(translate.FILE_DIALOG_FOR_SOURCE_SCENARIO_FOLDER, hrsa_cct_globals.app_data)
+    # cct_patient_info_ui.set_scenario_path(hrsa_cct_globals.scenario_path_destination)
+    # cct_scenario_config.set_scenario_path(hrsa_cct_globals.scenario_path_destination)
+    # show_ink_files.set_scenario_path(hrsa_cct_globals.scenario_path_destination)
 
 
 def save_init():
@@ -370,8 +372,10 @@ def main() -> None:
 
     log.on_init_and_render_ui()
 
-    # Show Default Workflow UI
-    cct_workflow_ui.initialize_default_workflow_ui()
+    # Init Data for UIs
+    cct_workflow_ui.init_data()  # Show Default Workflow UI
+    cct_scenario_ui.init_data()
+    cct_patient_info_ui.init_data()
 
     dpg.setup_dearpygui()
     dpg.show_viewport()
