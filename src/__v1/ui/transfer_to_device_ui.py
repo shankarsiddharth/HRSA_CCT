@@ -8,6 +8,10 @@ target_devices = []
 TTD_SELECT_APK_FILE_DIALOG: str = 'TTD_SELECT_APK_FILE_DIALOG'
 
 
+def kill_adb_server():
+    adb.server_kill()
+
+
 def _select_target_device(sender, app_data, user_data):
     print(sender, app_data)
     global target_devices

@@ -8,8 +8,8 @@ import dearpygui.dearpygui as dpg
 import hrsa_cct_constants
 import hrsa_cct_globals
 from __v1 import hrsa_cct_config, cct_ui_panels
-from __v1.ui import transfer_to_device_ui
 from __v1.ui import cct_patient_info_ui, cct_scenario_config_ui, cct_workflow_ui, cct_scenario_ui, audio_generation_ui, translate_ui, show_ink_files_ui
+from __v1.ui import transfer_to_device_ui
 from app_version import app_version
 from hrsa_cct_globals import log
 from hrsa_data.scenario_data.scenario_information.scenario_information import ScenarioInformation
@@ -242,6 +242,7 @@ def __exit_callback__(sender, app_data, user_data):
     # log.info("User clicked on the Close Window button.")
     # show_ink_files_ui.wait_for_all_ink_threads()
     log.close_ui()
+    transfer_to_device_ui.kill_adb_server()
 
 
 def main() -> None:
