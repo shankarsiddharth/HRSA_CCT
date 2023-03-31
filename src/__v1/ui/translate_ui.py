@@ -10,12 +10,12 @@ import dearpygui.dearpygui as dpg
 from google.cloud import translate
 from google.oauth2 import service_account
 
-import hrsa_cct_config
-import hrsa_cct_constants
-import hrsa_cct_globals
-from hrsa_cct_globals import log
-from hrsa_data.scenario_data.scenario_information.scenario_information import ScenarioInformation
+from __v1 import hrsa_cct_config
+from __v1 import hrsa_cct_constants
+from __v1 import hrsa_cct_globals
 from __v1 import patient_info_translate
+from __v1.hrsa_cct_globals import log
+from hrsa_data.scenario_data.scenario_information.scenario_information import ScenarioInformation
 
 project_id = ''
 clientTranslate = None

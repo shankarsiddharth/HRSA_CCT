@@ -10,10 +10,10 @@ from google.cloud import texttospeech
 from google.cloud.texttospeech_v1 import ListVoicesResponse
 from google.oauth2 import service_account
 
-import hrsa_cct_config
-import hrsa_cct_constants
-import hrsa_cct_globals
-from hrsa_cct_globals import log, hfsc, hfs
+from __v1 import hrsa_cct_config
+from __v1 import hrsa_cct_constants
+from __v1 import hrsa_cct_globals
+from __v1.hrsa_cct_globals import log, hfsc, hfs
 
 voices = ListVoicesResponse()
 client = None
