@@ -253,13 +253,13 @@ def _add_sdoh_problem_ui(sdoh_problem_id: int):
 
 def _callback_delete_sdoh_problem(sender, app_data, user_data):
     global patient_info
-    header_name = problems_list_header_name
+    header_name = sdoh_problems_list_header_name
     sdoh_problem_id = user_data['id']
     the_last_id = len(patient_info.problems.sdoh_problems_health_concerns) - 1
     if sdoh_problem_id > the_last_id:
         return
     for i in range(sdoh_problem_id, the_last_id):
-        next_problem = patient_info.problems.problems[i + 1]
+        next_problem = patient_info.problems.sdoh_problems_health_concerns[i + 1]
         dpg.set_value(_get_ui_child_object_tag(header_name, 'title', i), 'Problem {0}: '.format(i + 1))
         dpg.set_value(_get_ui_child_object_tag(header_name, 'problem', i), next_problem.problem)
         dpg.set_value(_get_ui_child_object_tag(header_name, 'date_of_diagnosis', i), next_problem.date_of_diagnosis)
