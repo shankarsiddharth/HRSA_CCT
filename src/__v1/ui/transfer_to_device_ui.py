@@ -6,6 +6,8 @@ from __v1 import cct_ui_panels
 target_devices = []
 
 TTD_SELECT_APK_FILE_DIALOG: str = 'TTD_SELECT_APK_FILE_DIALOG'
+TOD_DEVICES_GROUP: str = 'TOD_DEVICES_GROUP'
+TOD_MESSAGE_TEXT: str = 'TOD_MESSAGE_TEXT'
 
 
 def kill_adb_server():
@@ -57,15 +59,13 @@ def file_dialog_cancel_callback(sender, app_data, user_data):
 
 def init_ui():
     with dpg.collapsing_header(label="Transfer to Device", tag=cct_ui_panels.TRANSFER_TO_DEVICE_COLLAPSING_HEADER,
-                               default_open=False):
-        dpg.add_text('Devices', indent=20)
-        connected_devices = adb.device_list()
-        for device in connected_devices:
-            print(device.serial, device.prop.model)
-            dpg.add_checkbox(label=device.serial, source="bool_value", callback=_select_target_device,
-                             user_data=device.serial)
-        if len(connected_devices) == 0:
-            dpg.add_text('No Device Connected!', indent=40)
+                               default_open=True):
+        with dpg.group(horizontal=True, indent=20):
+            dpg.add_text('Devices')
+            dpg.add_button(label='Refresh', callback=refresh_device_list)
+        with dpg.group(tag=TOD_DEVICES_GROUP, indent=40):
+            pass
+        dpg.add_text('No Device Connected!', tag=TOD_MESSAGE_TEXT, indent=40)
         dpg.add_button(label='Install Latest Package', callback=_install_latest_package, user_data=True)
         dpg.add_button(label='Enable Media Transfer', callback=_toggle_media_transfer, user_data=True)
 
@@ -77,3 +77,22 @@ def init_ui():
         # file selection dialog end
 
         dpg.add_separator()
+
+
+def refresh_device_list():
+    # Clear device list
+    dpg.delete_item(TOD_DEVICES_GROUP, children_only=True)
+    # Get connected devices
+    connected_devices = adb.device_list()
+    for device in connected_devices:
+        print(device.serial, device.prop.model)
+        dpg.add_checkbox(label=device.serial,
+                         parent=TOD_DEVICES_GROUP,
+                         source="bool_value", callback=_select_target_device,
+                         user_data=device.serial)
+    # Show message if no device connected and hide message if there is at least one device connected
+    dpg.configure_item(TOD_MESSAGE_TEXT, show=(len(connected_devices) <= 0))
+
+
+def init_data():
+    refresh_device_list()

@@ -393,6 +393,7 @@ def main() -> None:
     cct_workflow_ui.init_data()  # Show Default Workflow UI
     cct_scenario_ui.init_data()
     cct_patient_info_ui.init_data()
+    transfer_to_device_ui.init_data()
 
     dpg.setup_dearpygui()
     dpg.show_viewport()
