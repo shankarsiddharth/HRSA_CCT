@@ -130,7 +130,8 @@ class AppPrimaryViewportUI(threading.Thread):
         #         dpg.add_button(tag="Button 2", label="Button 2", callback=self.button_callback)
 
         dpg.setup_dearpygui()
-        # dpg.maximize_viewport()
+        if IS_DEBUG_MODE_ENABLED:
+            dpg.maximize_viewport()
         dpg.show_viewport()
 
         # below replaces, start_dearpygui()
