@@ -88,7 +88,7 @@ def callback_on_scenario_folder_button_clicked(sender, app_data, user_data):
 
 def init_ui():
     with dpg.collapsing_header(label="Select Scenario", tag=cct_ui_panels.SELECT_SCENARIO_COLLAPSING_HEADER,
-                               default_open=False):
+                               default_open=True):
         with dpg.collapsing_header(label="Choose Scenario from List", tag=CSU_SELECT_SCENARIO_FROM_LIST_COLLAPSING_HEADER,
                                    indent=20, default_open=True):
             dpg.add_button(label="Refresh Scenario List", indent=20, tag=CSU_REFRESH_SCENARIO_LIST_BUTTON,

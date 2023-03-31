@@ -30,6 +30,25 @@ MEDICAL_STUDENT_LABEL: str = 'MedicalStudent'
 GENDER_LABEL: str = 'Gender'
 ETHNICITY_LABEL: str = 'Ethnicity'
 
+DEFAULT_PLAYER_SUBTITLE_TEXT_COLOR: str = "#FFFFFF"
+DEFAULT_MEDICAL_STUDENT_SUBTITLE_TEXT_COLOR: str = "#FF0000"
+DEFAULT_TRAINER_SUBTITLE_TEXT_COLOR: str = "#00ABFF"
+DEFAULT_PATIENT_SUBTITLE_TEXT_COLOR: str = "#0CA600"
+
+scenario_config_json_file_path = ""
+scu_scenario_path = ""
+
+# region Dialog UI Config Global Variables
+
+DUC_UNLIMITED_QUESTION_TIMER_MARK: str = 'duc_unlimited_question_timer_mark'
+DUC_QUESTION_TIMER_INPUT_TEXT: str = 'duc_question_timer_input_text'
+
+MINIMUM_QUESTION_TIMER_VALUE = 30
+DEFAULT_QUESTION_TIMER_VALUE = 60
+
+
+# endregion Dialog UI Config Global Variables
+
 
 # target: Player: key: Gender
 def get_combo_tag(target: str, key: str):
@@ -50,18 +69,6 @@ def get_model_detail_image_tag(target: str, uid):
 
 def get_selected_model_property_tag(target: str, key: str):
     return 'SCU_SELECTED_{0}_MODEL_INFO_{1}'.format(target.upper(), key.upper())
-
-
-# scenario_config = dict()
-scenario_config_json_file_path = ""
-scu_scenario_path = ""
-
-# region Dialog UI Config Global Variables
-
-DUC_UNLIMITED_QUESTION_TIMER_MARK: str = 'duc_unlimited_question_timer_mark'
-DUC_QUESTION_TIMER_INPUT_TEXT: str = 'duc_question_timer_input_text'
-
-MINIMUM_QUESTION_TIMER = 5
 
 
 # region Dialog UI Config
@@ -263,8 +270,9 @@ def _clear_filter(sender, app_data, user_data):
 # region Dialogue UI Config callbacks start
 def _callback_update_subtitle_text_color(sender, app_data, user_data):
     rgb_color = [int(value) for value in dpg.get_value(sender)]
-    rgb_color = tuple(rgb_color)
-    hex_color = ('#%02x%02x%02x%02x' % rgb_color).upper()
+    rgb_color = tuple(rgb_color[:3])
+    # hex_color = ('#%02x%02x%02x%02x' % rgb_color).upper()
+    hex_color = ('#%02x%02x%02x' % rgb_color).upper()
     global scenario_config
     if user_data == PLAYER_LABEL:
         scenario_config.player_config.ui_config.subtitle_config.text_color = hex_color
@@ -306,12 +314,30 @@ def _set_question_timer(sender, app_data, user_data):
             scenario_config.conversation_config.question_timer_in_seconds = 0
         else:
             dpg.show_item(DUC_QUESTION_TIMER_INPUT_TEXT)
+            value = max(MINIMUM_QUESTION_TIMER_VALUE, int(dpg.get_value(DUC_QUESTION_TIMER_INPUT_TEXT)))
+            scenario_config.conversation_config.question_timer_in_seconds = value
     else:
-        value = MINIMUM_QUESTION_TIMER
+        value = MINIMUM_QUESTION_TIMER_VALUE
         if dpg.get_value(DUC_QUESTION_TIMER_INPUT_TEXT):
-            value = max(5, int(dpg.get_value(DUC_QUESTION_TIMER_INPUT_TEXT)))
+            value = max(MINIMUM_QUESTION_TIMER_VALUE, int(dpg.get_value(DUC_QUESTION_TIMER_INPUT_TEXT)))
         dpg.set_value(DUC_QUESTION_TIMER_INPUT_TEXT, value)
         scenario_config.conversation_config.question_timer_in_seconds = value
+
+
+def _callback_reset_subtitle_text_color(sender, app_data, user_data):
+    label = user_data['label']
+    if label == PLAYER_LABEL:
+        dpg.set_value("DUC_PLAYER_SUBTITLE_TEXT_COLOR", _hex_to_rgb(DEFAULT_PLAYER_SUBTITLE_TEXT_COLOR))
+        scenario_config.player_config.ui_config.subtitle_config.text_color = DEFAULT_PLAYER_SUBTITLE_TEXT_COLOR
+    elif label == MEDICAL_STUDENT_LABEL:
+        dpg.set_value("DUC_MEDICAL_STUDENT_SUBTITLE_TEXT_COLOR", _hex_to_rgb(DEFAULT_MEDICAL_STUDENT_SUBTITLE_TEXT_COLOR))
+        scenario_config.medicalstudent_config.ui_config.subtitle_config.text_color = DEFAULT_MEDICAL_STUDENT_SUBTITLE_TEXT_COLOR
+    elif label == TRAINER_LABEL:
+        dpg.set_value("DUC_TRAINER_SUBTITLE_TEXT_COLOR", _hex_to_rgb(DEFAULT_TRAINER_SUBTITLE_TEXT_COLOR))
+        scenario_config.trainer_config.ui_config.subtitle_config.text_color = DEFAULT_TRAINER_SUBTITLE_TEXT_COLOR
+    elif label == PATIENT_LABEL:
+        dpg.set_value("DUC_PATIENT_SUBTITLE_TEXT_COLOR", _hex_to_rgb(DEFAULT_PATIENT_SUBTITLE_TEXT_COLOR))
+        scenario_config.patient_config.ui_config.subtitle_config.text_color = DEFAULT_PATIENT_SUBTITLE_TEXT_COLOR
 
 
 # region Dialogue UI Config callbacks end
@@ -423,41 +449,65 @@ def init_ui():
         with dpg.collapsing_header(indent=25, tag=CCT_DIALOGUE_UI_CONFIG_COLLAPSING_HEADER,
                                    label="Dialogue UI Config", default_open=True,
                                    show=False):
-            dpg.add_color_edit(label="Player Subtitle Text Color",
+            with dpg.group(horizontal=True):
+                dpg.add_text("Player Subtitle Text Color")
+                dpg.add_button(label="Reset",
+                               user_data={'label': PLAYER_LABEL},
+                               callback=_callback_reset_subtitle_text_color)
+            dpg.add_color_edit(label="",
                                tag="DUC_PLAYER_SUBTITLE_TEXT_COLOR",
                                callback=_callback_update_subtitle_text_color,
                                user_data=PLAYER_LABEL,
-                               input_mode=dpg.mvColorEdit_input_rgb)
+                               input_mode=dpg.mvColorEdit_input_rgb,
+                               indent=20)
 
-            dpg.add_color_edit(label="Medical Student Subtitle Text Color",
+            with dpg.group(horizontal=True):
+                dpg.add_text("Medical Student Subtitle Text Color")
+                dpg.add_button(label="Reset",
+                               user_data={'label': MEDICAL_STUDENT_LABEL},
+                               callback=_callback_reset_subtitle_text_color)
+            dpg.add_color_edit(label="",
                                tag="DUC_MEDICAL_STUDENT_SUBTITLE_TEXT_COLOR",
                                callback=_callback_update_subtitle_text_color,
                                user_data=MEDICAL_STUDENT_LABEL,
-                               input_mode=dpg.mvColorEdit_input_rgb)
+                               input_mode=dpg.mvColorEdit_input_rgb,
+                               indent=20)
 
-            dpg.add_color_edit(label="Patient Subtitle Text Color",
+            with dpg.group(horizontal=True):
+                dpg.add_text("Patient Subtitle Text Color")
+                dpg.add_button(label="Reset",
+                               user_data={'label': PATIENT_LABEL},
+                               callback=_callback_reset_subtitle_text_color)
+            dpg.add_color_edit(label="",
                                tag="DUC_PATIENT_SUBTITLE_TEXT_COLOR",
                                callback=_callback_update_subtitle_text_color,
                                user_data=PATIENT_LABEL,
-                               input_mode=dpg.mvColorEdit_input_rgb)
+                               input_mode=dpg.mvColorEdit_input_rgb,
+                               indent=20)
 
-            dpg.add_color_edit(label="Trainer Subtitle Text Color",
+            with dpg.group(horizontal=True):
+                dpg.add_text("Trainer Subtitle Text Color")
+                dpg.add_button(label="Reset",
+                               user_data={'label': TRAINER_LABEL},
+                               callback=_callback_reset_subtitle_text_color)
+            dpg.add_color_edit(label="",
                                tag="DUC_TRAINER_SUBTITLE_TEXT_COLOR",
                                callback=_callback_update_subtitle_text_color,
                                user_data=TRAINER_LABEL,
-                               input_mode=dpg.mvColorEdit_input_rgb)
+                               input_mode=dpg.mvColorEdit_input_rgb,
+                               indent=20)
 
-            dpg.add_text("Question Timer", indent=20)
-            with dpg.group(horizontal=True, indent=20):
+            dpg.add_text("Question Timer")
+            with dpg.group(horizontal=True):
                 dpg.add_checkbox(label="Unlimited Timer", source="bool_value", tag=DUC_UNLIMITED_QUESTION_TIMER_MARK,
                                  callback=_set_question_timer)
-                dpg.add_input_text(label="Question Timer in Seconds", width=100, decimal=True, default_value='60',
+                dpg.add_input_text(label="Question Timer in Seconds", width=100, decimal=True, default_value=DEFAULT_QUESTION_TIMER_VALUE,
                                    tag=DUC_QUESTION_TIMER_INPUT_TEXT,
                                    callback=_set_question_timer)
 
-            # dpg.add_button(label="Save Setting", show=True, callback=_update_current_scenario_config_file)
-        # endregion Dialogue UI Config
+            # endregion Dialogue UI Config
 
         dpg.add_button(tag=CCT_SCENARIO_CONFIG_SAVE_SETTINGS_BUTTON, label="Save Setting",
-                       parent=cct_ui_panels.CCT_SCENARIO_CONFIG_COLLAPSING_HEADER, show=False, callback=_update_current_scenario_config_file)
+                       show=False, callback=_update_current_scenario_config_file)
+
         dpg.add_separator()
