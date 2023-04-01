@@ -1,4 +1,5 @@
 import os.path
+import sys
 
 import dearpygui.dearpygui as dpg
 
@@ -781,3 +782,7 @@ def init_ui():
 
 def init_data():
     _load_patient_info_file(file_path_name="")
+
+
+if sys.flags.dev_mode:
+    print("cct_patient_info_ui.__init__()")

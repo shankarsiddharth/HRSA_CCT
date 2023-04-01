@@ -1,5 +1,6 @@
 import json
 import os
+import sys
 
 import dearpygui.dearpygui as dpg
 
@@ -504,3 +505,7 @@ def init_ui():
                        show=False, callback=_update_current_scenario_config_file)
 
         dpg.add_separator()
+
+
+if sys.flags.dev_mode:
+    print("cct_scenario_config_ui.__init__()")

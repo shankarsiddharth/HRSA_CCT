@@ -1,5 +1,6 @@
 import os
 import pathlib
+import sys
 
 import dearpygui.dearpygui as dpg
 
@@ -114,3 +115,7 @@ def init_ui():
 
 def init_data():
     refresh_scenario_list()
+
+
+if sys.flags.dev_mode:
+    print("cct_scenario_ui.__init__()")

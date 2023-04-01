@@ -1,3 +1,6 @@
+import sys
+
+
 class CharacterModelMetaData(object):
     def __init__(self, CharacterType, GenderType, EthnicityType, PreviewLabel):
         self.CharacterType = CharacterType
@@ -15,3 +18,7 @@ class CharacterModelData(object):
     def __init__(self, uid, metaData):
         self.uid = uid
         self.metaData = CharacterModelMetaData(**metaData)
+
+
+if sys.flags.dev_mode:
+    print("character_model_data.__init__()")

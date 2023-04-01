@@ -482,4 +482,4 @@ def generate_audio_gc_tts(dialogue_text, audio_file_path, language_code, in_gend
 
 
 if sys.flags.dev_mode:
-    print("audio_generation.__init__()")
+    print("audio_generation_ui.__init__()")

@@ -5,13 +5,11 @@ from dataclasses import asdict
 
 import dearpygui.dearpygui as dpg
 
-import hrsa_cct_constants
-import hrsa_cct_globals
-from __v1 import hrsa_cct_config, cct_ui_panels
+from __v1 import hrsa_cct_config, cct_ui_panels, hrsa_cct_constants, hrsa_cct_globals
+from __v1.hrsa_cct_globals import log
 from __v1.ui import cct_patient_info_ui, cct_scenario_config_ui, cct_workflow_ui, cct_scenario_ui, audio_generation_ui, translate_ui, show_ink_files_ui
 from __v1.ui import transfer_to_device_ui
 from app_version import app_version
-from hrsa_cct_globals import log
 from hrsa_data.scenario_data.scenario_information.scenario_information import ScenarioInformation
 
 # debug build parameters

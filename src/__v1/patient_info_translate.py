@@ -1,3 +1,4 @@
+import sys
 from dataclasses import asdict
 
 from hrsa_data.scenario_data.ehr.patient_information import PatientInformation
@@ -72,3 +73,7 @@ def translate_text_from_en_to_es(text: str = None) -> str:
                                                                           target_language_code='es',
                                                                           source_language_code='en-US')
     return gc_rd.response_data[0].translated_text
+
+
+if sys.flags.dev_mode:
+    print("patient_info_translate.__init__()")
