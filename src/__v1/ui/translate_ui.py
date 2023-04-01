@@ -67,8 +67,6 @@ SOURCE_SECTION_GROUP: str = "SOURCE_SECTION_GROUP"
 
 
 def callback_on_source_scenario_folder_selected(sender, app_data):
-    log.debug("Sender: " + str(sender))
-    log.debug("App Data: " + str(app_data))
     global source_scenario_language_code_path
     global new_data_path
     source_scenario_folder_path = os.path.normpath(str(app_data['file_path_name']))
@@ -227,8 +225,6 @@ def callback_on_translate_text_clicked():
             continue
         file_ink.seek(0, 0)
         data = file_ink.read()
-        # print(data)
-        # log.trace(data)
         file_ink.close()
         for dialogue_text_list_element in dialogue_text_list:
             try:

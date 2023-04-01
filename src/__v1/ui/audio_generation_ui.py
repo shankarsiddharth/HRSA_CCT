@@ -26,7 +26,6 @@ def initialize_audio_generation():
     if hrsa_cct_config.is_google_cloud_credentials_file_found():
         try:
             path_string = os.path.abspath(hrsa_cct_config.get_google_cloud_credentials_file_path())
-            print(path_string)
             credentials = service_account.Credentials.from_service_account_file(path_string)
             # Instantiates a client
             client = texttospeech.TextToSpeechClient(credentials=credentials)
@@ -73,8 +72,6 @@ VOICE_CONFIG_SECTION: str = "VOICE_CONFIG_SECTION"
 
 
 def callback_on_scenario_folder_selected(sender, app_data):
-    log.debug("Sender: " + str(sender))
-    log.debug("App Data: " + str(app_data))
     folder_language_list = list()
     global scenario_path_root
     scenario_path_root = os.path.normpath(str(app_data['file_path_name']))

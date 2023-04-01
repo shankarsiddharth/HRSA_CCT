@@ -106,8 +106,6 @@ def create_scenario_folders(scenario_name, scenario_information_json_object) -> 
 
 
 def callback_on_data_folder_selected(sender, app_data):
-    log.debug("Sender: " + str(sender))
-    log.debug("App Data: " + str(app_data))
     data_path = os.path.normpath(str(app_data['file_path_name']))
     log.info('Data Folder Path: ' + data_path)
     hrsa_cct_config.update_user_hrsa_data_folder_path(data_path)
@@ -123,9 +121,6 @@ def callback_on_data_folder_selected(sender, app_data):
 
 
 def callback_on_google_cloud_credentials_file_selected(sender, app_data):
-    print("callback_on_google_cloud_credentials_file_selected")
-    log.debug("Sender: " + str(sender))
-    log.debug("App Data: " + str(app_data))
     json_file_path = os.path.normpath(str(app_data['file_path_name']))
     hrsa_cct_config.update_google_cloud_credentials_file_path(json_file_path)
     audio_generation_ui.initialize_audio_generation()
@@ -145,9 +140,6 @@ def callback_on_google_cloud_credentials_file_selected(sender, app_data):
 
 
 def file_dialog_cancel_callback(sender, app_data, user_data):
-    # log.debug("Sender: " + str(sender))
-    # log.debug("App Data: " + str(app_data))
-    # log.debug("User Data: " + str(user_data))
     pass
 
 
@@ -183,16 +175,12 @@ def on_create_scenario_button_clicked() -> bool:
 
 
 def callback_on_scenario_source_folder_selected(sender, app_data):
-    log.debug("Sender: " + str(sender))
-    log.debug("App Data: " + str(app_data))
     hrsa_cct_globals.scenario_path_source = os.path.normpath(str(app_data['file_path_name']))
     log.info("Source Scenario Path: " + hrsa_cct_globals.scenario_path_source)
     dpg.configure_item(SCENARIO_DIRECTORY_PATH_TEXT_SOURCE, default_value=hrsa_cct_globals.scenario_path_source)
 
 
 def callback_on_scenario_destination_folder_selected(sender, app_data):
-    log.debug("Sender: " + str(sender))
-    log.debug("App Data: " + str(app_data))
     log.info("Destination Scenario Path: " + hrsa_cct_globals.scenario_path_destination)
     dpg.configure_item(SCENARIO_DIRECTORY_PATH_TEXT_DESTINATION, default_value=hrsa_cct_globals.scenario_path_destination)
 
@@ -229,13 +217,11 @@ def callback_on_create_scenario_by_copy_button_clicked():
 
 
 def save_init():
-    print("Saving Init File", hrsa_cct_config.dpg_ini_file_path)
     dpg.save_init_file(hrsa_cct_config.dpg_ini_file_path)
 
 
 def callback_on_connect_to_cloud_checkbox_clicked(sender, app_data, user_data):
     hrsa_cct_globals.connect_to_cloud = dpg.get_value("connect_to_cloud")
-    print("Connect to Cloud: " + str(hrsa_cct_globals.connect_to_cloud))
 
 
 def __exit_callback__(sender, app_data, user_data):
