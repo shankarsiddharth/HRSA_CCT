@@ -38,6 +38,9 @@ tests/**/*.json
 # Ignore PyInstaller cutom intermidiate folder & files
 _pyi_temp/
 
+# Ignore debug outputs folder
+docs/outputs/
+
 # ======================================================================================================================
 
 
