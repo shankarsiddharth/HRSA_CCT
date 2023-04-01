@@ -3,25 +3,13 @@ from tkinter import *
 from tkinter.filedialog import askopenfilename
 
 from app_queue import AppQueue
-from app_debug.app_debug import IS_DEBUG_MODE_ENABLED
+from classes.singleton import Singleton
 
 
-class AppFileDialog(object):
-    _instance = None
-
+class AppFileDialog(metaclass=Singleton):
     _lock = threading.Lock()
 
-    def __new__(cls):
-        if cls._instance is None:
-            with cls._lock:
-                if cls._instance is None:
-                    cls._instance = super(AppFileDialog, cls).__new__(cls)
-                    cls._instance.__initialize__()
-                    if IS_DEBUG_MODE_ENABLED:
-                        print("AppFileDialog.__new__()")
-        return cls._instance
-
-    def __initialize__(self):
+    def __init__(self):
 
         self.__application_queue__: AppQueue = AppQueue()
 

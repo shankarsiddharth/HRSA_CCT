@@ -2,32 +2,19 @@ import logging
 import os
 import pathlib
 import sys
-import threading
 from logging.handlers import SocketHandler
 
 from app_debug.app_debug import IS_DEBUG_MODE_ENABLED
+from classes.singleton import Singleton
 from . import app_logging_custom as alc
 from .app_logger_file_system import AppLoggerFileSystem
 from .app_logger_file_system_constants import AppLoggerFileSystemConstants
 from .app_logger_ui import AppUILogger
 
 
-class AppLogger(object):
-    _instance = None
+class AppLogger(metaclass=Singleton):
 
-    _lock = threading.Lock()
-
-    def __new__(cls):
-        if cls._instance is None:
-            with cls._lock:
-                if cls._instance is None:
-                    cls._instance = super(AppLogger, cls).__new__(cls)
-                    cls._instance.__initialize__()
-                    if IS_DEBUG_MODE_ENABLED:
-                        print("AppLogger.__new__()")
-        return cls._instance
-
-    def __initialize__(self):
+    def __init__(self):
         self.alfsc: AppLoggerFileSystemConstants = AppLoggerFileSystemConstants()
         self.alfs: AppLoggerFileSystem = AppLoggerFileSystem()
         self.should_log_to_ui = True

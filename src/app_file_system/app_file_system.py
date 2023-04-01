@@ -1,29 +1,16 @@
 import os
 import pathlib
 import shutil
-import threading
 
 from app_debug.app_debug import IS_DEBUG_MODE_ENABLED
 from app_logger.app_logger_file_system import AppLoggerFileSystem
+from classes.singleton import Singleton
 from .app_file_system_constants import AppFileSystemConstants
 
 
-class AppFileSystem(object):
-    _instance = None
+class AppFileSystem(metaclass=Singleton):
 
-    _lock = threading.Lock()
-
-    def __new__(cls):
-        if cls._instance is None:
-            with cls._lock:
-                if cls._instance is None:
-                    cls._instance = super(AppFileSystem, cls).__new__(cls)
-                    cls._instance.__initialize__()
-                    if IS_DEBUG_MODE_ENABLED:
-                        print("AppFileSystem.__new__()")
-        return cls._instance
-
-    def __initialize__(self):
+    def __init__(self):
         self.afsc: AppFileSystemConstants = AppFileSystemConstants()
         self.alfs: AppLoggerFileSystem = AppLoggerFileSystem()
         self.__root_folder_path__ = self.alfs.get_root_folder_path()

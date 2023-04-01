@@ -1,31 +1,15 @@
-import threading
-
 from langcodes import Language
 
-from app_debug.app_debug import IS_DEBUG_MODE_ENABLED
+from classes.singleton import Singleton
 
 
-class HRSADataFileSystemConstants(object):
-    _instance = None
+class HRSADataFileSystemConstants(metaclass=Singleton):
 
-    _lock = threading.Lock()
-
-    def __new__(cls):
-        if cls._instance is None:
-            with cls._lock:
-                if cls._instance is None:
-                    cls._instance = super(HRSADataFileSystemConstants, cls).__new__(cls)
-                    cls._instance.__initialize__()
-                    if IS_DEBUG_MODE_ENABLED:
-                        print("HRSADataFileSystemConstants.__new__()")
-        return cls._instance
-
-    def __initialize__(self):
-
+    def __init__(self):
         self.HRSA_CCT_WORKSPACE_FOLDER_NAME = "HRSA_CCT_Workspace"
 
-        # ========================== START HRSAData Folder Constants ===================================
-        # HRSAData Folder Constants
+        # region HRSAData Folder Constants
+        # region HRSAData Files & Folder Constants
         self.BREAK_ROOM_NAME = "BreakRoom"
         self.PATIENT_ROOM_NAME = "PatientRoom"
         self.FEEDBACK_ROOM_NAME = "FeedbackRoom"
@@ -41,18 +25,18 @@ class HRSADataFileSystemConstants(object):
         self.PATIENT_INFORMATION_JSON_FILE_NAME = "patient_information.json"
         self.SCENARIO_CONFIG_JSON_FILE_NAME = "scenario_config.json"
         self.SCENARIO_THUMBNAIL_IMAGE_FILE_NAME = "thumbnail.jpg"
+        # endregion HRSAData Files & Folder Constants
 
-        # HRSAData Scenario Constants
+        # region HRSAData Scenario Constants
         self.NONE_SCENARIO_CODE = "NONE"
         self.NONE_SCENARIO_CODE_NAME = "(none)"
+        # endregion HRSAData Scenario Constants
 
-        # Default Language Constants
+        # region Default Language Constants
         self.NONE_LANGUAGE_CODE = "NONE"
         self.NONE_LANGUAGE_CODE_NAME = "(none)"
         self.DEFAULT_LANGUAGE_CODE = "en-US"
         self.DEFAULT_LANGUAGE_NAME = Language.get(self.DEFAULT_LANGUAGE_CODE).display_name()
-        # ========================== END HRSAData Folder Constants ===================================
+        # endregion Default Language Constants
 
-    @staticmethod
-    def get_instance():
-        return HRSADataFileSystemConstants()
+        # endregion HRSAData Folder Constants

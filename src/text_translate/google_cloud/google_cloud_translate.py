@@ -1,10 +1,8 @@
-import threading
-
 import langcodes
 from google.cloud import translate
 
 from app_file_system.app_file_system import AppFileSystem
-from app_debug.app_debug import IS_DEBUG_MODE_ENABLED
+from classes.singleton import Singleton
 from service_providers.google_cloud import GoogleCloudServiceProvider
 from .google_cloud_translate_data import GoogleCloudTranslateData
 from .google_cloud_translate_language_data import GoogleCloudTranslateLanguageData
@@ -12,22 +10,9 @@ from .google_cloud_translate_response_data import GoogleCloudTranslateResponseDa
 from .google_cloud_translate_response_element_data import GoogleCloudTranslateResponseElementData
 
 
-class GoogleCloudTranslate(object):
-    _instance = None
+class GoogleCloudTranslate(metaclass=Singleton):
 
-    _lock = threading.Lock()
-
-    def __new__(cls):
-        if cls._instance is None:
-            with cls._lock:
-                if cls._instance is None:
-                    cls._instance = super(GoogleCloudTranslate, cls).__new__(cls)
-                    cls._instance.__initialize__()
-                    if IS_DEBUG_MODE_ENABLED:
-                        print("GoogleCloudTranslate.__new__()")
-        return cls._instance
-
-    def __initialize__(self):
+    def __init__(self):
         # Reference: https://cloud.google.com/translate/docs/reference/rest/v3/projects.locations/translateText
         self.MAX_TEXT_LIST_LENGTH = 1024
         self.MAX_CODEPOINTS_PER_REQUEST = 30000  # 30k codepoints per request

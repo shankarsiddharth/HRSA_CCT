@@ -1,29 +1,16 @@
 import os
 import pathlib
 import sys
-import threading
 import traceback
 
 from app_debug.app_debug import IS_DEBUG_MODE_ENABLED
+from classes.singleton import Singleton
 from .app_logger_file_system_constants import AppLoggerFileSystemConstants
 
 
-class AppLoggerFileSystem(object):
-    _instance = None
+class AppLoggerFileSystem(metaclass=Singleton):
 
-    _lock = threading.Lock()
-
-    def __new__(cls):
-        if cls._instance is None:
-            with cls._lock:
-                if cls._instance is None:
-                    cls._instance = super(AppLoggerFileSystem, cls).__new__(cls)
-                    cls._instance.__initialize__()
-                    if IS_DEBUG_MODE_ENABLED:
-                        print("AppLoggerFileSystem.__new__()")
-        return cls._instance
-
-    def __initialize__(self):
+    def __init__(self):
         self.alfsc: AppLoggerFileSystemConstants = AppLoggerFileSystemConstants()
         self.__EXECUTABLE_FILE_PATH__ = None
         self.__root_folder_path__ = None

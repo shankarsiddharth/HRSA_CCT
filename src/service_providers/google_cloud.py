@@ -1,29 +1,15 @@
 import json
-import threading
 
 from google.oauth2 import service_account
 
 from app_file_system.app_file_system import AppFileSystem
 from app_file_system.app_file_system_constants import AppFileSystemConstants
-from app_debug.app_debug import IS_DEBUG_MODE_ENABLED
+from classes.singleton import Singleton
 
 
-class GoogleCloudServiceProvider(object):
-    _instance = None
+class GoogleCloudServiceProvider(metaclass=Singleton):
 
-    _lock = threading.Lock()
-
-    def __new__(cls):
-        if cls._instance is None:
-            with cls._lock:
-                if cls._instance is None:
-                    cls._instance = super(GoogleCloudServiceProvider, cls).__new__(cls)
-                    cls._instance.__initialize__()
-                    if IS_DEBUG_MODE_ENABLED:
-                        print("GoogleCloudServiceProvider.__new__()")
-        return cls._instance
-
-    def __initialize__(self):
+    def __init__(self):
         self.afs: AppFileSystem = AppFileSystem()
         self.afsc: AppFileSystemConstants = AppFileSystemConstants()
         self.credentials_file_path = self.afs.get_google_cloud_credentials_file_path()

@@ -1,33 +1,19 @@
 import json
-import threading
 from dataclasses import asdict
 
 from app_file_system.app_file_system import AppFileSystem
 from app_file_system.app_file_system_constants import AppFileSystemConstants
 from app_logger.app_logger import AppLogger
-from app_debug.app_debug import IS_DEBUG_MODE_ENABLED
+from classes.singleton import Singleton
 from .file_system_result_data import FileSystemResultData
 from .hrsa_data_file_system_constants import HRSADataFileSystemConstants
 from .hrsa_data_workspace_folder_data import HRSADataWorkspaceFolderData
 from .scenario_language_folder_data import ScenarioLanguageFolderData
 
 
-class HRSADataFileSystem(object):
-    _instance = None
+class HRSADataFileSystem(metaclass=Singleton):
 
-    _lock = threading.Lock()
-
-    def __new__(cls):
-        if cls._instance is None:
-            with cls._lock:
-                if cls._instance is None:
-                    cls._instance = super(HRSADataFileSystem, cls).__new__(cls)
-                    cls._instance.__initialize__()
-                    if IS_DEBUG_MODE_ENABLED:
-                        print("HRSADataFileSystem.__new__()")
-        return cls._instance
-
-    def __initialize__(self):
+    def __init__(self):
         self.hdfsc: HRSADataFileSystemConstants = HRSADataFileSystemConstants()
         self.afsc: AppFileSystemConstants = AppFileSystemConstants()
         self.afs: AppFileSystem = AppFileSystem()

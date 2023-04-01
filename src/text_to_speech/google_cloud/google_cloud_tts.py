@@ -1,11 +1,10 @@
 import sys
-import threading
 
 from google.cloud import texttospeech
 from langcodes import Language
 
-from app_debug.app_debug import IS_DEBUG_MODE_ENABLED
 from app_file_system.app_file_system import AppFileSystem
+from classes.singleton import Singleton
 from hrsa_data.scenario_data.scenario_voice_config.charater_voice_config import CharacterVoiceConfig
 from hrsa_data.scenario_data.scenario_voice_config.scenario_voice_config import ScenarioVoiceConfig
 from service_providers.google_cloud import GoogleCloudServiceProvider
@@ -16,22 +15,9 @@ from ..tts_dialogue_data.room_dialogue_data import RoomDialogueData
 from ..tts_dialogue_data.tts_dialogue_data import TTSDialogueData
 
 
-class GoogleCloudTTS(object):
-    _instance = None
-
-    _lock = threading.Lock()
-
-    def __new__(cls):
-        if cls._instance is None:
-            with cls._lock:
-                if cls._instance is None:
-                    cls._instance = super(GoogleCloudTTS, cls).__new__(cls)
-                    cls._instance.__initialize__()
-                    if IS_DEBUG_MODE_ENABLED:
-                        print("GoogleCloudTTS.__new__()")
-        return cls._instance
-
-    def __initialize__(self):
+class GoogleCloudTTS(metaclass=Singleton):
+    
+    def __init__(self):
         self.afs: AppFileSystem = AppFileSystem()
         self.gc_sp: GoogleCloudServiceProvider = GoogleCloudServiceProvider()
         self.google_cloud_voice_data: GoogleCloudVoiceData = GoogleCloudVoiceData()
