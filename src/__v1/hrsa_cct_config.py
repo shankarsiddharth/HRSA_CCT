@@ -1,9 +1,9 @@
 import configparser
 import os
 import pathlib
+import sys
 
-import hrsa_cct_constants as hcc
-from __v1 import hrsa_cct_globals
+from __v1 import hrsa_cct_globals, hrsa_cct_constants as hcc
 from app_file_system.app_file_system import AppFileSystem
 from app_file_system.app_file_system_constants import AppFileSystemConstants
 from app_logger.app_logger import AppLogger
@@ -149,3 +149,6 @@ def get_scenario_list():
 
 
 read_config_file()
+
+if sys.flags.dev_mode:
+    print("hrsa_cct_config.__init__()")

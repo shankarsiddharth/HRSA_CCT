@@ -242,4 +242,4 @@ def callback_on_translate_text_clicked():
 
 
 if sys.flags.dev_mode:
-    print("translate.__init__()")
+    print("translate_ui.__init__()")

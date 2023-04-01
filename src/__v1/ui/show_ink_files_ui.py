@@ -1,5 +1,6 @@
 import os
 import subprocess
+import sys
 import threading
 
 import dearpygui.dearpygui as dpg
@@ -152,5 +153,9 @@ def init_ui():
         dpg.add_text(tag=SIF_PATIENT_ROOM_FEEDBACK_INK_FILE_PATH_TEXT, indent=20)
         dpg.add_separator()
 
+
 # if __name__ == '__main__':
 #     _open_ink_file(r"C:\GAppLab\hrsa_cct\HRSAData_Old\Scenario1\en-US\BreakRoom\dialogue.ink")
+
+if sys.flags.dev_mode:
+    print("show_ink_files_ui.__init__()")

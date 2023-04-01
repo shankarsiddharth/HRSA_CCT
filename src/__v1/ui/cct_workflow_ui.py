@@ -1,3 +1,5 @@
+import sys
+
 import dearpygui.dearpygui as dpg
 
 from __v1 import hrsa_cct_globals, cct_ui_panels
@@ -87,3 +89,7 @@ def init_ui():
                              tag=CHOOSE_WORKFLOW_RADIO_BUTTON, default_value=DEFAULT_WORKFLOW_OPTION, callback=callback_on_choose_workflow_radio_button_clicked)
         dpg.add_separator()
         dpg.add_spacer(height=20)
+
+
+if sys.flags.dev_mode:
+    print("cct_workflow_ui.__init__()")

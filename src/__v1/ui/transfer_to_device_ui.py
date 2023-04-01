@@ -1,3 +1,5 @@
+import sys
+
 import dearpygui.dearpygui as dpg
 from adbutils import adb
 
@@ -95,3 +97,7 @@ def refresh_device_list():
 
 def init_data():
     refresh_device_list()
+
+
+if sys.flags.dev_mode:
+    print("transfer_to_device_ui.__init__()")
