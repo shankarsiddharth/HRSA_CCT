@@ -41,7 +41,6 @@ def set_scenario_path(scenario_path):
                                                       hrsa_cct_constants.PATIENT_INFORMATION_JSON_FILE_NAME)
     dpg.configure_item(PIU_SCENARIO_PATIENT_INFO_JSON_PATH_TEXT, default_value=patient_information_json_file_path)
     _load_patient_info_file(patient_information_json_file_path)
-    print('set_scenario_path ', patient_information_json_file_path)
     _toggle_patient_info_ui_sections(True)
 
 
@@ -103,20 +102,17 @@ def _load_patient_info_file(file_path_name: str):
 
 def _get_header_tag(header_name: str):
     header_tag = 'PIU_HEADER_{}'.format(header_name.upper().replace(' ', '_'))
-    print(header_tag)
     return header_tag
 
 
 def _get_ui_object_tag(header_name: str, node_name: str):
     ui_object_tag = 'PIU_{0}_{1}'.format(header_name.upper().replace(' ', '_'), node_name.upper().replace(' ', '_'))
-    print(ui_object_tag)
     return ui_object_tag
 
 
 def _get_ui_child_object_tag(header_name: str, node_name: str, index: int):
     ui_object_tag = 'PIU_{0}_{1}_{2}'.format(header_name.upper().replace(' ', '_'), index,
                                              node_name.upper().replace(' ', '_'))
-    print(ui_object_tag)
     return ui_object_tag
 
 

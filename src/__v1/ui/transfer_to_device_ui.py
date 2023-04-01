@@ -15,7 +15,6 @@ def kill_adb_server():
 
 
 def _select_target_device(sender, app_data, user_data):
-    print(sender, app_data)
     global target_devices
     if user_data not in target_devices:
         target_devices.append(user_data)
@@ -85,8 +84,8 @@ def refresh_device_list():
     # Get connected devices
     connected_devices = adb.device_list()
     for device in connected_devices:
-        print(device.serial, device.prop.model)
-        dpg.add_checkbox(label=device.serial,
+        device_label = f"{device.serial} ({device.prop.model})"
+        dpg.add_checkbox(label=device_label,
                          parent=TOD_DEVICES_GROUP,
                          source="bool_value", callback=_select_target_device,
                          user_data=device.serial)

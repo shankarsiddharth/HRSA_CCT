@@ -102,7 +102,6 @@ def _get_character_by_uid(uid):
 
 
 def _get_characters_of_type(conditions):
-    # print('search conditions ', conditions)
     data_of_type = []
     global model_data_list
 
@@ -133,7 +132,6 @@ def _load_character_config():
         for data in row_config['ModelDataList']:
             item = character_model_data.CharacterModelData(**data)
             model_data_list.append(item)
-        # print(_get_characters_of_type({'CharacterType': 'kMedicalStudent'}))
 
 
 def _update_model_config(sender, app_data, user_data):
@@ -154,9 +152,6 @@ def _update_model_config(sender, app_data, user_data):
     model_detail_window_tag = get_model_detail_window_tag(user_data)
     dpg.delete_item(model_detail_window_tag, children_only=True)
     dpg.add_image(detail_texture, tag=get_model_detail_image_tag(user_data, uid), parent=model_detail_window_tag)
-
-    print('Loaded Texture', loaded_texture)
-
     _update_selected_model_info(user_data, uid)
 
 
@@ -199,7 +194,6 @@ def _load_character_model_image(image_name):
 
 
 def _callback_update_filter(sender, app_data, user_data):
-    print(sender, app_data, user_data)
     gender = dpg.get_value(get_combo_tag(user_data, GENDER_LABEL))
     ethnicity = dpg.get_value(get_combo_tag(user_data, ETHNICITY_LABEL))
 
@@ -213,7 +207,6 @@ def _callback_update_filter(sender, app_data, user_data):
     if not ethnicity == 'None':
         conditions['EthnicityType'] = 'k' + ethnicity
 
-    print('conditions => ', conditions)
     patients_data = _get_characters_of_type(conditions)
 
     dpg.delete_item(target_window, children_only=True)

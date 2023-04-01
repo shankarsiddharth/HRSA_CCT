@@ -27,7 +27,6 @@ SIF_PATIENT_ROOM_FEEDBACK_INK_FILE_PATH_TEXT: str = 'SIF_PATIENT_ROOM_FEEDBACK_I
 
 bin_folder = hfs.get_default_binary_folder_path()
 inky_windows_path = os.path.join(bin_folder, hfsc.BINARY_INKY_FOLDER_NAME, hfsc.WINDOWS_BINARY_FOLDER_NAME, hfsc.DEFAULT_WINDOWS_INKY_EXECUTABLE_FILE_NAME)
-print("inky_windows_path: " + inky_windows_path)
 
 break_room_dialogue_ink_file_path: str = ''
 patient_room_dialogue_ink_file_path: str = ''
