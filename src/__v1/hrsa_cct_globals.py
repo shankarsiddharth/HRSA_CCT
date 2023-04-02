@@ -46,6 +46,7 @@ option_text_prefixes = [
 
 dialogue_regular_expression = r"\".*?\""
 option_regular_expression = r"[*](.*)\[(.*?(?=`))`(.*?(?=`))`(.*?(?=`))`(.*?(?=`|\]))(?:`(.*)])?"
+feedback_option_regular_expression = r"\[[12345]\]"
 option_display_text_regular_expression = r"\s*[A-Za-z0-9]+\s*[\.](.*)"
 
 default_selected_scenario = "(none)"

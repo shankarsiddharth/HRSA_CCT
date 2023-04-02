@@ -226,6 +226,13 @@ def callback_on_translate_text_clicked():
         file_ink.seek(0, 0)
         data = file_ink.read()
         file_ink.close()
+        # Sort the dialogue text list by descending order of length
+        # i.e. The largest text will be translated and replaced first
+        # This step is required to avoid replacing the text in the middle of the string
+        #   If the text is replaced in the middle of the string then the translation will be incorrect,
+        #       because the text will be split with source language and translated language text
+        dialogue_text_list.sort(key=len, reverse=True)
+        # Translate and replace the text in the sorted list order
         for dialogue_text_list_element in dialogue_text_list:
             try:
                 translated_text = translate_text(text=dialogue_text_list_element, language=selected_language)

@@ -340,6 +340,10 @@ def main() -> None:
                 dpg.add_listbox(tag=audio_generation_ui.AUDIO_GENDER_TEXT, label="Gender", num_items=3, show=True, callback=audio_generation_ui.callback_on_gender_selected)
                 dpg.add_listbox(tag=audio_generation_ui.AUDIO_VOICE_LIST, label="Voice", num_items=10, tracked=True)
                 dpg.add_button(tag=audio_generation_ui.SAVE_AUDIO_SETTINGS_BUTTON, label="Save voice settings", show=True, callback=audio_generation_ui.save_audio_settings)
+            dpg.add_button(tag=audio_generation_ui.PARSE_INK_SCRIPTS_BUTTON, label="Parse Ink Scripts", show=False,
+                           callback=audio_generation_ui.callback_on_parse_ink_scripts_clicked)
+            dpg.add_button(tag=audio_generation_ui.COMPILE_INK_SCRIPTS_BUTTON, label="Compile Ink Scripts", show=False,
+                           callback=audio_generation_ui.callback_on_compile_ink_scripts_clicked)
             dpg.add_button(tag=audio_generation_ui.GENERATE_AUDIO_BUTTON, label="Generate Audio", show=False, callback=audio_generation_ui.callback_on_generate_audio_clicked)
             dpg.add_separator()
         # endregion Audio Generation UI
