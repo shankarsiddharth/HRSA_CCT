@@ -10,7 +10,7 @@ from google.cloud import texttospeech
 from google.cloud.texttospeech_v1 import ListVoicesResponse
 from google.oauth2 import service_account
 
-from __v1 import hrsa_cct_config
+from __v1 import hrsa_cct_config, cct_ui_panels
 from __v1 import hrsa_cct_constants
 from __v1 import hrsa_cct_globals
 from __v1.hrsa_cct_globals import log, hfsc, hfs
@@ -544,6 +544,45 @@ def generate_audio_gc_tts(dialogue_text, audio_file_path, language_code, in_gend
     except Exception as e:
         log.error(str(e))
         log.error("Google Cloud TTS Request Failed")
+
+
+def callback_on_show_file_dialog_clicked(item_tag):
+    dpg.configure_item(item_tag, show=True, modal=True)
+
+
+def file_dialog_cancel_callback(sender, app_data, user_data):
+    pass
+
+
+def init_ui():
+    with dpg.collapsing_header(tag=cct_ui_panels.AUDIO_GENERATION_COLLAPSING_HEADER,
+                               label="Choose the Scenario Folder for Audio Generation", default_open=False, show=hrsa_cct_config.is_google_cloud_credentials_file_found()):
+        dpg.add_file_dialog(tag=FILE_DIALOG_FOR_SCENARIO_FOLDER, height=300, width=450, directory_selector=True, show=False,
+                            callback=callback_on_scenario_folder_selected,
+                            default_path=hrsa_cct_config.get_file_dialog_default_path(),
+                            cancel_callback=file_dialog_cancel_callback)
+        dpg.add_button(tag=SHOW_FILE_DIALOG_BUTTON_SCENARIO_FOLDER, label="Select Scenario Folder",
+                       callback=lambda s, a: callback_on_show_file_dialog_clicked(item_tag=FILE_DIALOG_FOR_SCENARIO_FOLDER))
+        dpg.add_text(tag=SCENARIO_DIRECTORY_PATH_TEXT)
+        with dpg.group(tag=AG_LANGUAGE_LISTBOX_GROUP, horizontal=True, show=False):
+            dpg.add_text("Audio Generation Language: ")
+            dpg.add_listbox(tag=AG_LANGUAGE_LISTBOX, items=hrsa_cct_globals.language_list,
+                            callback=callback_on_language_code_selected, default_value="")
+        dpg.add_text(tag=SCENARIO_LANGUAGE_CODE_DIRECTORY_PATH_TEXT, show=False)
+        # TODO: Voice Configuration
+        with dpg.collapsing_header(indent=50, tag=VOICE_CONFIG_SECTION, label="Configure Character Voice Settings", default_open=True, show=False):
+            dpg.add_listbox(tag=CHARACTER_SELECT_LISTBOX, label="Choose Character", num_items=5, show=True,
+                            callback=display_character_info)
+            dpg.add_listbox(tag=LANGUAGE_CODE_TEXT, label="Language Code", num_items=4, callback=callback_on_change_language_code)
+            dpg.add_listbox(tag=AUDIO_GENDER_TEXT, label="Gender", num_items=3, show=True, callback=callback_on_gender_selected)
+            dpg.add_listbox(tag=AUDIO_VOICE_LIST, label="Voice", num_items=10, tracked=True)
+            dpg.add_button(tag=SAVE_AUDIO_SETTINGS_BUTTON, label="Save voice settings", show=True, callback=save_audio_settings)
+        dpg.add_button(tag=PARSE_INK_SCRIPTS_BUTTON, label="Parse Ink Scripts", show=False,
+                       callback=callback_on_parse_ink_scripts_clicked)
+        dpg.add_button(tag=COMPILE_INK_SCRIPTS_BUTTON, label="Compile Ink Scripts", show=False,
+                       callback=callback_on_compile_ink_scripts_clicked)
+        dpg.add_button(tag=GENERATE_AUDIO_BUTTON, label="Generate Audio", show=False, callback=callback_on_generate_audio_clicked)
+        dpg.add_separator()
 
 
 if sys.flags.dev_mode:

@@ -141,14 +141,6 @@ def file_dialog_cancel_callback(sender, app_data, user_data):
     pass
 
 
-# def callback_on_select_data_folder_button_clicked():
-#     dpg.configure_item(FILE_DIALOG_FOR_DATA_FOLDER, show=True, modal=True)
-#
-#
-# def callback_show_file_dialog_scenario_folder():
-#     dpg.configure_item(FILE_DIALOG_FOR_SCENARIO_FOLDER, show=True, modal=True)
-
-
 def callback_on_show_file_dialog_clicked(item_tag):
     dpg.configure_item(item_tag, show=True, modal=True)
 
@@ -195,12 +187,6 @@ def on_copy_scenario_button_clicked():
     dpg.configure_item(COPY_SCENARIO_INFORMATION_BUTTON, show=True)
 
     cct_scenario_ui.set_current_scenario_path(hrsa_cct_globals.scenario_path_destination)
-
-    # audio_generation_ui.callback_on_scenario_folder_selected(audio_generation_ui.FILE_DIALOG_FOR_SCENARIO_FOLDER, hrsa_cct_globals.app_data)
-    # translate_ui.callback_on_source_scenario_folder_selected(translate_ui.FILE_DIALOG_FOR_SOURCE_SCENARIO_FOLDER, hrsa_cct_globals.app_data)
-    # cct_patient_info_ui.set_scenario_path(hrsa_cct_globals.scenario_path_destination)
-    # cct_scenario_config_ui.set_scenario_path(hrsa_cct_globals.scenario_path_destination)
-    # show_ink_files_ui.set_scenario_path(hrsa_cct_globals.scenario_path_destination)
 
 
 def callback_on_create_scenario_by_copy_button_clicked():
@@ -317,60 +303,11 @@ def main() -> None:
         # Show Ink Files UI - Initialize
         show_ink_files_ui.init_ui()
 
-        # region Audio Generation UI
-        with dpg.collapsing_header(tag=cct_ui_panels.AUDIO_GENERATION_COLLAPSING_HEADER,
-                                   label="Choose the Scenario Folder for Audio Generation", default_open=False, show=hrsa_cct_config.is_google_cloud_credentials_file_found()):
-            dpg.add_file_dialog(tag=audio_generation_ui.FILE_DIALOG_FOR_SCENARIO_FOLDER, height=300, width=450, directory_selector=True, show=False,
-                                callback=audio_generation_ui.callback_on_scenario_folder_selected,
-                                default_path=hrsa_cct_config.get_file_dialog_default_path(),
-                                cancel_callback=file_dialog_cancel_callback)
-            dpg.add_button(tag=audio_generation_ui.SHOW_FILE_DIALOG_BUTTON_SCENARIO_FOLDER, label="Select Scenario Folder",
-                           callback=lambda s, a: callback_on_show_file_dialog_clicked(item_tag=audio_generation_ui.FILE_DIALOG_FOR_SCENARIO_FOLDER))
-            dpg.add_text(tag=audio_generation_ui.SCENARIO_DIRECTORY_PATH_TEXT)
-            with dpg.group(tag=audio_generation_ui.AG_LANGUAGE_LISTBOX_GROUP, horizontal=True, show=False):
-                dpg.add_text("Audio Generation Language: ")
-                dpg.add_listbox(tag=audio_generation_ui.AG_LANGUAGE_LISTBOX, items=hrsa_cct_globals.language_list,
-                                callback=audio_generation_ui.callback_on_language_code_selected, default_value="")
-            dpg.add_text(tag=audio_generation_ui.SCENARIO_LANGUAGE_CODE_DIRECTORY_PATH_TEXT, show=False)
-            # TODO: Voice Configuration
-            with dpg.collapsing_header(indent=50, tag=audio_generation_ui.VOICE_CONFIG_SECTION, label="Configure Character Voice Settings", default_open=True, show=False):
-                dpg.add_listbox(tag=audio_generation_ui.CHARACTER_SELECT_LISTBOX, label="Choose Character", num_items=5, show=True,
-                                callback=audio_generation_ui.display_character_info)
-                dpg.add_listbox(tag=audio_generation_ui.LANGUAGE_CODE_TEXT, label="Language Code", num_items=4, callback=audio_generation_ui.callback_on_change_language_code)
-                dpg.add_listbox(tag=audio_generation_ui.AUDIO_GENDER_TEXT, label="Gender", num_items=3, show=True, callback=audio_generation_ui.callback_on_gender_selected)
-                dpg.add_listbox(tag=audio_generation_ui.AUDIO_VOICE_LIST, label="Voice", num_items=10, tracked=True)
-                dpg.add_button(tag=audio_generation_ui.SAVE_AUDIO_SETTINGS_BUTTON, label="Save voice settings", show=True, callback=audio_generation_ui.save_audio_settings)
-            dpg.add_button(tag=audio_generation_ui.PARSE_INK_SCRIPTS_BUTTON, label="Parse Ink Scripts", show=False,
-                           callback=audio_generation_ui.callback_on_parse_ink_scripts_clicked)
-            dpg.add_button(tag=audio_generation_ui.COMPILE_INK_SCRIPTS_BUTTON, label="Compile Ink Scripts", show=False,
-                           callback=audio_generation_ui.callback_on_compile_ink_scripts_clicked)
-            dpg.add_button(tag=audio_generation_ui.GENERATE_AUDIO_BUTTON, label="Generate Audio", show=False, callback=audio_generation_ui.callback_on_generate_audio_clicked)
-            dpg.add_separator()
-        # endregion Audio Generation UI
+        # Show Audio Generation UI - Initialize
+        audio_generation_ui.init_ui()
 
-        # region Translate UI
-        with dpg.collapsing_header(tag=cct_ui_panels.TRANSLATE_COLLAPSING_HEADER,
-                                   label="Choose a location to create the Translated Data Folder", default_open=False,
-                                   show=hrsa_cct_config.is_google_cloud_credentials_file_found()):
-            dpg.add_file_dialog(tag=translate_ui.FILE_DIALOG_FOR_SOURCE_SCENARIO_FOLDER, height=300, width=450, directory_selector=True, show=False,
-                                callback=translate_ui.callback_on_source_scenario_folder_selected,
-                                default_path=hrsa_cct_config.get_file_dialog_default_path(),
-                                cancel_callback=file_dialog_cancel_callback)
-            dpg.add_button(tag=translate_ui.SHOW_FILE_DIALOG_BUTTON_SOURCE_SCENARIO_FOLDER, label="Select Scenario Folder",
-                           callback=lambda s, a: callback_on_show_file_dialog_clicked(item_tag=translate_ui.FILE_DIALOG_FOR_SOURCE_SCENARIO_FOLDER))
-            with dpg.group(tag=translate_ui.SOURCE_SECTION_GROUP, horizontal=True, show=False):
-                dpg.add_text("Selected Source Language Folder (en) : ")
-                dpg.add_text(tag=translate_ui.SOURCE_SCENARIO_DIRECTORY_PATH_TEXT)
-            with dpg.group(tag=translate_ui.LANGUAGE_LISTBOX_GROUP, horizontal=True, show=False):
-                dpg.add_text("Language To Translate: ")
-                dpg.add_listbox(tag=translate_ui.LANGUAGE_LISTBOX, items=hrsa_cct_globals.language_list,
-                                callback=translate_ui.set_new_language_code, default_value="")
-            with dpg.group(tag=translate_ui.DESTINATION_SECTION_GROUP, horizontal=True, show=False):
-                dpg.add_text("Destination Language Folder: ")
-                dpg.add_text(tag=translate_ui.NEW_DATA_DIRECTORY_PATH_TEXT)
-            dpg.add_button(tag=translate_ui.TRANSLATE_TEXT_BUTTON, label="Translate Data", show=False, callback=translate_ui.callback_on_translate_text_clicked)
-            dpg.add_separator()
-        # endregion Translate UI
+        # Show Translate UI - Initialize
+        translate_ui.init_ui()
 
         # Transfer to Device UI
         transfer_to_device_ui.init_ui()

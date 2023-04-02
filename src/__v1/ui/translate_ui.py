@@ -10,7 +10,7 @@ import dearpygui.dearpygui as dpg
 from google.cloud import translate
 from google.oauth2 import service_account
 
-from __v1 import hrsa_cct_config
+from __v1 import hrsa_cct_config, cct_ui_panels
 from __v1 import hrsa_cct_constants
 from __v1 import hrsa_cct_globals
 from __v1 import patient_info_translate
@@ -246,6 +246,38 @@ def callback_on_translate_text_clicked():
             file.write(data)
     log_text = "Translation Complete! total_characters_translated : " + str(total_characters_translated)
     log.info(log_text)
+
+
+def callback_on_show_file_dialog_clicked(item_tag):
+    dpg.configure_item(item_tag, show=True, modal=True)
+
+
+def file_dialog_cancel_callback(sender, app_data, user_data):
+    pass
+
+
+def init_ui():
+    with dpg.collapsing_header(tag=cct_ui_panels.TRANSLATE_COLLAPSING_HEADER,
+                               label="Choose a location to create the Translated Data Folder", default_open=False,
+                               show=hrsa_cct_config.is_google_cloud_credentials_file_found()):
+        dpg.add_file_dialog(tag=FILE_DIALOG_FOR_SOURCE_SCENARIO_FOLDER, height=300, width=450, directory_selector=True, show=False,
+                            callback=callback_on_source_scenario_folder_selected,
+                            default_path=hrsa_cct_config.get_file_dialog_default_path(),
+                            cancel_callback=file_dialog_cancel_callback)
+        dpg.add_button(tag=SHOW_FILE_DIALOG_BUTTON_SOURCE_SCENARIO_FOLDER, label="Select Scenario Folder",
+                       callback=lambda s, a: callback_on_show_file_dialog_clicked(item_tag=FILE_DIALOG_FOR_SOURCE_SCENARIO_FOLDER))
+        with dpg.group(tag=SOURCE_SECTION_GROUP, horizontal=True, show=False):
+            dpg.add_text("Selected Source Language Folder (en) : ")
+            dpg.add_text(tag=SOURCE_SCENARIO_DIRECTORY_PATH_TEXT)
+        with dpg.group(tag=LANGUAGE_LISTBOX_GROUP, horizontal=True, show=False):
+            dpg.add_text("Language To Translate: ")
+            dpg.add_listbox(tag=LANGUAGE_LISTBOX, items=hrsa_cct_globals.language_list,
+                            callback=set_new_language_code, default_value="")
+        with dpg.group(tag=DESTINATION_SECTION_GROUP, horizontal=True, show=False):
+            dpg.add_text("Destination Language Folder: ")
+            dpg.add_text(tag=NEW_DATA_DIRECTORY_PATH_TEXT)
+        dpg.add_button(tag=TRANSLATE_TEXT_BUTTON, label="Translate Data", show=False, callback=callback_on_translate_text_clicked)
+        dpg.add_separator()
 
 
 if sys.flags.dev_mode:
