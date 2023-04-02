@@ -48,16 +48,19 @@ room_dialogue_data = dict()
 character_voice_config_data = dict()
 new_character_voice_config_data = dict()
 character_voice_config_file_path = ""
-ink_file_path_list = []
+ink_file_path_list = list()
+audio_folder_path_list = list()
 # TODO: Move this into a global constant
 gender_list = ["MALE", "FEMALE"]
-voice_list = []
+voice_list = list()
 
 total_characters_for_audio_generation = 0
 
 # GUI Element Tags
 SCENARIO_DIRECTORY_PATH_TEXT: str = "SCENARIO_DIRECTORY_PATH_TEXT"
 GENERATE_AUDIO_BUTTON: str = "GENERATE_AUDIO_BUTTON"
+PARSE_INK_SCRIPTS_BUTTON: str = "PARSE_INK_SCRIPTS_BUTTON"
+COMPILE_INK_SCRIPTS_BUTTON: str = "COMPILE_INK_SCRIPTS_BUTTON"
 SAVE_AUDIO_SETTINGS_BUTTON: str = "CONFIGURE_AUDIO_BUTTON"
 CHARACTER_SELECT_LISTBOX: str = "CHARACTER_SELECT_LISTBOX"
 LANGUAGE_CODE_TEXT: str = "LANGUAGE_CODE_TEXT"
@@ -113,6 +116,8 @@ def callback_on_language_code_selected(sender):
         dpg.configure_item(SCENARIO_LANGUAGE_CODE_DIRECTORY_PATH_TEXT, show=True)
         new_button_label = "Generate Audio (" + selected_language_code + ")"
         dpg.configure_item(GENERATE_AUDIO_BUTTON, label=new_button_label)
+        dpg.configure_item(PARSE_INK_SCRIPTS_BUTTON, show=True)
+        dpg.configure_item(COMPILE_INK_SCRIPTS_BUTTON, show=True)
         dpg.configure_item(GENERATE_AUDIO_BUTTON, show=True)
         # TODO: Voice Configuration
         selected_character = dpg.get_value(CHARACTER_SELECT_LISTBOX)
@@ -132,6 +137,8 @@ def callback_on_language_code_selected(sender):
     else:
         dpg.configure_item(SCENARIO_LANGUAGE_CODE_DIRECTORY_PATH_TEXT, default_value="")
         dpg.configure_item(SCENARIO_LANGUAGE_CODE_DIRECTORY_PATH_TEXT, show=False)
+        dpg.configure_item(PARSE_INK_SCRIPTS_BUTTON, show=False)
+        dpg.configure_item(COMPILE_INK_SCRIPTS_BUTTON, show=False)
         dpg.configure_item(GENERATE_AUDIO_BUTTON, show=False)
         dpg.configure_item(VOICE_CONFIG_SECTION, show=False)
         log.warning("Selected Language for Audio Generation: " + selected_language_code)
@@ -157,12 +164,16 @@ def callback_on_change_language_code(sender):
         dpg.configure_item(AUDIO_GENDER_TEXT, show=True)
         dpg.configure_item(AUDIO_VOICE_LIST, show=True)
         dpg.configure_item(SAVE_AUDIO_SETTINGS_BUTTON, show=True)
+        dpg.configure_item(PARSE_INK_SCRIPTS_BUTTON, show=True)
+        dpg.configure_item(COMPILE_INK_SCRIPTS_BUTTON, show=True)
         dpg.configure_item(GENERATE_AUDIO_BUTTON, show=True)
     else:
         # TODO: Handle (none) case
         dpg.configure_item(AUDIO_GENDER_TEXT, show=False)
         dpg.configure_item(AUDIO_VOICE_LIST, show=False)
         dpg.configure_item(SAVE_AUDIO_SETTINGS_BUTTON, show=False)
+        dpg.configure_item(PARSE_INK_SCRIPTS_BUTTON, show=False)
+        dpg.configure_item(COMPILE_INK_SCRIPTS_BUTTON, show=False)
         dpg.configure_item(GENERATE_AUDIO_BUTTON, show=False)
         pass
 
@@ -204,6 +215,8 @@ def display_character_info(sender):
     dpg.configure_item(AUDIO_GENDER_TEXT, show=True)
     dpg.configure_item(AUDIO_VOICE_LIST, show=True)
     dpg.configure_item(SAVE_AUDIO_SETTINGS_BUTTON, show=True)
+    dpg.configure_item(PARSE_INK_SCRIPTS_BUTTON, show=True)
+    dpg.configure_item(COMPILE_INK_SCRIPTS_BUTTON, show=True)
     dpg.configure_item(GENERATE_AUDIO_BUTTON, show=True)
 
 
@@ -212,7 +225,7 @@ def save_audio_settings(sender):
     language_code = dpg.get_value(LANGUAGE_CODE_TEXT)
     audio_gender = dpg.get_value(AUDIO_GENDER_TEXT)
     voice_model = dpg.get_value(AUDIO_VOICE_LIST)
-    global new_character_voice_config_data
+    global character_voice_config_data, new_character_voice_config_data
     if str(language_code).lower() != str(hrsa_cct_globals.none_language_code).lower():
         new_character_voice_config_data[selected_character]['language_code'] = language_code
         new_character_voice_config_data[selected_character]['gender'] = audio_gender
@@ -223,6 +236,7 @@ def save_audio_settings(sender):
         global character_voice_config_file_path
         with open(character_voice_config_file_path, 'w') as output_json_file:
             output_json_file.write(character_voice_config_json_object)
+        character_voice_config_data = new_character_voice_config_data
         log.info("Voice Configuration for Audio Generation Saved")
     else:
         # TODO: Log Error
@@ -284,14 +298,59 @@ def compile_ink_files():
         log.debug("returncode: " + str(completed_process_result.returncode))
 
 
+def callback_on_parse_ink_scripts_clicked():
+    global scenario_language_code_folder_path
+    parse_all_ink_scripts(path=scenario_language_code_folder_path)
+
+
+def callback_on_compile_ink_scripts_clicked():
+    # Compile all ink files to JSON
+    compile_ink_files()
+    log.info('Complete - compile_ink_files')
+
+
+def validate_audio_files():
+    global audio_folder_path_list, ink_file_path_list
+    for index, audio_folder_path in enumerate(audio_folder_path_list):
+        total_audio_files = len([name for name in os.listdir(audio_folder_path) if (os.path.isfile(os.path.join(audio_folder_path, name)) and name.endswith('.mp3'))])
+        regex = r"#Audio_*"
+        with open(ink_file_path_list[index], "r", encoding="utf-8") as f:
+            test_str = f.read()
+        matches = re.finditer(regex, test_str, re.MULTILINE)
+        total_matches_sum = sum(1 for _ in matches)
+        if total_audio_files != total_matches_sum:
+            log.error("Total Audio Files: " + str(total_audio_files))
+            log.error("Total Ink Audio Tags: " + str(total_matches_sum))
+            log.error("Audio Files and Ink Audio Tags do not match")
+            log.error("Audio Folder Path: " + audio_folder_path)
+            log.error("Ink File Path: " + ink_file_path_list[index])
+            log.error("Please check the Ink file and Audio Folder Path")
+        else:
+            log.info("Verified Number of Audio Files and Ink Audio Tags")
+
+
 def callback_on_generate_audio_clicked():
     # Check for the Voice Configuration File
+    dpg.configure_item(PARSE_INK_SCRIPTS_BUTTON, show=False)
+    dpg.configure_item(COMPILE_INK_SCRIPTS_BUTTON, show=False)
     dpg.configure_item(GENERATE_AUDIO_BUTTON, show=False)
-    generate_audio(path=scenario_language_code_folder_path)
+
+    # Process For Audio Generation
+    callback_on_parse_ink_scripts_clicked()
+    callback_on_compile_ink_scripts_clicked()
+    generate_audio_files()
+    log.info('Complete - generate_audio_files')
+    log_text = "total_characters_for_audio_generation : " + str(total_characters_for_audio_generation)
+    log.info(log_text)
+    validate_audio_files()
+    log.info('Complete - validate_audio_files')
+
+    dpg.configure_item(PARSE_INK_SCRIPTS_BUTTON, show=True)
+    dpg.configure_item(COMPILE_INK_SCRIPTS_BUTTON, show=True)
     dpg.configure_item(GENERATE_AUDIO_BUTTON, show=True)
 
 
-def generate_audio(path=""):
+def parse_all_ink_scripts(path=""):
     global total_characters_for_audio_generation
     total_characters_for_audio_generation = 0
     # Check for the Voice Configuration File
@@ -299,6 +358,10 @@ def generate_audio(path=""):
     scenario_language_code_folder_path = path
     global room_dialogue_data
     room_dialogue_data = dict()
+    global ink_file_path_list
+    ink_file_path_list.clear()
+    global audio_folder_path_list
+    audio_folder_path_list.clear()
     # Process Break Room Dialogue Ink Script
     log.info('Processing Break Room ink file')
     process_dialogue_ink_file_for_room(hrsa_cct_constants.BREAK_ROOM_NAME)
@@ -317,14 +380,6 @@ def generate_audio(path=""):
     log.info('Complete - Processing Feedback Room - Patient Room ink file')
     json_object = json.dumps(room_dialogue_data)
     log.debug("Room Dialogue Dict: " + json_object)
-    # Compile all ink files to JSON
-    compile_ink_files()
-    log.info('Complete - compile_ink_files')
-    # Process For Audio Generation
-    generate_audio_files()
-    log.info('Complete - generate_audio_files')
-    log_text = "total_characters_for_audio_generation : " + str(total_characters_for_audio_generation)
-    log.info(log_text)
 
 
 def process_dialogue_ink_file_for_room(room_name):
@@ -335,6 +390,7 @@ def process_dialogue_ink_file_for_room(room_name):
     file_path = os.path.join(room_folder_path, hrsa_cct_constants.DIALOGUE_INK_FILE_NAME)
     log.info("Dialogue Ink File Path: " + file_path)
     parse_ink_script(audio_folder_path, file_path, room_name)
+    audio_folder_path_list.append(audio_folder_path)
     ink_file_path_list.append(file_path)
 
 
@@ -347,6 +403,7 @@ def process_feedback_ink_file_for_room(feedback_room_type):
     file_path = os.path.join(room_folder_path, hrsa_cct_constants.FEEDBACK_INK_FILE_NAME)
     log.info("Feedback Ink File Path: " + file_path)
     parse_ink_script(audio_folder_path, file_path, feedback_room_type)
+    audio_folder_path_list.append(audio_folder_path)
     ink_file_path_list.append(file_path)
 
 
@@ -371,26 +428,35 @@ def parse_ink_script(audio_folder_path, file_path, room_name):
                 # TODO : #Highpriority Check the option string for the option letter/text
                 # TODO : Throw error if it has any option characters
                 # TODO : Check for valid emotion tags
-                match_list = re.findall(hrsa_cct_globals.option_regular_expression, string_to_parse)
-                if len(match_list) >= 1:
-                    match_group_tuple = match_list[0]
-                    if len(match_group_tuple) >= 3:
-                        option_text = match_group_tuple[1]
-                        option_text_without_spaces = "".join(option_text.split())
-                        if option_text_without_spaces.startswith(tuple(hrsa_cct_globals.option_text_prefixes)):
-                            # TODO : Check for other tags
-                            pass
-                        else:
-                            log_text = str(line_number) + ' : ' + 'Not a valid option index. ' \
-                                                                  'Option index can be in the range A-E or 1-5 and should have a dot character after the index. ' \
-                                                                  'eg. (\'A.\' \'E.\' \'1.\' \'5.\')'
-                            log.warning(log_text)
+                if room_name == hrsa_cct_constants.FEEDBACK_TYPE_BREAK_ROOM_NAME or room_name == hrsa_cct_constants.FEEDBACK_TYPE_PATIENT_ROOM_NAME:
+                    # TODO : Check for valid feedback option
+                    match_list = re.findall(hrsa_cct_globals.feedback_option_regular_expression, string_to_parse)
+                    if len(match_list) != 1:
+                        log_text = str(line_number) + ' : ' + 'Not a valid feedback option. ' \
+                                                              'Feedback option can be in the range 1-5' \
+                                                              'eg. (\'1\' \'5\')'
+                        log.warning(log_text)
                 else:
-                    # TODO: Log Error Wrong formatting for Option text
-                    # TODO: If it is a feedback room text then ignore
-                    log_text = "Line Number : " + str(line_number) + ' : ' + " Wrong formatting for Option text"
-                    log.warning(log_text)
-                continue
+                    match_list = re.findall(hrsa_cct_globals.option_regular_expression, string_to_parse)
+                    if len(match_list) >= 1:
+                        match_group_tuple = match_list[0]
+                        if len(match_group_tuple) >= 3:
+                            option_text = match_group_tuple[1]
+                            option_text_without_spaces = "".join(option_text.split())
+                            if option_text_without_spaces.startswith(tuple(hrsa_cct_globals.option_text_prefixes)):
+                                # TODO : Check for other tags
+                                pass
+                            else:
+                                log_text = str(line_number) + ' : ' + 'Not a valid option index. ' \
+                                                                      'Option index can be in the range A-E or 1-5 and should have a dot character after the index. ' \
+                                                                      'eg. (\'A.\' \'E.\' \'1.\' \'5.\')'
+                                log.warning(log_text)
+                    else:
+                        # TODO: Log Error Wrong formatting for Option text
+                        # TODO: If it is a feedback room text then ignore
+                        log_text = "Line Number : " + str(line_number) + ' : ' + " Wrong formatting for Option text"
+                        log.warning(log_text)
+                    continue
             else:
                 log.trace("string_to_parse: " + string_to_parse)
                 text_to_display = string_to_parse.split("#")[0].strip()
@@ -399,7 +465,6 @@ def parse_ink_script(audio_folder_path, file_path, room_name):
                     # TODO: Display error message by collecting this error data in a collection and display in the end
                     log_text = str(line_number) + ' : ' + 'Length exceeds max character count'
                     log.warning(log_text)
-                    continue
                 string_without_name = string_to_parse.split(":", 1)
                 log.trace("string_without_name: " + str(string_without_name))
                 # TODO: Error Check for all the string operations
@@ -423,7 +488,7 @@ def parse_ink_script(audio_folder_path, file_path, room_name):
                 if audio_file_name in audio_dialogue_data:
                     # TODO: Error duplicate audio names
                     log_text = str(line_number) + ' : ' + 'Duplicate Audio file names, ' + audio_file_name
-                    log.warning(log_text)
+                    log.error(log_text)
                     continue
                 else:
                     dialogue_data = dict()
