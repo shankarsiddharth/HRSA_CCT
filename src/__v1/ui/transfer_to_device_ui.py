@@ -1,3 +1,4 @@
+import os.path
 import sys
 
 import dearpygui.dearpygui as dpg
@@ -13,6 +14,8 @@ selected_scenario_list = []
 TTD_SELECT_APK_FILE_DIALOG: str = 'TTD_SELECT_APK_FILE_DIALOG'
 TOD_DEVICES_GROUP: str = 'TOD_DEVICES_GROUP'
 TOD_MESSAGE_TEXT: str = 'TOD_MESSAGE_TEXT'
+
+HRSA_DATA_ROOT_PATH: str = '/storage/emulated/0/HRSAData/'
 
 TOD_SCENARIO_LIST_WINDOW: str = "TOD_SCENARIO_LIST_WINDOW"
 
@@ -32,18 +35,47 @@ def _toggle_media_transfer(sender, app_data, user_data):
     if len(target_devices) <= 0:
         print("No target devices selected!")
     for info in target_devices:
+        print(info)
         try:
-            device = adb.device(serial=info.serial)
+            device = adb.device(serial=info)
             if user_data:
                 device.shell("svc usb setFunctions mtp")
-                device = adb.device(serial=info.serial)  # need reconnect
+                device = adb.device(serial=info)  # need reconnect
                 device.shell("svc usb setScreenUnlockedFunctions mtp")
             else:
                 device.shell("svc usb setScreenUnlockedFunctions")
-                device = adb.device(serial=info.serial)  # need reconnect
+                device = adb.device(serial=info)  # need reconnect
                 device.shell("svc usb setFunctions")
         except RuntimeError as e:
             print(e)
+
+
+def _callback_transfer_scenario_data(sender, app_data, user_data):
+    global target_devices, selected_scenario_list
+    for serial in target_devices:
+        device = adb.device(serial=serial)
+        for scenario in selected_scenario_list:
+            try:
+                # check or create the HRSA_DATA_ROOT_PATH at the target device
+                if not _adb_util_check_file_exist(device, HRSA_DATA_ROOT_PATH):
+                    print(HRSA_DATA_ROOT_PATH + ' not exist.')
+                    if not _adb_util_create_file(device, HRSA_DATA_ROOT_PATH):
+                        raise Exception("Failed to create HRSAData folder in the target device.")
+                # delete the previous data folder
+                scenario_target_path = HRSA_DATA_ROOT_PATH + scenario + '/'
+                if _adb_util_check_file_exist(device, scenario_target_path):
+                    _adb_util_delete_file(device, scenario_target_path)
+                # copy the data
+                scenario_source_path = _retrieve_scenario_path(scenario) + '.zip'
+                scenario_target_path = HRSA_DATA_ROOT_PATH + scenario + '.zip'
+                if _adb_util_check_file_exist(device, scenario_target_path):
+                    _adb_util_delete_file(device, scenario_target_path)
+                print(scenario_source_path)
+                print(scenario_target_path)
+                device.sync.push(scenario_source_path, scenario_target_path, mode=0o777)
+                _adb_util_unzip_file(device, scenario_target_path)
+            except Exception as e:
+                print(e)
 
 
 def _install_latest_package(sender, app_data, user_data):
@@ -79,7 +111,7 @@ def init_ui():
         dpg.add_separator()
         dpg.add_child_window(width=500, height=225, tag=TOD_SCENARIO_LIST_WINDOW)
         dpg.add_button(label='Enable Media Transfer', callback=_toggle_media_transfer, user_data=True)
-        dpg.add_button(label='Transfer Scenarios', callback=_toggle_media_transfer, user_data=True)
+        dpg.add_button(label='Transfer Scenarios', callback=_callback_transfer_scenario_data, user_data=True)
 
         # file selection dialog start
         with dpg.file_dialog(height=300, width=600, directory_selector=False, show=False,
@@ -147,6 +179,39 @@ def refresh_scenario_list():
                          parent=TOD_SCENARIO_LIST_WINDOW,
                          source="bool_value", callback=_select_target_scenario,
                          user_data=scenario)
+
+
+def _retrieve_scenario_path(scenario_name):
+    return os.path.join(hrsa_cct_config.get_user_hrsa_data_folder_path(), scenario_name)
+
+
+def _adb_util_check_file_exist(device, file_path):
+    cmd_str = '[ -e {0} ]'.format(file_path)
+    ret = device.shell2(cmd_str)
+    print(cmd_str + ' => ' + str(ret.returncode))
+    return ret.returncode == 0
+
+
+def _adb_util_create_file(device, file_path):
+    cmd_str = 'mkdir -m 777 {}'.format(file_path)
+    ret = device.shell2(cmd_str)
+    print(cmd_str + ' => ' + str(ret.returncode))
+    return ret.returncode == 0
+
+
+def _adb_util_delete_file(device, file_path):
+    cmd_str = 'rm -r {}'.format(file_path)
+    ret = device.shell2(cmd_str)
+    print(cmd_str + ' => ' + str(ret.returncode))
+    return ret.returncode == 0
+
+
+def _adb_util_unzip_file(device, file_path: str):
+    unzip_dst_path = file_path[:file_path.rfind('/')]
+    cmd_str = 'unzip  {0} -d {1}'.format(file_path, unzip_dst_path)
+    ret = device.shell2(cmd_str)
+    print(cmd_str + ' => ' + str(ret.returncode))
+    return ret.returncode == 0
 
 
 def init_data():
