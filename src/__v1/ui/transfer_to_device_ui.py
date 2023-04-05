@@ -1,5 +1,6 @@
 import os.path
 import sys
+import asyncio
 
 import dearpygui.dearpygui as dpg
 from adbutils import adb
@@ -50,32 +51,63 @@ def _toggle_media_transfer(sender, app_data, user_data):
             print(e)
 
 
-def _callback_transfer_scenario_data(sender, app_data, user_data):
+def _callback_transfer_scenarios_data(sender, app_data, user_data):
     global target_devices, selected_scenario_list
-    for serial in target_devices:
-        device = adb.device(serial=serial)
-        for scenario in selected_scenario_list:
-            try:
-                # check or create the HRSA_DATA_ROOT_PATH at the target device
-                if not _adb_util_check_file_exist(device, HRSA_DATA_ROOT_PATH):
-                    print(HRSA_DATA_ROOT_PATH + ' not exist.')
-                    if not _adb_util_create_file(device, HRSA_DATA_ROOT_PATH):
-                        raise Exception("Failed to create HRSAData folder in the target device.")
-                # delete the previous data folder
-                scenario_target_path = HRSA_DATA_ROOT_PATH + scenario + '/'
-                if _adb_util_check_file_exist(device, scenario_target_path):
-                    _adb_util_delete_file(device, scenario_target_path)
-                # copy the data
-                scenario_source_path = _retrieve_scenario_path(scenario) + '.zip'
-                scenario_target_path = HRSA_DATA_ROOT_PATH + scenario + '.zip'
-                if _adb_util_check_file_exist(device, scenario_target_path):
-                    _adb_util_delete_file(device, scenario_target_path)
-                print(scenario_source_path)
-                print(scenario_target_path)
-                device.sync.push(scenario_source_path, scenario_target_path, mode=0o777)
-                _adb_util_unzip_file(device, scenario_target_path)
-            except Exception as e:
-                print(e)
+    try:
+        for serial in target_devices:
+            device = adb.device(serial=serial)
+            # check or create the HRSA_DATA_ROOT_PATH at the target device
+            if not _adb_util_check_file_exist(device, HRSA_DATA_ROOT_PATH):
+                print(HRSA_DATA_ROOT_PATH + ' not exist.')
+                if not _adb_util_create_file(device, HRSA_DATA_ROOT_PATH):
+                    raise Exception("Failed to create HRSAData folder in the target device.")
+            for scenario in selected_scenario_list:
+                scenario_path = os.path.join(HRSA_DATA_ROOT_PATH, scenario)
+                if _adb_util_check_file_exist(device, scenario_path):
+                    _show_overwrite_scenario_confirmation(device, scenario)
+                else:
+                    _transfer_scenario_data(None, None, {'override': True, 'device': device, 'scenario': scenario})
+    except Exception as e:
+        print(e)
+
+
+def _show_overwrite_scenario_confirmation(device, scenario):
+    with dpg.window(label='Confirmation', modal=True, no_close=True) as confirm_window:
+        dpg.add_text('{0} already exist in the device, do you want to override it?'.format(scenario))
+        dpg.add_button(label="Skip", width=75, user_data={'override': False, 'confirm_window': confirm_window},
+                       callback=_transfer_scenario_data)
+        dpg.add_button(label="Override", width=75, user_data={'device': device, 'scenario': scenario, 'override': True,
+                                                              'confirm_window': confirm_window},
+                       callback=_transfer_scenario_data)
+
+    viewport_width = dpg.get_viewport_client_width()
+    viewport_height = dpg.get_viewport_client_height()
+    dpg.set_item_pos(confirm_window, [viewport_width // 2, viewport_height // 2])
+
+
+def _transfer_scenario_data(sender, app_data, user_data):
+    if 'confirm_window' in user_data:
+        dpg.delete_item(user_data['confirm_window'])
+    if not user_data['override']:
+        return
+
+    # delete the previous data folder
+    device = user_data['device']
+    scenario = user_data['scenario']
+    scenario_target_path = HRSA_DATA_ROOT_PATH + scenario + '/'
+    if _adb_util_check_file_exist(device, scenario_target_path):
+        _adb_util_delete_file(device, scenario_target_path)
+    # copy the data
+    scenario_root_path = _retrieve_scenario_path(scenario)
+    for root, dirs, files in os.walk(scenario_root_path):
+        for file in files:
+            source_file_path = os.path.join(root, file)
+            left = source_file_path.find(scenario)
+            if left == -1:
+                raise Exception("Invalid file path!")
+            target_file_path = os.path.join(HRSA_DATA_ROOT_PATH, source_file_path[left:])
+            target_file_path = target_file_path.replace(os.sep, '/')
+            device.sync.push(source_file_path, target_file_path, mode=0o777)
 
 
 def _install_latest_package(sender, app_data, user_data):
@@ -111,7 +143,7 @@ def init_ui():
         dpg.add_separator()
         dpg.add_child_window(width=500, height=225, tag=TOD_SCENARIO_LIST_WINDOW)
         dpg.add_button(label='Enable Media Transfer', callback=_toggle_media_transfer, user_data=True)
-        dpg.add_button(label='Transfer Scenarios', callback=_callback_transfer_scenario_data, user_data=True)
+        dpg.add_button(label='Transfer Scenarios', callback=_callback_transfer_scenarios_data, user_data=True)
 
         # file selection dialog start
         with dpg.file_dialog(height=300, width=600, directory_selector=False, show=False,
