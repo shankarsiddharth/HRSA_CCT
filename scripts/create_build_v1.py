@@ -13,20 +13,7 @@ from app_file_system.app_file_system import AppFileSystem
 from app_file_system.app_file_system_constants import AppFileSystemConstants
 from app_version import app_version
 
-PYINSTALLER_INTERMEDIATE_FOLDER_NAME = "_pyi_temp"
-PYINSTALLER_WORKPATH_FOLDER_NAME = "_pyi_build"
-PYINSTALLER_DIST_FOLDER_NAME = "_pyi_dist"
-PYINSTALLER_SPEC_FOLDER_NAME = "_pyi_spec"
-
-PROJECT_LICENSE_FILE_NAME = "LICENSE.md"
-
-SOURCE_FOLDER_NAME = "src"
-DEPRECATED_FOLDER_NAME = "__v1"
-BUILD_FOLDER_NAME = "build"
-
-# Application Start-up Script Name
-application_start_up_script_name = "__main__v1__.py"
-
+# region startup
 afs: AppFileSystem = AppFileSystem()
 afsc: AppFileSystemConstants = AppFileSystemConstants()
 
@@ -36,25 +23,13 @@ current_folder_path = os.path.dirname(os.path.realpath(__file__))
 # Project root folder path
 project_folder_path = os.path.dirname(os.path.realpath(current_folder_path))
 
-pyinstaller_temp_folder_path = os.path.join(project_folder_path, PYINSTALLER_INTERMEDIATE_FOLDER_NAME)
-pyinstaller_temp_folder = pathlib.Path(pyinstaller_temp_folder_path)
-# Delete the pyinstaller temp folder if it exists
-if pyinstaller_temp_folder.exists():
-    shutil.rmtree(pyinstaller_temp_folder_path)
-# Create pyinstaller temp folder if it does not exist
-if not pyinstaller_temp_folder.exists():
-    pyinstaller_temp_folder.mkdir()
-
-# PyInstaller SPEC Folder Path
-pyinstaller_spec_folder_path = os.path.join(project_folder_path, PYINSTALLER_INTERMEDIATE_FOLDER_NAME, PYINSTALLER_SPEC_FOLDER_NAME)
-# PyInstaller Workpath / Build Folder Path
-pyinstaller_workpath_folder_path = os.path.join(project_folder_path, PYINSTALLER_INTERMEDIATE_FOLDER_NAME, PYINSTALLER_WORKPATH_FOLDER_NAME)
-# PyInstaller Dist Folder Path
-pyinstaller_dist_folder_path = os.path.join(project_folder_path, PYINSTALLER_INTERMEDIATE_FOLDER_NAME, PYINSTALLER_DIST_FOLDER_NAME)
-
 # Source folder path
+SOURCE_FOLDER_NAME = "src"
 src_folder_path = os.path.join(project_folder_path, SOURCE_FOLDER_NAME)
+# endregion startup
 
+# region build
+BUILD_FOLDER_NAME = "build"
 # Create build folder if it does not exist
 build_folder_path = os.path.join(project_folder_path, BUILD_FOLDER_NAME)
 build_folder = pathlib.Path(build_folder_path)
@@ -85,7 +60,7 @@ if not version_folder.exists():
     version_folder.mkdir()
 
 # Create the Application Build folder
-application_name = "HRSACCT"
+APPLICATION_NAME = "HRSACCT"
 build_platform = platform.system()
 
 if build_platform == "Windows":
@@ -96,8 +71,8 @@ elif build_platform == "Darwin":
     sys.exit("MacOS is not supported yet.")
 
 # Application Executable File Name - Windows Only
-application_executable_file_name = application_name + ".exe"
-app_build_version_folder_path = os.path.join(version_folder_path, application_name)
+application_executable_file_name = APPLICATION_NAME + ".exe"
+app_build_version_folder_path = os.path.join(version_folder_path, APPLICATION_NAME)
 app_build_version_folder = pathlib.Path(app_build_version_folder_path)
 # Delete the Application Build folder if it exists
 if app_build_version_folder.exists():
@@ -106,15 +81,45 @@ if app_build_version_folder.exists():
 if not app_build_version_folder.exists():
     app_build_version_folder.mkdir()
 
+# region _pyi_temp
+PYINSTALLER_INTERMEDIATE_FOLDER_NAME = "_pyi_temp"
+PYINSTALLER_WORKPATH_FOLDER_NAME = "_pyi_build"
+PYINSTALLER_DIST_FOLDER_NAME = "_pyi_dist"
+PYINSTALLER_SPEC_FOLDER_NAME = "_pyi_spec"
+
+pyinstaller_temp_folder_path = os.path.join(project_folder_path, PYINSTALLER_INTERMEDIATE_FOLDER_NAME)
+pyinstaller_temp_folder = pathlib.Path(pyinstaller_temp_folder_path)
+# Delete the pyinstaller temp folder if it exists
+if pyinstaller_temp_folder.exists():
+    print("Deleting pyinstaller temp folder: " + pyinstaller_temp_folder_path)
+    shutil.rmtree(pyinstaller_temp_folder_path)
+# Create pyinstaller temp folder if it does not exist
+if not pyinstaller_temp_folder.exists():
+    print("Creating pyinstaller temp folder: " + pyinstaller_temp_folder_path)
+    pyinstaller_temp_folder.mkdir()
+
+# PyInstaller SPEC Folder Path
+pyinstaller_spec_folder_path = os.path.join(project_folder_path, PYINSTALLER_INTERMEDIATE_FOLDER_NAME, PYINSTALLER_SPEC_FOLDER_NAME)
+# PyInstaller Workpath / Build Folder Path
+pyinstaller_workpath_folder_path = os.path.join(project_folder_path, PYINSTALLER_INTERMEDIATE_FOLDER_NAME, PYINSTALLER_WORKPATH_FOLDER_NAME)
+# PyInstaller Dist Folder Path
+pyinstaller_dist_folder_path = os.path.join(project_folder_path, PYINSTALLER_INTERMEDIATE_FOLDER_NAME, PYINSTALLER_DIST_FOLDER_NAME)
+# endregion _pyi_temp
+
+# Version 1 Folder Name
+VERSION_1_FOLDER_NAME = "__v1"
+# Application Start-up Script Name
+application_start_up_script_name = "__main__v1__.py"
+
 # Create options for pyinstaller
 # Application Name Argument
-app_name_args_string = "--name=" + application_name
+app_name_args_string = "--name=" + APPLICATION_NAME
 # Source Path Argument
 src_path_args_string = "--path=" + src_folder_path
 # Deprecated Source Path Argument
-deprecated_src_path_args_string = "--path=" + os.path.join(src_folder_path, DEPRECATED_FOLDER_NAME)
+deprecated_src_path_args_string = "--path=" + os.path.join(src_folder_path, VERSION_1_FOLDER_NAME)
 # Start-up script path - "*.py" file
-main_script_path = os.path.join(src_folder_path, DEPRECATED_FOLDER_NAME, application_start_up_script_name)
+main_script_path = os.path.join(src_folder_path, VERSION_1_FOLDER_NAME, application_start_up_script_name)
 # Icon File Path for the Application
 icon_path = afs.get_default_app_icon_large_file_path()
 icon_args_string = "--icon=" + icon_path
@@ -146,7 +151,9 @@ except BaseException as e:
     print(e, file=sys.stderr)
     exit(1)
 print("PyInstaller packaging completed.")
+# endregion build
 
+# region assets
 # Copy the assets folder to the Application Build folder
 print("Copying assets folder to the Application Build folder...")
 build_assets_folder_path = os.path.join(app_build_version_folder_path, afsc.ASSETS_FOLDER_NAME)
@@ -162,7 +169,9 @@ if not project_assets_folder.exists():
     print("Project assets folder does not exist", file=sys.stderr)
     exit(1)
 shutil.copytree(project_assets_folder_path, build_assets_folder_path)
+# endregion assets
 
+# region bin
 # Create a binary directory in the Application Build folder
 print("Copying binaries to the Application Build folder...")
 build_binary_folder_path = os.path.join(app_build_version_folder_path, afsc.BINARY_FOLDER_NAME)
@@ -248,7 +257,9 @@ if not inky_version_file.exists():
     print("Please check the project version file path: " + inky_version_fp, file=sys.stderr)
     exit(1)
 os.remove(inky_version_file_path)
+# endregion bin
 
+# region cctconfig
 # Copy cctconfig defaults folder to the Application Builds folder
 print("Copying cctconfig defaults folder to the Application Builds folder...")
 build_cctconfig_folder_path = os.path.join(app_build_version_folder_path, hcc.CCT_CONFIG_FOLDER_NAME)
@@ -270,7 +281,9 @@ if not project_dpg_config_ini_file.exists():
     print("Project cctconfig - dpg config ini file does not exist", file=sys.stderr)
     exit(1)
 shutil.copyfile(project_dpg_config_ini_file_path, build_dpg_config_file_path)
+# endregion cctconfig
 
+# region data
 # Copy project data folder to the Application Build folder
 print("Copying project data folder to the Application Build folder...")
 build_data_folder_path = os.path.join(app_build_version_folder_path, afsc.DATA_FOLDER_NAME)
@@ -286,13 +299,39 @@ if not project_data_folder.exists():
     print("Project data defaults folder does not exist", file=sys.stderr)
     exit(1)
 shutil.copytree(project_data_folder_path, build_data_folder_path)
+# endregion data
 
+# region HRSAData
+# Copy project HRSAData folder to the Application Build folder
+print("Copying project HRSAData folder to the Application Build folder...")
+build_HRSAData_folder_path = os.path.join(app_build_version_folder_path, afsc.HRSA_DATA_WORKSPACE_FOLDER_NAME)
+build_HRSAData_folder = pathlib.Path(build_HRSAData_folder_path)
+# Delete the HRSAData defaults folder if it exists
+if build_HRSAData_folder.exists():
+    print("Deleting the existing HRSAData folder...")
+    shutil.rmtree(build_HRSAData_folder_path)
+# Copy the project HRSAData folder to the distribution/build HRSAData folder
+project_HRSAData_folder_path = os.path.join(project_folder_path, afsc.HRSA_DATA_WORKSPACE_FOLDER_NAME)
+project_HRSAData_folder = pathlib.Path(project_HRSAData_folder_path)
+if not project_HRSAData_folder.exists():
+    print("ERROR: Project HRSAData folder does not exist.", file=sys.stderr)
+    print("Please check the project HRSAData folder path: " + project_HRSAData_folder_path, file=sys.stderr)
+    print("If the project HRSAData folder does not exist, please create it and copy the HRSAData files to it.", file=sys.stderr)
+    print("The HRSAData files are located in the Unity HRSA project root folder.", file=sys.stderr)
+    exit(1)
+shutil.copytree(project_HRSAData_folder_path, build_HRSAData_folder_path)
+# endregion HRSAData
+
+# region license
+PROJECT_LICENSE_FILE_NAME = "LICENSE.md"
 # Copy the license file to the Application Build folder
 print("Copying the license file to the Application Build folder...")
 build_license_file_path = os.path.join(app_build_version_folder_path, PROJECT_LICENSE_FILE_NAME)
 project_license_file_path = os.path.join(project_folder_path, PROJECT_LICENSE_FILE_NAME)
 shutil.copy(project_license_file_path, build_license_file_path)
+# endregion license
 
+# region version
 # Create Build Version File
 print("Creating Build Version File...")
 BUILD_VERSION_FILE_NAME = "version"
@@ -308,11 +347,13 @@ with open(build_version_file_path, "w") as version_file:
     time_zone_string = time.strftime("%Z", time.localtime())
     version_file_string = version_string + " - " + date_time_string + " " + time_zone_string
     version_file.write(version_file_string)
+# endregion version
 
+# region zip
 # Create a zip file of the Application Build folder
 print("Creating a zip file of the Application Build folder...")
 print("This operation may take some time...")
-zip_file_path = os.path.join(version_folder_path, application_name + ".zip")
+zip_file_path = os.path.join(version_folder_path, APPLICATION_NAME + ".zip")
 # Delete the zip file if it exists
 if os.path.exists(zip_file_path):
     os.remove(zip_file_path)
@@ -325,3 +366,4 @@ print(version_string + " Build Completed Successfully")
 print("Build Folder: " + app_build_version_folder_path)
 print("Zip File: " + zip_file_path)
 print("====================================================================================================")
+# endregion zip
