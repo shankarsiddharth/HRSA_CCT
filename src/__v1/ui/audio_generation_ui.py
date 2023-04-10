@@ -162,7 +162,7 @@ def callback_on_language_code_selected(sender):
                 character_list.remove('version')
 
             for character_name in character_list:
-                print("display_character_info {0}".format(character_name))
+                # print("display_character_info {0}".format(character_name))
                 display_character_info(character_name)
                 dpg.configure_item(_get_character_voice_config_ui_tag(character_name, AG_VOICE_CONFIG_UI_SECTION_GENDER, 'list'), items=gender_list)
                 dpg.configure_item(_get_character_voice_config_ui_tag(character_name, AG_VOICE_CONFIG_UI_SECTION_LANGUAGE_CODE, 'list'),
@@ -643,7 +643,7 @@ def init_ui():
                                 label="Gender", num_items=3, show=True, callback=callback_on_gender_selected, user_data={"node": character_name})
                 dpg.add_listbox(tag=_get_character_voice_config_ui_tag(character_name, AG_VOICE_CONFIG_UI_SECTION_VOICE, "list"), width=150,
                                 label="Voice", num_items=10)
-            # endregion
+            # endregion Player Voice Configuration
 
             # region Medical Student Voice Configuration
             character_name = "MedicalStudent"
@@ -659,7 +659,7 @@ def init_ui():
                                 label="Gender", num_items=3, show=True, callback=callback_on_gender_selected, user_data={"node": character_name})
                 dpg.add_listbox(tag=_get_character_voice_config_ui_tag(character_name, AG_VOICE_CONFIG_UI_SECTION_VOICE, "list"), width=150,
                                 label="Voice", num_items=10)
-            # endregion
+            # endregion Medical Student Voice Configuration
 
             # region Patient Voice Configuration
             character_name = "Patient"
@@ -675,7 +675,7 @@ def init_ui():
                                 label="Gender", num_items=3, show=True, callback=callback_on_gender_selected, user_data={"node": character_name})
                 dpg.add_listbox(tag=_get_character_voice_config_ui_tag(character_name, AG_VOICE_CONFIG_UI_SECTION_VOICE, "list"), width=150,
                                 label="Voice", num_items=10)
-            # endregion
+            # endregion Patient Voice Configuration
 
             # region Trainer Voice Configuration
             character_name = "Trainer"
@@ -691,7 +691,7 @@ def init_ui():
                                 label="Gender", num_items=3, show=True, callback=callback_on_gender_selected, user_data={"node": character_name})
                 dpg.add_listbox(tag=_get_character_voice_config_ui_tag(character_name, AG_VOICE_CONFIG_UI_SECTION_VOICE, "list"), width=150,
                                 label="Voice", num_items=10)
-            # endregion
+            # endregion Trainer Voice Configuration
 
             dpg.add_button(tag=SAVE_AUDIO_SETTINGS_BUTTON, label="Save voice settings", show=True, callback=save_audio_settings)
         dpg.add_button(tag=PARSE_INK_SCRIPTS_BUTTON, label="Check Ink Scripts", show=False,
