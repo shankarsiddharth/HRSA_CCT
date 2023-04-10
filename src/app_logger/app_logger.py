@@ -83,7 +83,7 @@ class AppLogger(metaclass=Singleton):
         # self.flush_count = 10000
 
     def on_init_and_render_ui(self, parent=None):
-        self.ui_logger: AppUILogger = AppUILogger(parent=parent)
+        self.ui_logger: AppUILogger = AppUILogger(parent=parent, log_level=logging.INFO)
         self.ui_logger.trace("HRSA CCT UI Logger Started")
         if IS_DEBUG_MODE_ENABLED:
             self.ui_logger.debug('Test UI Debug')

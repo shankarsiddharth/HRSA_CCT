@@ -8,9 +8,9 @@ from . import app_logging_custom as alc
 
 class AppUILogger:
 
-    def __init__(self, parent, is_open=True):
+    def __init__(self, parent, is_open: bool = True, log_level: int = logging.NOTSET):
 
-        self.log_level = 0
+        self.log_level = log_level
         self._auto_scroll = True
         self._default_show_all_logs = False
         if IS_DEBUG_MODE_ENABLED:
