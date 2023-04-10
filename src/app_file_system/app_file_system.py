@@ -194,7 +194,7 @@ class AppFileSystem(metaclass=Singleton):
 
     # region HRSA Data Workspace methods
 
-    def __get_default_hrsa_data_workspace_folder_path__(self):
+    def get_default_hrsa_data_workspace_folder_path(self):
         user_hrsa_data_workspace_path = os.path.join(self.__root_folder_path__, self.afsc.HRSA_DATA_WORKSPACE_FOLDER_NAME)
         return user_hrsa_data_workspace_path
 
@@ -206,7 +206,7 @@ class AppFileSystem(metaclass=Singleton):
     # TODO: Replace the following with proper path using the user config settings functionality after it is implemented
     def get_hrsa_data_workspace_folder_path(self):
         if IS_DEBUG_MODE_ENABLED:
-            return self.__get_default_hrsa_data_workspace_folder_path__()
+            return self.get_default_hrsa_data_workspace_folder_path()
         return self.__get_user_hrsa_data_workspace_path__()
 
     # endregion HRSA Data Workspace methods

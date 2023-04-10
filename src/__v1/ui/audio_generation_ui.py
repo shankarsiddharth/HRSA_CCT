@@ -10,7 +10,7 @@ from google.cloud import texttospeech
 from google.cloud.texttospeech_v1 import ListVoicesResponse
 from google.oauth2 import service_account
 
-from __v1 import hrsa_cct_config, cct_ui_panels
+from __v1 import hrsa_cct_config, cct_ui_panels, cct_advanced_options_ui
 from __v1 import hrsa_cct_constants
 from __v1 import hrsa_cct_globals
 from __v1.hrsa_cct_globals import log, hfsc, hfs
@@ -67,7 +67,6 @@ SAVE_AUDIO_SETTINGS_BUTTON: str = "CONFIGURE_AUDIO_BUTTON"
 # AUDIO_GENDER_TEXT: str = "AUDIO_GENDER_TEXT"
 # AUDIO_VOICE_LIST: str = "AUDIO_VOICE_LIST"
 FILE_DIALOG_FOR_SCENARIO_FOLDER: str = "FILE_DIALOG_FOR_SCENARIO_FOLDER"
-SHOW_FILE_DIALOG_BUTTON_SCENARIO_FOLDER: str = "SHOW_FILE_DIALOG_BUTTON_SCENARIO_FOLDER"
 AG_LANGUAGE_LISTBOX_GROUP: str = "AG_LANGUAGE_LISTBOX_GROUP"
 AG_LANGUAGE_LISTBOX: str = "AG_LANGUAGE_LISTBOX"
 SCENARIO_LANGUAGE_CODE_DIRECTORY_PATH_TEXT: str = "SCENARIO_LANGUAGE_CODE_DIRECTORY_PATH_TEXT"
@@ -92,6 +91,20 @@ def _get_character_voice_config_ui_tag(character: str, section: str, ui_type: st
     # print(ui_obj_tag)
     return ui_obj_tag
 
+
+# region Show Advanced Options
+def on_advanced_options_button_clicked(should_show_advanced_options):
+    if should_show_advanced_options:
+        if dpg.get_item_configuration(GENERATE_AUDIO_BUTTON)['show']:
+            dpg.configure_item(COMPILE_INK_SCRIPTS_BUTTON, show=True)
+    else:
+        dpg.configure_item(COMPILE_INK_SCRIPTS_BUTTON, show=False)
+
+
+cct_advanced_options_ui.add_advanced_options_delegate(on_advanced_options_button_clicked)
+
+
+# endregion Show Advanced Options
 
 def callback_on_scenario_folder_selected(sender, app_data):
     folder_language_list = list()
@@ -136,8 +149,9 @@ def callback_on_language_code_selected(sender):
         new_button_label = "Generate Audio (" + selected_language_code + ")"
         dpg.configure_item(GENERATE_AUDIO_BUTTON, label=new_button_label)
         dpg.configure_item(PARSE_INK_SCRIPTS_BUTTON, show=True)
-        dpg.configure_item(COMPILE_INK_SCRIPTS_BUTTON, show=True)
         dpg.configure_item(GENERATE_AUDIO_BUTTON, show=True)
+        if hrsa_cct_globals.show_advanced_options:
+            dpg.configure_item(COMPILE_INK_SCRIPTS_BUTTON, show=True)
         # TODO: Voice Configuration
         # selected_character = dpg.get_value(CHARACTER_SELECT_LISTBOX)
         dpg.configure_item(VOICE_CONFIG_SECTION, show=True)
@@ -160,9 +174,10 @@ def callback_on_language_code_selected(sender):
         dpg.configure_item(SCENARIO_LANGUAGE_CODE_DIRECTORY_PATH_TEXT, default_value="")
         dpg.configure_item(SCENARIO_LANGUAGE_CODE_DIRECTORY_PATH_TEXT, show=False)
         dpg.configure_item(PARSE_INK_SCRIPTS_BUTTON, show=False)
-        dpg.configure_item(COMPILE_INK_SCRIPTS_BUTTON, show=False)
         dpg.configure_item(GENERATE_AUDIO_BUTTON, show=False)
         dpg.configure_item(VOICE_CONFIG_SECTION, show=False)
+        if hrsa_cct_globals.show_advanced_options:
+            dpg.configure_item(COMPILE_INK_SCRIPTS_BUTTON, show=False)
         log.warning("Selected Language for Audio Generation: " + selected_language_code)
 
 
@@ -188,17 +203,18 @@ def callback_on_change_language_code(sender, app_data, user_data):
         dpg.configure_item(_get_character_voice_config_ui_tag(character_name, AG_VOICE_CONFIG_UI_SECTION_VOICE, "list"), show=True)
         dpg.configure_item(SAVE_AUDIO_SETTINGS_BUTTON, show=True)
         dpg.configure_item(PARSE_INK_SCRIPTS_BUTTON, show=True)
-        dpg.configure_item(COMPILE_INK_SCRIPTS_BUTTON, show=True)
         dpg.configure_item(GENERATE_AUDIO_BUTTON, show=True)
+        if hrsa_cct_globals.show_advanced_options:
+            dpg.configure_item(COMPILE_INK_SCRIPTS_BUTTON, show=True)
     else:
         # TODO: Handle (none) case
         dpg.configure_item(_get_character_voice_config_ui_tag(character_name, AG_VOICE_CONFIG_UI_SECTION_GENDER, "list"), show=False)
         dpg.configure_item(_get_character_voice_config_ui_tag(character_name, AG_VOICE_CONFIG_UI_SECTION_VOICE, "list"), show=False)
         dpg.configure_item(SAVE_AUDIO_SETTINGS_BUTTON, show=False)
         dpg.configure_item(PARSE_INK_SCRIPTS_BUTTON, show=False)
-        dpg.configure_item(COMPILE_INK_SCRIPTS_BUTTON, show=False)
         dpg.configure_item(GENERATE_AUDIO_BUTTON, show=False)
-        pass
+        if hrsa_cct_globals.show_advanced_options:
+            dpg.configure_item(COMPILE_INK_SCRIPTS_BUTTON, show=False)
 
 
 def callback_on_gender_selected(sender, app_data, user_data):
@@ -241,8 +257,9 @@ def display_character_info(selected_character):
     dpg.configure_item(_get_character_voice_config_ui_tag(selected_character, AG_VOICE_CONFIG_UI_SECTION_VOICE, "list"), items=voice_list, default_value=character_data["voice_name"])
     dpg.configure_item(SAVE_AUDIO_SETTINGS_BUTTON, show=True)
     dpg.configure_item(PARSE_INK_SCRIPTS_BUTTON, show=True)
-    dpg.configure_item(COMPILE_INK_SCRIPTS_BUTTON, show=True)
     dpg.configure_item(GENERATE_AUDIO_BUTTON, show=True)
+    if hrsa_cct_globals.show_advanced_options:
+        dpg.configure_item(COMPILE_INK_SCRIPTS_BUTTON, show=True)
 
 
 def save_audio_settings(sender):
@@ -361,8 +378,9 @@ def validate_audio_files():
 def callback_on_generate_audio_clicked():
     # Check for the Voice Configuration File
     dpg.configure_item(PARSE_INK_SCRIPTS_BUTTON, show=False)
-    dpg.configure_item(COMPILE_INK_SCRIPTS_BUTTON, show=False)
     dpg.configure_item(GENERATE_AUDIO_BUTTON, show=False)
+    if hrsa_cct_globals.show_advanced_options:
+        dpg.configure_item(COMPILE_INK_SCRIPTS_BUTTON, show=False)
 
     # Process For Audio Generation
     callback_on_parse_ink_scripts_clicked()
@@ -375,8 +393,9 @@ def callback_on_generate_audio_clicked():
     log.info('Complete - validate_audio_files')
 
     dpg.configure_item(PARSE_INK_SCRIPTS_BUTTON, show=True)
-    dpg.configure_item(COMPILE_INK_SCRIPTS_BUTTON, show=True)
     dpg.configure_item(GENERATE_AUDIO_BUTTON, show=True)
+    if hrsa_cct_globals.show_advanced_options:
+        dpg.configure_item(COMPILE_INK_SCRIPTS_BUTTON, show=True)
 
 
 def parse_all_ink_scripts(path=""):
@@ -585,12 +604,12 @@ def file_dialog_cancel_callback(sender, app_data, user_data):
 
 def init_ui():
     with dpg.collapsing_header(tag=cct_ui_panels.AUDIO_GENERATION_COLLAPSING_HEADER,
-                               label="Choose the Scenario Folder for Audio Generation", default_open=False, show=hrsa_cct_config.is_google_cloud_credentials_file_found()):
+                               label="Audio Generation", default_open=False, show=hrsa_cct_config.is_google_cloud_credentials_file_found()):
         dpg.add_file_dialog(tag=FILE_DIALOG_FOR_SCENARIO_FOLDER, height=300, width=450, directory_selector=True, show=False,
                             callback=callback_on_scenario_folder_selected,
                             default_path=hrsa_cct_config.get_file_dialog_default_path(),
                             cancel_callback=file_dialog_cancel_callback)
-        dpg.add_button(tag=SHOW_FILE_DIALOG_BUTTON_SCENARIO_FOLDER, label="Select Scenario Folder",
+        dpg.add_button(tag=cct_advanced_options_ui.SHOW_FILE_DIALOG_BUTTON_SCENARIO_FOLDER, label="Select Scenario Folder...",
                        callback=lambda s, a: callback_on_show_file_dialog_clicked(item_tag=FILE_DIALOG_FOR_SCENARIO_FOLDER))
         dpg.add_text(tag=SCENARIO_DIRECTORY_PATH_TEXT)
         with dpg.group(tag=AG_LANGUAGE_LISTBOX_GROUP, horizontal=True, show=False):
@@ -667,7 +686,7 @@ def init_ui():
             # endregion
 
             dpg.add_button(tag=SAVE_AUDIO_SETTINGS_BUTTON, label="Save voice settings", show=True, callback=save_audio_settings)
-        dpg.add_button(tag=PARSE_INK_SCRIPTS_BUTTON, label="Parse Ink Scripts", show=False,
+        dpg.add_button(tag=PARSE_INK_SCRIPTS_BUTTON, label="Check Ink Scripts", show=False,
                        callback=callback_on_parse_ink_scripts_clicked)
         dpg.add_button(tag=COMPILE_INK_SCRIPTS_BUTTON, label="Compile Ink Scripts", show=False,
                        callback=callback_on_compile_ink_scripts_clicked)

@@ -1,9 +1,11 @@
 import os.path
+import pathlib
 import sys
 
 import dearpygui.dearpygui as dpg
 
-from __v1 import hrsa_cct_constants, hrsa_cct_globals, cct_ui_panels, hrsa_cct_config
+from __v1 import hrsa_cct_constants, hrsa_cct_globals, cct_ui_panels, hrsa_cct_config, cct_advanced_options_ui
+from __v1.hrsa_cct_globals import log
 from hrsa_data.scenario_data.ehr.patient_demographics import PatientDemographics
 from hrsa_data.scenario_data.ehr.patient_information import PatientInformation
 from hrsa_data.scenario_data.ehr.problem import Problem
@@ -537,6 +539,10 @@ def _toggle_patient_info_ui_sections(value: bool):
 
 def file_dialog_confirm_callback(sender, app_data, user_data):
     file_path_name = app_data["file_path_name"]
+    file_name_with_extension = pathlib.Path(file_path_name).name
+    if file_name_with_extension != hrsa_cct_constants.PATIENT_INFORMATION_JSON_FILE_NAME:
+        log.error("Patient Information json file name is invalid! Choose " + hrsa_cct_constants.PATIENT_INFORMATION_JSON_FILE_NAME + " file.")
+        return
     _load_patient_info_file(file_path_name)
     dpg.configure_item(PIU_SCENARIO_PATIENT_INFO_JSON_PATH_TEXT, default_value=file_path_name)
     _toggle_patient_info_ui_sections(True)
@@ -547,7 +553,7 @@ def file_dialog_cancel_callback(sender, app_data, user_data):
 
 
 def init_ui():
-    with dpg.collapsing_header(label='Patient Info UI', tag=cct_ui_panels.CCT_PATIENT_INFO_COLLAPSING_HEADER,
+    with dpg.collapsing_header(label='Patient Information', tag=cct_ui_panels.CCT_PATIENT_INFO_COLLAPSING_HEADER,
                                default_open=False):
         # TODO: Add a 'Clear Data Button' that clears all the UI information
 
@@ -559,7 +565,7 @@ def init_ui():
                              cancel_callback=file_dialog_cancel_callback):
             dpg.add_file_extension(".json", color=(255, 255, 0, 255))
         with dpg.group(horizontal=True):
-            dpg.add_button(label="Select Patient Info Config JSON File...",
+            dpg.add_button(label="Select Patient Info Config JSON File...", tag=cct_advanced_options_ui.PIU_OPEN_FILE_DIALOG_BUTTON,
                            callback=lambda: dpg.show_item(PIU_OPEN_FILE_DIALOG))
 
         # region Patient Info UI Sections
@@ -778,6 +784,8 @@ def init_ui():
 
             dpg.add_button(label='Save Patient Information', callback=_callback_export_patient_info)
         # endregion Patient Information UI Sections
+
+        dpg.add_separator()
 
 
 def init_data():

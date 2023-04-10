@@ -58,10 +58,15 @@ connect_to_cloud = False
 
 is_debug: bool = sys.flags.dev_mode
 
+show_advanced_options: bool = is_debug
+
 # Global Variable
 scenario_path = ""
 scenario_path_source = ""
 scenario_path_destination = ""
+
+
+
 
 if sys.flags.dev_mode:
     print("hrsa_cc_globals.__init__()")
