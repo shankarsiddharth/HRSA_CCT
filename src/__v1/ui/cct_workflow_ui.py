@@ -2,6 +2,7 @@ import sys
 
 import dearpygui.dearpygui as dpg
 
+from __v1 import cct_advanced_options_ui as caou
 from __v1 import hrsa_cct_globals, cct_ui_panels
 
 # Workflow Options - Constants
@@ -10,6 +11,7 @@ CREATE_SCENARIO_BY_COPYING_EXISTING_OPTION: str = "Create Scenario"
 EDIT_EXISTING_SCENARIO_OPTION: str = "Edit Scenario"
 TRANSFER_SCENARIO_TO_DEVICE_OPTION: str = "Transfer to Device"
 SHOW_ALL_MODULES: str = "Show All Modules"
+CWU_SHOW_ADVANCED_OPTIONS: str = "CWU_SHOW_ADVANCED_OPTIONS"
 WORKFLOW_OPTION_LIST: list = [
     CREATE_SCENARIO_BY_COPYING_EXISTING_OPTION,
     EDIT_EXISTING_SCENARIO_OPTION,
@@ -76,6 +78,20 @@ def callback_on_choose_workflow_radio_button_clicked(sender, app_data, user_data
         show_all_modules_ui()
 
 
+def set_advanced_options_visibility(should_show_advanced_options):
+    dpg.configure_item(caou.PIU_OPEN_FILE_DIALOG_BUTTON, show=should_show_advanced_options)
+    dpg.configure_item(caou.SCU_OPEN_FILE_DIALOG_BUTTON, show=should_show_advanced_options)
+    dpg.configure_item(caou.SIF_SHOW_FILE_DIALOG_BUTTON_SCENARIO_FOLDER, show=should_show_advanced_options)
+    dpg.configure_item(caou.SHOW_FILE_DIALOG_BUTTON_SCENARIO_FOLDER, show=should_show_advanced_options)
+    dpg.configure_item(caou.SHOW_FILE_DIALOG_BUTTON_SOURCE_SCENARIO_FOLDER, show=should_show_advanced_options)
+    caou.on_advanced_options_clicked(should_show_advanced_options)
+
+
+def callback_on_show_advanced_options_clicked(sender, app_data, user_data):
+    hrsa_cct_globals.show_advanced_options = dpg.get_value(CWU_SHOW_ADVANCED_OPTIONS)
+    set_advanced_options_visibility(hrsa_cct_globals.show_advanced_options)
+
+
 def init_data():
     # Set the default workflow
     default_workflow = dpg.get_value(CHOOSE_WORKFLOW_RADIO_BUTTON)
@@ -85,10 +101,13 @@ def init_data():
 def init_ui():
     # Choose Workflow UI
     with dpg.collapsing_header(label="Choose Workflow", default_open=True):
-        dpg.add_radio_button(items=WORKFLOW_OPTION_LIST, horizontal=True,
-                             tag=CHOOSE_WORKFLOW_RADIO_BUTTON, default_value=DEFAULT_WORKFLOW_OPTION, callback=callback_on_choose_workflow_radio_button_clicked)
+        with dpg.group(horizontal=True):
+            dpg.add_radio_button(items=WORKFLOW_OPTION_LIST, horizontal=True,
+                                 tag=CHOOSE_WORKFLOW_RADIO_BUTTON, default_value=DEFAULT_WORKFLOW_OPTION, callback=callback_on_choose_workflow_radio_button_clicked)
+            dpg.add_checkbox(label="Show Advanced Options", tag=CWU_SHOW_ADVANCED_OPTIONS, default_value=hrsa_cct_globals.show_advanced_options,
+                             callback=callback_on_show_advanced_options_clicked)
+        dpg.add_spacer(height=10)
         dpg.add_separator()
-        dpg.add_spacer(height=20)
 
 
 if sys.flags.dev_mode:

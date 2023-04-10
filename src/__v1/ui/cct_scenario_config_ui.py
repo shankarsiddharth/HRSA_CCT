@@ -1,11 +1,12 @@
 import json
 import os
+import pathlib
 import sys
 
 import dearpygui.dearpygui as dpg
 
-from __v1 import hrsa_cct_constants, hrsa_cct_globals, hrsa_cct_config, cct_ui_panels, character_model_data
-from __v1.hrsa_cct_globals import hfs
+from __v1 import hrsa_cct_constants, hrsa_cct_globals, hrsa_cct_config, cct_ui_panels, character_model_data, cct_advanced_options_ui
+from __v1.hrsa_cct_globals import hfs, log
 from hrsa_data.scenario_data.scenario_config.conversation_config import ConversationConfig
 from hrsa_data.scenario_data.scenario_config.scenario_config import ScenarioConfig
 
@@ -229,11 +230,16 @@ def _show_scenario_config_ui_sections():
 def _load_character_config_for_current_scenario(sender, app_data, user_data):
     global scenario_config, scenario_config_json_file_path
     scenario_config_json_file_path = app_data["file_path_name"]
-    global scenario_config
 
     if not scenario_config_json_file_path:
-        print("Scenario Config json file path is empty!")
+        log.debug("Scenario Config json file path is empty!")
         return
+
+    file_name_with_extension = pathlib.Path(scenario_config_json_file_path).name
+    if file_name_with_extension != hrsa_cct_constants.SCENARIO_CONFIG_JSON_FILE_NAME:
+        log.error("Scenario Config json file name is invalid! Choose " + hrsa_cct_constants.SCENARIO_CONFIG_JSON_FILE_NAME + " file.")
+        return
+
     scenario_config = ScenarioConfig.load_from_json_file(scenario_config_json_file_path)
 
     _update_model_config(scenario_config.patient_config.character_model_config.uid, None, PATIENT_LABEL)
@@ -244,13 +250,15 @@ def _load_character_config_for_current_scenario(sender, app_data, user_data):
 
     _show_scenario_config_ui_sections()
 
+    dpg.configure_item(SCU_SCENARIO_CONFIG_JSON_PATH_TEXT, default_value=scenario_config_json_file_path)
+
 
 def _update_current_scenario_config_file():
     global scenario_config_json_file_path
     global scenario_config
 
     if not scenario_config_json_file_path:
-        print("Scenario Config json file path is empty!")
+        log.debug("Scenario Config json file path is empty!")
         return
     ScenarioConfig.save_to_json_file(scenario_config, scenario_config_json_file_path)
 
@@ -340,6 +348,16 @@ def file_dialog_cancel_callback(sender, app_data, user_data):
     pass
 
 
+def _help(message):
+    last_item = dpg.last_item()
+    group = dpg.add_group(horizontal=True)
+    dpg.move_item(last_item, parent=group)
+    dpg.capture_next_item(lambda s: dpg.move_item(s, parent=group))
+    t = dpg.add_text("(?)", color=[0, 255, 0])
+    with dpg.tooltip(t):
+        dpg.add_text(message)
+
+
 def init_ui():
     _load_character_config()
 
@@ -352,7 +370,7 @@ def init_ui():
                              cancel_callback=file_dialog_cancel_callback):
             dpg.add_file_extension(".json", color=(255, 255, 0, 255))
         with dpg.group(horizontal=True):
-            dpg.add_button(label="Select Scenario Config JSON File...",
+            dpg.add_button(label="Select Scenario Config JSON File...", tag=cct_advanced_options_ui.SCU_OPEN_FILE_DIALOG_BUTTON,
                            callback=lambda: dpg.show_item(SCU_OPEN_FILE_DIALOG))
         # region Character Config
         with dpg.collapsing_header(indent=25, tag=CCT_CHARACTER_CONFIG_COLLAPSING_HEADER,
@@ -495,9 +513,10 @@ def init_ui():
             with dpg.group(horizontal=True):
                 dpg.add_checkbox(label="Unlimited Timer", source="bool_value", tag=DUC_UNLIMITED_QUESTION_TIMER_MARK,
                                  callback=_set_question_timer)
-                dpg.add_input_text(label="Question Timer in Seconds", width=100, decimal=True, default_value=DEFAULT_QUESTION_TIMER_VALUE,
+                dpg.add_input_text(label="Question Timer in Seconds", width=100, decimal=True, default_value=str(DEFAULT_QUESTION_TIMER_VALUE),
                                    tag=DUC_QUESTION_TIMER_INPUT_TEXT,
                                    callback=_set_question_timer)
+                _help("If this value is below 30 seconds, the timer will be set to 30 seconds.")
 
             # endregion Dialogue UI Config
 

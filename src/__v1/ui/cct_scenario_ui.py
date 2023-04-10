@@ -7,7 +7,6 @@ import dearpygui.dearpygui as dpg
 from __v1 import cct_ui_panels, hrsa_cct_config, hrsa_cct_globals
 from __v1.ui import cct_patient_info_ui, cct_scenario_config_ui, audio_generation_ui, translate_ui, show_ink_files_ui, cct_workflow_ui
 
-CSU_SELECT_SCENARIO_FROM_LIST_COLLAPSING_HEADER: str = "CSU_SELECT_SCENARIO_FROM_LIST_COLLAPSING_HEADER"
 CSU_REFRESH_SCENARIO_LIST_BUTTON: str = "CSU_REFRESH_SCENARIO_LIST_BUTTON"
 CSU_SELECT_SCENARIO_LISTBOX: str = "CSU_SELECT_SCENARIO_LISTBOX"
 CSU_EDIT_SELECTED_SCENARIO_BUTTON: str = "CSU_EDIT_SELECTED_SCENARIO_BUTTON"
@@ -90,27 +89,25 @@ def callback_on_scenario_folder_button_clicked(sender, app_data, user_data):
 def init_ui():
     with dpg.collapsing_header(label="Select Scenario", tag=cct_ui_panels.SELECT_SCENARIO_COLLAPSING_HEADER,
                                default_open=True):
-        with dpg.collapsing_header(label="Choose Scenario from List", tag=CSU_SELECT_SCENARIO_FROM_LIST_COLLAPSING_HEADER,
-                                   indent=20, default_open=True):
-            dpg.add_button(label="Refresh Scenario List", indent=20, tag=CSU_REFRESH_SCENARIO_LIST_BUTTON,
-                           callback=refresh_scenario_list, show=False)
-            dpg.add_text(CSU_SELECT_SCENARIO_TEXT, tag=CSU_SELECTED_SCENARIO_TEXT_TAG, indent=40)
-            dpg.add_listbox(tag=CSU_SELECT_SCENARIO_LISTBOX, items=scenario_list, num_items=10,
-                            callback=callback_on_scenario_selected, default_value="", indent=40)
-            dpg.add_button(label="Edit Selected Scenario", tag=CSU_EDIT_SELECTED_SCENARIO_BUTTON, indent=20,
-                           callback=callback_on_scenario_selected, show=False)
-
-        with dpg.group(show=False):
-            dpg.add_spacer(height=10)
-            dpg.add_text("OR")
-            dpg.add_spacer(height=10)
-
-        with dpg.collapsing_header(label="Select Scenario Folder", tag=CSU_SELECT_SCENARIO_FOLDER_COLLAPSING_HEADER,
-                                   indent=20, default_open=True, show=False):
-            dpg.add_button(label="Select Scenario Folder...", tag=CSU_SELECT_SCENARIO_FOLDER_BUTTON, indent=20, callback=callback_on_scenario_folder_button_clicked)
-            dpg.add_text("", indent=20, tag=CSU_SELECTED_SCENARIO_FOLDER_TEXT)
+        dpg.add_button(label="Refresh Scenario List", indent=20, tag=CSU_REFRESH_SCENARIO_LIST_BUTTON,
+                       callback=refresh_scenario_list, show=False)
+        dpg.add_text(CSU_SELECT_SCENARIO_TEXT, tag=CSU_SELECTED_SCENARIO_TEXT_TAG, indent=40)
+        dpg.add_listbox(tag=CSU_SELECT_SCENARIO_LISTBOX, items=scenario_list, num_items=10,
+                        callback=callback_on_scenario_selected, default_value="", indent=40)
+        dpg.add_button(label="Edit Selected Scenario", tag=CSU_EDIT_SELECTED_SCENARIO_BUTTON, indent=20,
+                       callback=callback_on_scenario_selected, show=False)
 
         dpg.add_separator()
+
+    # with dpg.group(show=False):
+    #     dpg.add_spacer(height=10)
+    #     dpg.add_text("OR")
+    #     dpg.add_spacer(height=10)
+    #
+    # with dpg.collapsing_header(label="Select Scenario Folder", tag=CSU_SELECT_SCENARIO_FOLDER_COLLAPSING_HEADER,
+    #                            indent=20, default_open=True, show=False):
+    #     dpg.add_button(label="Select Scenario Folder...", tag=CSU_SELECT_SCENARIO_FOLDER_BUTTON, indent=20, callback=callback_on_scenario_folder_button_clicked)
+    #     dpg.add_text("", indent=20, tag=CSU_SELECTED_SCENARIO_FOLDER_TEXT)
 
 
 def init_data():

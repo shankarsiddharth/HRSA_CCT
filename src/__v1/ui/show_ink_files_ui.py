@@ -5,7 +5,7 @@ import threading
 
 import dearpygui.dearpygui as dpg
 
-from __v1 import hrsa_cct_constants as hcc, hrsa_cct_globals as hcg, hrsa_cct_config, cct_ui_panels
+from __v1 import hrsa_cct_constants as hcc, hrsa_cct_globals as hcg, hrsa_cct_config, cct_ui_panels, cct_advanced_options_ui
 from __v1.hrsa_cct_globals import hfsc, hfs, log
 
 ink_file_process_threads = dict()
@@ -13,7 +13,6 @@ thread_counter = 0
 
 # UI Constants
 SIF_FILE_DIALOG_FOR_SCENARIO_FOLDER: str = 'SIF_FILE_DIALOG_FOR_SCENARIO_FOLDER'
-SIF_SHOW_FILE_DIALOG_BUTTON_SCENARIO_FOLDER: str = 'SIF_SHOW_FILE_DIALOG_BUTTON_SCENARIO_FOLDER'
 SIF_SCENARIO_DIRECTORY_PATH_TEXT: str = 'SIF_SCENARIO_DIRECTORY_PATH_TEXT'
 
 OPEN_BREAK_ROOM_DIALOGUE_INK_FILE_BUTTON: str = 'OPEN_BREAK_ROOM_DIALOGUE_INK_FILE_BUTTON'
@@ -103,11 +102,13 @@ def _open_ink_file_in_thread(ink_file_type: str, ink_file_path: str):
 
 
 def _callback_on_scenario_folder_selected(sender, app_data):
-    source_scenario_folder_path = os.path.normpath(str(app_data['file_path_name']))
-    source_scenario_language_code_path = os.path.join(source_scenario_folder_path, hcg.default_language_code)
-    new_data_path = os.path.abspath(source_scenario_folder_path)
-    log.info("source_scenario_language_code_path: " + source_scenario_language_code_path)
-    set_scenario_path(source_scenario_language_code_path)
+    selected_file_path = str(app_data['file_path_name'])
+    source_scenario_folder_path = os.path.normpath(selected_file_path)
+    # source_scenario_language_code_path = os.path.join(source_scenario_folder_path, hcg.default_language_code)
+    # new_data_path = os.path.abspath(source_scenario_folder_path)
+    # log.info("source_scenario_language_code_path: " + source_scenario_language_code_path)
+    # set_scenario_path(source_scenario_language_code_path)
+    set_scenario_path(source_scenario_folder_path)
 
 
 def _callback_on_show_file_dialog_clicked(item_tag):
@@ -131,7 +132,7 @@ def init_ui():
                             callback=_callback_on_scenario_folder_selected,
                             default_path=hrsa_cct_config.get_file_dialog_default_path(),
                             cancel_callback=file_dialog_cancel_callback)
-        dpg.add_button(tag=SIF_SHOW_FILE_DIALOG_BUTTON_SCENARIO_FOLDER, label="Select Scenario Folder",
+        dpg.add_button(tag=cct_advanced_options_ui.SIF_SHOW_FILE_DIALOG_BUTTON_SCENARIO_FOLDER, label="Select Scenario Folder...",
                        callback=lambda s, a: _callback_on_show_file_dialog_clicked(item_tag=SIF_FILE_DIALOG_FOR_SCENARIO_FOLDER))
         dpg.add_text(tag=SIF_SCENARIO_DIRECTORY_PATH_TEXT)
 

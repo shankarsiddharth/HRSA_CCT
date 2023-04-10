@@ -10,7 +10,7 @@ import dearpygui.dearpygui as dpg
 from google.cloud import translate
 from google.oauth2 import service_account
 
-from __v1 import hrsa_cct_config, cct_ui_panels
+from __v1 import hrsa_cct_config, cct_ui_panels, cct_advanced_options_ui
 from __v1 import hrsa_cct_constants
 from __v1 import hrsa_cct_globals
 from __v1 import patient_info_translate
@@ -56,7 +56,6 @@ total_characters_to_translate = 0
 FILE_DIALOG_FOR_NEW_DATA_FOLDER: str = "FILE_DIALOG_FOR_NEW_DATA_FOLDER"
 FILE_DIALOG_FOR_SOURCE_SCENARIO_FOLDER: str = "FILE_DIALOG_FOR_SOURCE_SCENARIO_FOLDER"
 SHOW_FILE_DIALOG_BUTTON_NEW_DATA_FOLDER: str = "SHOW_FILE_DIALOG_BUTTON_NEW_DATA_FOLDER"
-SHOW_FILE_DIALOG_BUTTON_SOURCE_SCENARIO_FOLDER: str = "SHOW_FILE_DIALOG_BUTTON_SOURCE_SCENARIO_FOLDER"
 NEW_DATA_DIRECTORY_PATH_TEXT: str = "NEW_DATA_DIRECTORY_PATH_TEXT"
 SOURCE_SCENARIO_DIRECTORY_PATH_TEXT: str = "SOURCE_SCENARIO_DIRECTORY_PATH_TEXT"
 TRANSLATE_TEXT_BUTTON: str = "TRANSLATE_TEXT_BUTTON"
@@ -258,13 +257,13 @@ def file_dialog_cancel_callback(sender, app_data, user_data):
 
 def init_ui():
     with dpg.collapsing_header(tag=cct_ui_panels.TRANSLATE_COLLAPSING_HEADER,
-                               label="Choose a location to create the Translated Data Folder", default_open=False,
+                               label="Translation", default_open=False,
                                show=hrsa_cct_config.is_google_cloud_credentials_file_found()):
         dpg.add_file_dialog(tag=FILE_DIALOG_FOR_SOURCE_SCENARIO_FOLDER, height=300, width=450, directory_selector=True, show=False,
                             callback=callback_on_source_scenario_folder_selected,
                             default_path=hrsa_cct_config.get_file_dialog_default_path(),
                             cancel_callback=file_dialog_cancel_callback)
-        dpg.add_button(tag=SHOW_FILE_DIALOG_BUTTON_SOURCE_SCENARIO_FOLDER, label="Select Scenario Folder",
+        dpg.add_button(tag=cct_advanced_options_ui.SHOW_FILE_DIALOG_BUTTON_SOURCE_SCENARIO_FOLDER, label="Select Scenario Folder...",
                        callback=lambda s, a: callback_on_show_file_dialog_clicked(item_tag=FILE_DIALOG_FOR_SOURCE_SCENARIO_FOLDER))
         with dpg.group(tag=SOURCE_SECTION_GROUP, horizontal=True, show=False):
             dpg.add_text("Selected Source Language Folder (en) : ")

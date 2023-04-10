@@ -189,7 +189,6 @@ def create_scenario_checkbox_tag(scenario_name):
 
 
 def _select_target_scenario(sender, app_data, user_data):
-    print(sender, app_data, user_data)
     global selected_scenario_list
     if app_data:
         if user_data not in selected_scenario_list:

@@ -322,8 +322,8 @@ def main() -> None:
 
     dpg.setup_dearpygui()
     dpg.show_viewport()
-    if is_debug:
-        dpg.maximize_viewport()
+    # if is_debug:
+    dpg.maximize_viewport()
     # dpg.set_primary_window(hrsa_cct_constants.HRSA_CCT_TOOL, True)
 
     if not is_debug:
