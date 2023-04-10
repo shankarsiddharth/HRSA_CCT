@@ -54,6 +54,7 @@ audio_folder_path_list = list()
 gender_list = ["MALE", "FEMALE"]
 voice_list = list()
 
+is_parsing_successful: bool = False
 total_characters_for_audio_generation = 0
 
 # GUI Element Tags
@@ -164,7 +165,8 @@ def callback_on_language_code_selected(sender):
                 print("display_character_info {0}".format(character_name))
                 display_character_info(character_name)
                 dpg.configure_item(_get_character_voice_config_ui_tag(character_name, AG_VOICE_CONFIG_UI_SECTION_GENDER, 'list'), items=gender_list)
-                dpg.configure_item(_get_character_voice_config_ui_tag(character_name, AG_VOICE_CONFIG_UI_SECTION_LANGUAGE_CODE, 'list'), items=hrsa_cct_globals.audio_generation_language_list)
+                dpg.configure_item(_get_character_voice_config_ui_tag(character_name, AG_VOICE_CONFIG_UI_SECTION_LANGUAGE_CODE, 'list'),
+                                   items=hrsa_cct_globals.audio_generation_language_list)
             # display_character_info(CHARACTER_SELECT_LISTBOX)
         else:
             # TODO: Log Error
@@ -254,7 +256,8 @@ def display_character_info(selected_character):
                 ssml_gender = texttospeech.SsmlVoiceGender(voice.ssml_gender)
                 if str(ssml_gender.name).upper() == str(character_data["gender"]).upper():
                     voice_list.append(voice.name)
-    dpg.configure_item(_get_character_voice_config_ui_tag(selected_character, AG_VOICE_CONFIG_UI_SECTION_VOICE, "list"), items=voice_list, default_value=character_data["voice_name"])
+    dpg.configure_item(_get_character_voice_config_ui_tag(selected_character, AG_VOICE_CONFIG_UI_SECTION_VOICE, "list"), items=voice_list,
+                       default_value=character_data["voice_name"])
     dpg.configure_item(SAVE_AUDIO_SETTINGS_BUTTON, show=True)
     dpg.configure_item(PARSE_INK_SCRIPTS_BUTTON, show=True)
     dpg.configure_item(GENERATE_AUDIO_BUTTON, show=True)
@@ -376,6 +379,8 @@ def validate_audio_files():
 
 
 def callback_on_generate_audio_clicked():
+    global is_parsing_successful
+    is_parsing_successful = True
     # Check for the Voice Configuration File
     dpg.configure_item(PARSE_INK_SCRIPTS_BUTTON, show=False)
     dpg.configure_item(GENERATE_AUDIO_BUTTON, show=False)
@@ -385,12 +390,15 @@ def callback_on_generate_audio_clicked():
     # Process For Audio Generation
     callback_on_parse_ink_scripts_clicked()
     callback_on_compile_ink_scripts_clicked()
-    generate_audio_files()
-    log.info('Complete - generate_audio_files')
-    log_text = "total_characters_for_audio_generation : " + str(total_characters_for_audio_generation)
-    log.info(log_text)
-    validate_audio_files()
-    log.info('Complete - validate_audio_files')
+    if is_parsing_successful:
+        generate_audio_files()
+        log.info('Complete - generate_audio_files')
+        log_text = "total_characters_for_audio_generation : " + str(total_characters_for_audio_generation)
+        log.info(log_text)
+        validate_audio_files()
+        log.info('Complete - validate_audio_files')
+    else:
+        log.error("Ink Files Check Failed - Cannot Generate Audio Files")
 
     dpg.configure_item(PARSE_INK_SCRIPTS_BUTTON, show=True)
     dpg.configure_item(GENERATE_AUDIO_BUTTON, show=True)
@@ -456,7 +464,7 @@ def process_feedback_ink_file_for_room(feedback_room_type):
 
 
 def parse_ink_script(audio_folder_path, file_path, room_name):
-    global room_dialogue_data
+    global room_dialogue_data, is_parsing_successful
     audio_dialogue_data = dict()
     with open(file_path, 'r', encoding='UTF-8') as file:
         lines = file.readlines()
@@ -477,7 +485,7 @@ def parse_ink_script(audio_folder_path, file_path, room_name):
                 # TODO : Throw error if it has any option characters
                 # TODO : Check for valid emotion tags
                 if room_name == hrsa_cct_constants.FEEDBACK_TYPE_BREAK_ROOM_NAME or room_name == hrsa_cct_constants.FEEDBACK_TYPE_PATIENT_ROOM_NAME:
-                    # TODO : Check for valid feedback option
+                    # Check for valid feedback option
                     match_list = re.findall(hrsa_cct_globals.feedback_option_regular_expression, string_to_parse)
                     if len(match_list) != 1:
                         log_text = str(line_number) + ' : ' + 'Not a valid feedback option. ' \
@@ -531,12 +539,13 @@ def parse_ink_script(audio_folder_path, file_path, room_name):
                 audio_file_path = os.path.join(audio_folder_path, audio_file_name_with_extension)
                 log.debug("Audio File Path: " + str(audio_file_path))
                 character_type = split_4[2].strip()
-                # TODO: Create a Dict with audio file names as the key
+                # Create a Dict with audio file names as the key
                 # and contains a dictionary of text, character_type, audio_file_path
                 if audio_file_name in audio_dialogue_data:
                     # TODO: Error duplicate audio names
                     log_text = str(line_number) + ' : ' + 'Duplicate Audio file names, ' + audio_file_name
                     log.error(log_text)
+                    is_parsing_successful = False
                     continue
                 else:
                     dialogue_data = dict()
@@ -619,7 +628,6 @@ def init_ui():
         dpg.add_text(tag=SCENARIO_LANGUAGE_CODE_DIRECTORY_PATH_TEXT, show=False)
         # TODO: Voice Configuration
         with dpg.collapsing_header(indent=50, tag=VOICE_CONFIG_SECTION, label="Configure Character Voice Settings", default_open=True, show=False):
-
             # region Player Voice Configuration
             character_name = "Player"
             with dpg.group(tag=AG_PLAYER_TITLE_GROUP, horizontal=True, show=True):
@@ -640,8 +648,8 @@ def init_ui():
             # region Medical Student Voice Configuration
             character_name = "MedicalStudent"
             with dpg.group(tag=AG_MEDICAL_STUDENT_TITLE_GROUP, horizontal=True, show=True):
-                dpg.add_text("Medical Student:")
-                dpg.add_text("Language", tag=_get_character_voice_config_ui_tag(character_name, AG_VOICE_CONFIG_UI_SECTION_LANGUAGE_CODE, "text"), indent=100)
+                dpg.add_text("MedicalStudent:")
+                dpg.add_text("Language", tag=_get_character_voice_config_ui_tag(character_name, AG_VOICE_CONFIG_UI_SECTION_LANGUAGE_CODE, "text"), indent=120)
                 dpg.add_text("Gender", tag=_get_character_voice_config_ui_tag(character_name, AG_VOICE_CONFIG_UI_SECTION_GENDER, "text"), indent=260)
                 dpg.add_text("Voice", tag=_get_character_voice_config_ui_tag(character_name, AG_VOICE_CONFIG_UI_SECTION_VOICE, "text"), indent=460)
             with dpg.group(tag=AG_MEDICAL_STUDENT_VOICE_CONFIGURATION_GROUP, horizontal=True, show=True, indent=40):
