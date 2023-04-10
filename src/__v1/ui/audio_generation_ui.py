@@ -62,16 +62,35 @@ GENERATE_AUDIO_BUTTON: str = "GENERATE_AUDIO_BUTTON"
 PARSE_INK_SCRIPTS_BUTTON: str = "PARSE_INK_SCRIPTS_BUTTON"
 COMPILE_INK_SCRIPTS_BUTTON: str = "COMPILE_INK_SCRIPTS_BUTTON"
 SAVE_AUDIO_SETTINGS_BUTTON: str = "CONFIGURE_AUDIO_BUTTON"
-CHARACTER_SELECT_LISTBOX: str = "CHARACTER_SELECT_LISTBOX"
-LANGUAGE_CODE_TEXT: str = "LANGUAGE_CODE_TEXT"
-AUDIO_GENDER_TEXT: str = "AUDIO_GENDER_TEXT"
-AUDIO_VOICE_LIST: str = "AUDIO_VOICE_LIST"
+# CHARACTER_SELECT_LISTBOX: str = "CHARACTER_SELECT_LISTBOX"
+# LANGUAGE_CODE_TEXT: str = "LANGUAGE_CODE_TEXT"
+# AUDIO_GENDER_TEXT: str = "AUDIO_GENDER_TEXT"
+# AUDIO_VOICE_LIST: str = "AUDIO_VOICE_LIST"
 FILE_DIALOG_FOR_SCENARIO_FOLDER: str = "FILE_DIALOG_FOR_SCENARIO_FOLDER"
 SHOW_FILE_DIALOG_BUTTON_SCENARIO_FOLDER: str = "SHOW_FILE_DIALOG_BUTTON_SCENARIO_FOLDER"
 AG_LANGUAGE_LISTBOX_GROUP: str = "AG_LANGUAGE_LISTBOX_GROUP"
 AG_LANGUAGE_LISTBOX: str = "AG_LANGUAGE_LISTBOX"
 SCENARIO_LANGUAGE_CODE_DIRECTORY_PATH_TEXT: str = "SCENARIO_LANGUAGE_CODE_DIRECTORY_PATH_TEXT"
 VOICE_CONFIG_SECTION: str = "VOICE_CONFIG_SECTION"
+
+AG_PLAYER_TITLE_GROUP: str = "AG_PLAYER_TITLE_GROUP"
+AG_PLAYER_VOICE_CONFIGURATION_GROUP: str = "AG_PLAYER_VOICE_CONFIGURATION_GROUP"
+AG_MEDICAL_STUDENT_TITLE_GROUP: str = "AG_MEDICAL_STUDENT_TITLE_GROUP"
+AG_MEDICAL_STUDENT_VOICE_CONFIGURATION_GROUP: str = "AG_MEDICAL_STUDENT_VOICE_CONFIGURATION_GROUP"
+AG_PATIENT_TITLE_GROUP: str = "AG_PATIENT_TITLE_GROUP"
+AG_PATIENT_VOICE_CONFIGURATION_GROUP: str = "AG_PATIENT_VOICE_CONFIGURATION_GROUP"
+AG_TRAINER_TITLE_GROUP: str = "AG_TRAINER_TITLE_GROUP"
+AG_TRAINER_VOICE_CONFIGURATION_GROUP: str = "AG_TRAINER_VOICE_CONFIGURATION_GROUP"
+
+AG_VOICE_CONFIG_UI_SECTION_LANGUAGE_CODE: str = "language code"
+AG_VOICE_CONFIG_UI_SECTION_GENDER: str = "gender"
+AG_VOICE_CONFIG_UI_SECTION_VOICE: str = "voice"
+
+
+def _get_character_voice_config_ui_tag(character: str, section: str, ui_type: str):
+    ui_obj_tag = "AG_{0}_{1}_{2}".format(character, section, ui_type).upper().replace(" ", "_")
+    # print(ui_obj_tag)
+    return ui_obj_tag
 
 
 def callback_on_scenario_folder_selected(sender, app_data):
@@ -120,16 +139,19 @@ def callback_on_language_code_selected(sender):
         dpg.configure_item(COMPILE_INK_SCRIPTS_BUTTON, show=True)
         dpg.configure_item(GENERATE_AUDIO_BUTTON, show=True)
         # TODO: Voice Configuration
-        selected_character = dpg.get_value(CHARACTER_SELECT_LISTBOX)
+        # selected_character = dpg.get_value(CHARACTER_SELECT_LISTBOX)
         dpg.configure_item(VOICE_CONFIG_SECTION, show=True)
         character_list = list(character_voice_config_data.keys())
         if len(character_list) >= 1:
             if 'version' in character_list:
                 character_list.remove('version')
-            dpg.configure_item(CHARACTER_SELECT_LISTBOX, items=character_list, default_value=selected_character)
-            dpg.configure_item(AUDIO_GENDER_TEXT, items=gender_list)
-            dpg.configure_item(LANGUAGE_CODE_TEXT, items=hrsa_cct_globals.audio_generation_language_list)
-            display_character_info(CHARACTER_SELECT_LISTBOX)
+
+            for character_name in character_list:
+                print("display_character_info {0}".format(character_name))
+                display_character_info(character_name)
+                dpg.configure_item(_get_character_voice_config_ui_tag(character_name, AG_VOICE_CONFIG_UI_SECTION_GENDER, 'list'), items=gender_list)
+                dpg.configure_item(_get_character_voice_config_ui_tag(character_name, AG_VOICE_CONFIG_UI_SECTION_LANGUAGE_CODE, 'list'), items=hrsa_cct_globals.audio_generation_language_list)
+            # display_character_info(CHARACTER_SELECT_LISTBOX)
         else:
             # TODO: Log Error
             pass
@@ -144,9 +166,10 @@ def callback_on_language_code_selected(sender):
         log.warning("Selected Language for Audio Generation: " + selected_language_code)
 
 
-def callback_on_change_language_code(sender):
-    selected_language_code = dpg.get_value(LANGUAGE_CODE_TEXT)
-    selected_character_gender = dpg.get_value(AUDIO_GENDER_TEXT)
+def callback_on_change_language_code(sender, app_data, user_data):
+    character_name = user_data["node"]
+    selected_language_code = dpg.get_value(_get_character_voice_config_ui_tag(character_name, AG_VOICE_CONFIG_UI_SECTION_LANGUAGE_CODE, "list"))
+    selected_character_gender = dpg.get_value(_get_character_voice_config_ui_tag(character_name, AG_VOICE_CONFIG_UI_SECTION_GENDER, "list"))
     if str(selected_language_code).lower() != str(hrsa_cct_globals.none_language_code).lower():
         voice_list.clear()
         global voices
@@ -160,17 +183,17 @@ def callback_on_change_language_code(sender):
                     # TODO: Log Error
                     pass
         if len(voice_list) >= 1:
-            dpg.configure_item(AUDIO_VOICE_LIST, items=voice_list, default_value=voice_list[0])
-        dpg.configure_item(AUDIO_GENDER_TEXT, show=True)
-        dpg.configure_item(AUDIO_VOICE_LIST, show=True)
+            dpg.configure_item(_get_character_voice_config_ui_tag(character_name, AG_VOICE_CONFIG_UI_SECTION_VOICE, "list"), items=voice_list, default_value=voice_list[0])
+        dpg.configure_item(_get_character_voice_config_ui_tag(character_name, AG_VOICE_CONFIG_UI_SECTION_GENDER, "list"), show=True)
+        dpg.configure_item(_get_character_voice_config_ui_tag(character_name, AG_VOICE_CONFIG_UI_SECTION_VOICE, "list"), show=True)
         dpg.configure_item(SAVE_AUDIO_SETTINGS_BUTTON, show=True)
         dpg.configure_item(PARSE_INK_SCRIPTS_BUTTON, show=True)
         dpg.configure_item(COMPILE_INK_SCRIPTS_BUTTON, show=True)
         dpg.configure_item(GENERATE_AUDIO_BUTTON, show=True)
     else:
         # TODO: Handle (none) case
-        dpg.configure_item(AUDIO_GENDER_TEXT, show=False)
-        dpg.configure_item(AUDIO_VOICE_LIST, show=False)
+        dpg.configure_item(_get_character_voice_config_ui_tag(character_name, AG_VOICE_CONFIG_UI_SECTION_GENDER, "list"), show=False)
+        dpg.configure_item(_get_character_voice_config_ui_tag(character_name, AG_VOICE_CONFIG_UI_SECTION_VOICE, "list"), show=False)
         dpg.configure_item(SAVE_AUDIO_SETTINGS_BUTTON, show=False)
         dpg.configure_item(PARSE_INK_SCRIPTS_BUTTON, show=False)
         dpg.configure_item(COMPILE_INK_SCRIPTS_BUTTON, show=False)
@@ -178,9 +201,10 @@ def callback_on_change_language_code(sender):
         pass
 
 
-def callback_on_gender_selected(sender):
-    character_language_code = dpg.get_value(LANGUAGE_CODE_TEXT)
-    character_gender = dpg.get_value(AUDIO_GENDER_TEXT)
+def callback_on_gender_selected(sender, app_data, user_data):
+    character_name = user_data["node"]
+    character_language_code = dpg.get_value(_get_character_voice_config_ui_tag(character_name, AG_VOICE_CONFIG_UI_SECTION_LANGUAGE_CODE, "list"))
+    character_gender = dpg.get_value(_get_character_voice_config_ui_tag(character_name, AG_VOICE_CONFIG_UI_SECTION_GENDER, "list"))
     global voice_list
     voice_list.clear()
     global voices
@@ -191,16 +215,19 @@ def callback_on_gender_selected(sender):
                 if str(ssml_gender.name).upper() == str(character_gender).upper():
                     voice_list.append(voice.name)
     if len(voice_list) >= 1:
-        dpg.configure_item(AUDIO_VOICE_LIST, items=voice_list, default_value=voice_list[0])
+        dpg.configure_item(_get_character_voice_config_ui_tag(character_name, AG_VOICE_CONFIG_UI_SECTION_VOICE, "list"), items=voice_list, default_value=voice_list[0])
     pass
 
 
-def display_character_info(sender):
+def display_character_info(selected_character):
     global character_voice_config_data
-    selected_character = dpg.get_value(CHARACTER_SELECT_LISTBOX)
     character_data = character_voice_config_data[selected_character]
-    dpg.configure_item(LANGUAGE_CODE_TEXT, default_value=character_data["language_code"])
-    dpg.configure_item(AUDIO_GENDER_TEXT, default_value=character_data["gender"])
+    dpg.set_value(_get_character_voice_config_ui_tag(selected_character, AG_VOICE_CONFIG_UI_SECTION_LANGUAGE_CODE, "text"), character_data["language_code"])
+    dpg.set_value(_get_character_voice_config_ui_tag(selected_character, AG_VOICE_CONFIG_UI_SECTION_GENDER, "text"), character_data["gender"])
+    dpg.set_value(_get_character_voice_config_ui_tag(selected_character, AG_VOICE_CONFIG_UI_SECTION_VOICE, "text"), character_data["voice_name"])
+
+    dpg.configure_item(_get_character_voice_config_ui_tag(selected_character, AG_VOICE_CONFIG_UI_SECTION_LANGUAGE_CODE, "list"), default_value=character_data["language_code"])
+    dpg.configure_item(_get_character_voice_config_ui_tag(selected_character, AG_VOICE_CONFIG_UI_SECTION_GENDER, "list"), default_value=character_data["gender"])
     character_language_code = character_data["language_code"]
     global voice_list
     voice_list.clear()
@@ -211,9 +238,7 @@ def display_character_info(sender):
                 ssml_gender = texttospeech.SsmlVoiceGender(voice.ssml_gender)
                 if str(ssml_gender.name).upper() == str(character_data["gender"]).upper():
                     voice_list.append(voice.name)
-    dpg.configure_item(AUDIO_VOICE_LIST, items=voice_list, default_value=character_data["voice_name"])
-    dpg.configure_item(AUDIO_GENDER_TEXT, show=True)
-    dpg.configure_item(AUDIO_VOICE_LIST, show=True)
+    dpg.configure_item(_get_character_voice_config_ui_tag(selected_character, AG_VOICE_CONFIG_UI_SECTION_VOICE, "list"), items=voice_list, default_value=character_data["voice_name"])
     dpg.configure_item(SAVE_AUDIO_SETTINGS_BUTTON, show=True)
     dpg.configure_item(PARSE_INK_SCRIPTS_BUTTON, show=True)
     dpg.configure_item(COMPILE_INK_SCRIPTS_BUTTON, show=True)
@@ -221,26 +246,30 @@ def display_character_info(sender):
 
 
 def save_audio_settings(sender):
-    selected_character = dpg.get_value(CHARACTER_SELECT_LISTBOX)
-    language_code = dpg.get_value(LANGUAGE_CODE_TEXT)
-    audio_gender = dpg.get_value(AUDIO_GENDER_TEXT)
-    voice_model = dpg.get_value(AUDIO_VOICE_LIST)
-    global character_voice_config_data, new_character_voice_config_data
-    if str(language_code).lower() != str(hrsa_cct_globals.none_language_code).lower():
-        new_character_voice_config_data[selected_character]['language_code'] = language_code
-        new_character_voice_config_data[selected_character]['gender'] = audio_gender
-        new_character_voice_config_data[selected_character]['voice_name'] = voice_model
-        log.debug("character_voice_config_data : " + str(character_voice_config_data))
-        log.debug("new_character_voice_config_data : " + str(new_character_voice_config_data))
-        character_voice_config_json_object = json.dumps(new_character_voice_config_data, indent=4)
-        global character_voice_config_file_path
-        with open(character_voice_config_file_path, 'w') as output_json_file:
-            output_json_file.write(character_voice_config_json_object)
-        character_voice_config_data = new_character_voice_config_data
-        log.info("Voice Configuration for Audio Generation Saved")
-    else:
-        # TODO: Log Error
-        pass
+    for selected_character in ["player", "medicalstudent", "trainer", "patient"]:
+        language_code = dpg.get_value(_get_character_voice_config_ui_tag(selected_character, AG_VOICE_CONFIG_UI_SECTION_LANGUAGE_CODE, "list"))
+        audio_gender = dpg.get_value(_get_character_voice_config_ui_tag(selected_character, AG_VOICE_CONFIG_UI_SECTION_GENDER, "list"))
+        voice_model = dpg.get_value(_get_character_voice_config_ui_tag(selected_character, AG_VOICE_CONFIG_UI_SECTION_VOICE, "list"))
+
+        dpg.set_value(_get_character_voice_config_ui_tag(selected_character, AG_VOICE_CONFIG_UI_SECTION_LANGUAGE_CODE, "text"), language_code)
+        dpg.set_value(_get_character_voice_config_ui_tag(selected_character, AG_VOICE_CONFIG_UI_SECTION_GENDER, "text"), audio_gender)
+        dpg.set_value(_get_character_voice_config_ui_tag(selected_character, AG_VOICE_CONFIG_UI_SECTION_VOICE, "text"), voice_model)
+        global character_voice_config_data, new_character_voice_config_data
+        if str(language_code).lower() != str(hrsa_cct_globals.none_language_code).lower():
+            new_character_voice_config_data[selected_character]['language_code'] = language_code
+            new_character_voice_config_data[selected_character]['gender'] = audio_gender
+            new_character_voice_config_data[selected_character]['voice_name'] = voice_model
+            log.debug("character_voice_config_data : " + str(character_voice_config_data))
+            log.debug("new_character_voice_config_data : " + str(new_character_voice_config_data))
+            character_voice_config_json_object = json.dumps(new_character_voice_config_data, indent=4)
+            global character_voice_config_file_path
+            with open(character_voice_config_file_path, 'w') as output_json_file:
+                output_json_file.write(character_voice_config_json_object)
+            character_voice_config_data = new_character_voice_config_data
+            log.info("Voice Configuration for Audio Generation Saved")
+        else:
+            # TODO: Log Error
+            pass
 
 
 def generate_audio_files():
@@ -571,11 +600,72 @@ def init_ui():
         dpg.add_text(tag=SCENARIO_LANGUAGE_CODE_DIRECTORY_PATH_TEXT, show=False)
         # TODO: Voice Configuration
         with dpg.collapsing_header(indent=50, tag=VOICE_CONFIG_SECTION, label="Configure Character Voice Settings", default_open=True, show=False):
-            dpg.add_listbox(tag=CHARACTER_SELECT_LISTBOX, label="Choose Character", num_items=5, show=True,
-                            callback=display_character_info)
-            dpg.add_listbox(tag=LANGUAGE_CODE_TEXT, label="Language Code", num_items=4, callback=callback_on_change_language_code)
-            dpg.add_listbox(tag=AUDIO_GENDER_TEXT, label="Gender", num_items=3, show=True, callback=callback_on_gender_selected)
-            dpg.add_listbox(tag=AUDIO_VOICE_LIST, label="Voice", num_items=10, tracked=True)
+
+            # region Player Voice Configuration
+            character_name = "Player"
+            with dpg.group(tag=AG_PLAYER_TITLE_GROUP, horizontal=True, show=True):
+                dpg.add_text("Player:")
+                dpg.add_text("Language", tag=_get_character_voice_config_ui_tag(character_name, AG_VOICE_CONFIG_UI_SECTION_LANGUAGE_CODE, "text"), indent=100)
+                dpg.add_text("Gender", tag=_get_character_voice_config_ui_tag(character_name, AG_VOICE_CONFIG_UI_SECTION_GENDER, "text"), indent=260)
+                dpg.add_text("Voice", tag=_get_character_voice_config_ui_tag(character_name, AG_VOICE_CONFIG_UI_SECTION_VOICE, "text"), indent=460)
+
+            with dpg.group(tag=AG_PLAYER_VOICE_CONFIGURATION_GROUP, horizontal=True, show=True, indent=40):
+                dpg.add_listbox(tag=_get_character_voice_config_ui_tag(character_name, AG_VOICE_CONFIG_UI_SECTION_LANGUAGE_CODE, "list"), width=100,
+                                label=AG_VOICE_CONFIG_UI_SECTION_LANGUAGE_CODE, num_items=4, callback=callback_on_change_language_code, user_data={"node": character_name})
+                dpg.add_listbox(tag=_get_character_voice_config_ui_tag(character_name, AG_VOICE_CONFIG_UI_SECTION_GENDER, "list"), width=100,
+                                label="Gender", num_items=3, show=True, callback=callback_on_gender_selected, user_data={"node": character_name})
+                dpg.add_listbox(tag=_get_character_voice_config_ui_tag(character_name, AG_VOICE_CONFIG_UI_SECTION_VOICE, "list"), width=150,
+                                label="Voice", num_items=10)
+            # endregion
+
+            # region Medical Student Voice Configuration
+            character_name = "MedicalStudent"
+            with dpg.group(tag=AG_MEDICAL_STUDENT_TITLE_GROUP, horizontal=True, show=True):
+                dpg.add_text("Medical Student:")
+                dpg.add_text("Language", tag=_get_character_voice_config_ui_tag(character_name, AG_VOICE_CONFIG_UI_SECTION_LANGUAGE_CODE, "text"), indent=100)
+                dpg.add_text("Gender", tag=_get_character_voice_config_ui_tag(character_name, AG_VOICE_CONFIG_UI_SECTION_GENDER, "text"), indent=260)
+                dpg.add_text("Voice", tag=_get_character_voice_config_ui_tag(character_name, AG_VOICE_CONFIG_UI_SECTION_VOICE, "text"), indent=460)
+            with dpg.group(tag=AG_MEDICAL_STUDENT_VOICE_CONFIGURATION_GROUP, horizontal=True, show=True, indent=40):
+                dpg.add_listbox(tag=_get_character_voice_config_ui_tag(character_name, AG_VOICE_CONFIG_UI_SECTION_LANGUAGE_CODE, "list"), width=100,
+                                label=AG_VOICE_CONFIG_UI_SECTION_LANGUAGE_CODE, num_items=4, callback=callback_on_change_language_code, user_data={"node": character_name})
+                dpg.add_listbox(tag=_get_character_voice_config_ui_tag(character_name, AG_VOICE_CONFIG_UI_SECTION_GENDER, "list"), width=100,
+                                label="Gender", num_items=3, show=True, callback=callback_on_gender_selected, user_data={"node": character_name})
+                dpg.add_listbox(tag=_get_character_voice_config_ui_tag(character_name, AG_VOICE_CONFIG_UI_SECTION_VOICE, "list"), width=150,
+                                label="Voice", num_items=10)
+            # endregion
+
+            # region Patient Voice Configuration
+            character_name = "Patient"
+            with dpg.group(tag=AG_PATIENT_TITLE_GROUP, horizontal=True, show=True):
+                dpg.add_text("Patient:")
+                dpg.add_text("Language", tag=_get_character_voice_config_ui_tag(character_name, AG_VOICE_CONFIG_UI_SECTION_LANGUAGE_CODE, "text"), indent=100)
+                dpg.add_text("Gender", tag=_get_character_voice_config_ui_tag(character_name, AG_VOICE_CONFIG_UI_SECTION_GENDER, "text"), indent=260)
+                dpg.add_text("Voice", tag=_get_character_voice_config_ui_tag(character_name, AG_VOICE_CONFIG_UI_SECTION_VOICE, "text"), indent=460)
+            with dpg.group(tag=AG_PATIENT_VOICE_CONFIGURATION_GROUP, horizontal=True, show=True, indent=40):
+                dpg.add_listbox(tag=_get_character_voice_config_ui_tag(character_name, AG_VOICE_CONFIG_UI_SECTION_LANGUAGE_CODE, "list"), width=100,
+                                label=AG_VOICE_CONFIG_UI_SECTION_LANGUAGE_CODE, num_items=4, callback=callback_on_change_language_code, user_data={"node": character_name})
+                dpg.add_listbox(tag=_get_character_voice_config_ui_tag(character_name, AG_VOICE_CONFIG_UI_SECTION_GENDER, "list"), width=100,
+                                label="Gender", num_items=3, show=True, callback=callback_on_gender_selected, user_data={"node": character_name})
+                dpg.add_listbox(tag=_get_character_voice_config_ui_tag(character_name, AG_VOICE_CONFIG_UI_SECTION_VOICE, "list"), width=150,
+                                label="Voice", num_items=10)
+            # endregion
+
+            # region Trainer Voice Configuration
+            character_name = "Trainer"
+            with dpg.group(tag=AG_TRAINER_TITLE_GROUP, horizontal=True, show=True):
+                dpg.add_text("Trainer:")
+                dpg.add_text("Language", tag=_get_character_voice_config_ui_tag(character_name, AG_VOICE_CONFIG_UI_SECTION_LANGUAGE_CODE, "text"), indent=100)
+                dpg.add_text("Gender", tag=_get_character_voice_config_ui_tag(character_name, AG_VOICE_CONFIG_UI_SECTION_GENDER, "text"), indent=260)
+                dpg.add_text("Voice", tag=_get_character_voice_config_ui_tag(character_name, AG_VOICE_CONFIG_UI_SECTION_VOICE, "text"), indent=460)
+            with dpg.group(tag=AG_TRAINER_VOICE_CONFIGURATION_GROUP, horizontal=True, show=True, indent=40):
+                dpg.add_listbox(tag=_get_character_voice_config_ui_tag(character_name, AG_VOICE_CONFIG_UI_SECTION_LANGUAGE_CODE, "list"), width=100,
+                                label=AG_VOICE_CONFIG_UI_SECTION_LANGUAGE_CODE, num_items=4, callback=callback_on_change_language_code, user_data={"node": character_name})
+                dpg.add_listbox(tag=_get_character_voice_config_ui_tag(character_name, AG_VOICE_CONFIG_UI_SECTION_GENDER, "list"), width=100,
+                                label="Gender", num_items=3, show=True, callback=callback_on_gender_selected, user_data={"node": character_name})
+                dpg.add_listbox(tag=_get_character_voice_config_ui_tag(character_name, AG_VOICE_CONFIG_UI_SECTION_VOICE, "list"), width=150,
+                                label="Voice", num_items=10)
+            # endregion
+
             dpg.add_button(tag=SAVE_AUDIO_SETTINGS_BUTTON, label="Save voice settings", show=True, callback=save_audio_settings)
         dpg.add_button(tag=PARSE_INK_SCRIPTS_BUTTON, label="Parse Ink Scripts", show=False,
                        callback=callback_on_parse_ink_scripts_clicked)
