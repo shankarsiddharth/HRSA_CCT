@@ -68,6 +68,7 @@ class AppFileSystemConstants(metaclass=Singleton):
 
         # Data Folder & File Constants
         self.DATA_IMAGES_FOLDER_NAME = "images"
+        self.DATA_SCENARIO_TEMPLATE_FOLDER_NAME = "scenario_template"
         self.DATA_IMAGES_AVATARS_FOLDER_NAME = "avatars"
 
         # endregion Application Constants

@@ -134,6 +134,11 @@ class AppFileSystem(metaclass=Singleton):
         default_data_images_folder_path = os.path.join(data_folder_path, self.afsc.DATA_IMAGES_FOLDER_NAME)
         return default_data_images_folder_path
 
+    def get_default_data_scenario_template_folder_path(self):
+        data_folder_path = self.get_default_data_folder_path()
+        default_data_scenario_template_folder_path = os.path.join(data_folder_path, self.afsc.DATA_SCENARIO_TEMPLATE_FOLDER_NAME)
+        return default_data_scenario_template_folder_path
+
     def get_default_data_images_avatars_folder_path(self):
         data_images_folder_path = self.get_default_data_images_folder_path()
         default_data_images_avatars_folder_path = os.path.join(data_images_folder_path, self.afsc.DATA_IMAGES_AVATARS_FOLDER_NAME)
