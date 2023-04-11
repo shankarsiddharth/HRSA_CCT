@@ -1,0 +1,35 @@
+{
+    "version": {
+        "major": 1,
+        "minor": 0,
+        "patch": 0
+    },
+    "player": {
+        "language_code": "en-US",
+        "gender": "MALE",
+        "voice_name": "en-US-Wavenet-A",
+        "language": "",
+        "model": ""
+    },
+    "medicalstudent": {
+        "language_code": "en-US",
+        "gender": "FEMALE",
+        "voice_name": "en-US-Wavenet-C",
+        "language": "",
+        "model": ""
+    },
+    "patient": {
+        "language_code": "es-US",
+        "gender": "FEMALE",
+        "voice_name": "es-US-Wavenet-A",
+        "language": "",
+        "model": ""
+    },
+    "trainer": {
+        "language_code": "en-US",
+        "gender": "FEMALE",
+        "voice_name": "en-US-Wavenet-H",
+        "language": "",
+        "model": ""
+    }
+}

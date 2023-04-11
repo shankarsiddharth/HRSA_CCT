@@ -1,0 +1,50 @@
+{
+    "version": {
+        "major": 1,
+        "minor": 0,
+        "patch": 0
+    },
+    "player_config": {
+        "ui_config": {
+            "subtitle_config": {
+                "text_color": "#000000"
+            }
+        },
+        "character_model_config": {
+            "uid": "PlayerCharacter"
+        }
+    },
+    "medicalstudent_config": {
+        "ui_config": {
+            "subtitle_config": {
+                "text_color": "#FF0000"
+            }
+        },
+        "character_model_config": {
+            "uid": "MedStudent1"
+        }
+    },
+    "patient_config": {
+        "ui_config": {
+            "subtitle_config": {
+                "text_color": "#00ABFF"
+            }
+        },
+        "character_model_config": {
+            "uid": "Patient2"
+        }
+    },
+    "trainer_config": {
+        "ui_config": {
+            "subtitle_config": {
+                "text_color": "#0CA600"
+            }
+        },
+        "character_model_config": {
+            "uid": "Trainer1"
+        }
+    },
+    "conversation_config": {
+        "question_timer_in_seconds": 120
+    }
+}
