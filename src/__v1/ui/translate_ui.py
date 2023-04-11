@@ -5,6 +5,7 @@ import pathlib
 import re
 import shutil
 import sys
+from dataclasses import asdict
 
 import dearpygui.dearpygui as dpg
 from google.cloud import translate
@@ -13,8 +14,10 @@ from google.oauth2 import service_account
 from __v1 import hrsa_cct_config, cct_ui_panels, cct_advanced_options_ui
 from __v1 import hrsa_cct_constants
 from __v1 import hrsa_cct_globals
-from __v1 import patient_info_translate
 from __v1.hrsa_cct_globals import log
+from hrsa_data.scenario_data.ehr.patient_information import PatientInformation
+from hrsa_data.scenario_data.ehr.social_health_history import SocialHealthHistory
+from hrsa_data.scenario_data.ehr.vital_signs import VitalSigns
 from hrsa_data.scenario_data.scenario_information.scenario_information import ScenarioInformation
 
 project_id = ''
@@ -101,7 +104,10 @@ def set_new_language_code(sender):
         dpg.configure_item(TRANSLATE_TEXT_BUTTON, show=False)
 
 
-def translate_text(text="I want to translate this text.", language="es"):
+def translate_text(text="", language="es"):
+    if text == "" or text is None:
+        return ""
+
     location = "global"
     parent = f"projects/{project_id}/locations/{location}"
     log.info("Translating : " + text + " - to " + language)
@@ -117,6 +123,62 @@ def translate_text(text="I want to translate this text.", language="es"):
 
     for translation in response.translations:
         return translation.translated_text
+
+
+def translate_patient_info(file_path: str = None):
+    if file_path is None:
+        return
+    patient_info: PatientInformation = PatientInformation.load_from_json_file(file_path)
+
+    # translate demographics
+    # patient_info_demographics_dict = asdict(patient_info.patient_demographics)
+    # for key, value in patient_info_demographics_dict.items():
+    #     patient_info_demographics_dict[key] = translate_text(value)
+    # patient_info.patient_demographics = PatientDemographics.from_dict(patient_info_demographics_dict)
+    patient_info.patient_demographics.occupation = translate_text(patient_info.patient_demographics.occupation)
+    patient_info.patient_demographics.occupation_history = translate_text(patient_info.patient_demographics.occupation_history)
+    patient_info.patient_demographics.chief_complaint = translate_text(patient_info.patient_demographics.chief_complaint)
+    patient_info.patient_demographics.insurance = translate_text(patient_info.patient_demographics.insurance)
+
+    # translate problems
+    for item in patient_info.problems.problems:
+        item.problem = translate_text(item.problem)
+
+    # translate SDOH problems
+    for item in patient_info.problems.sdoh_problems_health_concerns:
+        item.problem = translate_text(item.problem)
+
+    # # translate medications
+    # translated_medication_list = []
+    # for item in patient_info.medications.medications:
+    #     translated_medication_list.append(translate_text(item))
+    # patient_info.medications.medications = translated_medication_list
+
+    # translate Allergies and Intolerances - Substances
+    for substance_item in patient_info.allergies_intolerances.substances:
+        substance_item.substance_medication = translate_text(substance_item.substance_medication)
+        substance_item.reaction = translate_text(substance_item.reaction)
+        substance_item.substance_drug_class = translate_text(substance_item.substance_drug_class)
+
+    # translate vital_signs
+    vital_signs_dict = asdict(patient_info.vital_signs)
+    for key, value in vital_signs_dict.items():
+        vital_signs_dict[key] = translate_text(value)
+    patient_info.vital_signs = VitalSigns.from_dict(vital_signs_dict)
+
+    # translate family_health_history
+    translated_family_health_history = []
+    for item in patient_info.family_health_history.family_health_history:
+        translated_family_health_history.append(translate_text(item))
+    patient_info.family_health_history.family_health_history = translated_family_health_history
+
+    # translate social_health_history
+    social_health_history_dict = asdict(patient_info.social_health_history)
+    for key, value in social_health_history_dict.items():
+        social_health_history_dict[key] = translate_text(value)
+    patient_info.social_health_history = SocialHealthHistory.from_dict(social_health_history_dict)
+
+    patient_info.save_to_json_file(patient_info, file_path)
 
 
 def callback_on_translate_text_clicked():
@@ -157,7 +219,7 @@ def callback_on_translate_text_clicked():
     # Translate the patient information JSON file
     patient_information_json_path = os.path.join(new_scenario_path_language_code, hrsa_cct_constants.PATIENT_INFORMATION_JSON_FILE_NAME)
     if os.path.exists(patient_information_json_path):
-        patient_info_translate.translate_patient_info(patient_information_json_path)
+        translate_patient_info(patient_information_json_path)
     else:
         # TODO: Error log important file missing
         pass
@@ -220,6 +282,7 @@ def callback_on_translate_text_clicked():
         log_text = "total_characters_to_translate : " + str(total_characters_to_translate)
         log.info(log_text)
         if not hrsa_cct_globals.connect_to_cloud:
+            log.warning("Connect to cloud is disabled.")
             file_ink.close()
             continue
         file_ink.seek(0, 0)

@@ -219,6 +219,12 @@ def check_hrsa_config_files():
         translate_ui.initialize_translate()
 
 
+def update_connect_to_cloud():
+    if not hrsa_cct_globals.is_debug:
+        hrsa_cct_globals.connect_to_cloud = True
+
+
 if __name__ == "__main__":
     check_hrsa_config_files()
+    update_connect_to_cloud()
     main()
