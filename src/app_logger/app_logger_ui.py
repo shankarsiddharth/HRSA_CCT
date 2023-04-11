@@ -80,7 +80,7 @@ class AppUILogger:
         if show_all_logs:
             dpg.set_value(self.filter_id, '')
         else:
-            dpg.set_value(self.filter_id, 'INFO, SUCCESS, WARNING, ERROR, CRITICAL')
+            dpg.set_value(self.filter_id, 'SUCCESS, WARNING, ERROR, CRITICAL')
 
     def __callback_on_filter_text_changed(self, sender):
         filter_text = dpg.get_value(self._filter_text_tag)
