@@ -132,8 +132,8 @@ class AppLogger(metaclass=Singleton):
             if self.ui_logger is not None and self.should_log_to_ui:
                 self.ui_logger.info(message, *args)
 
-        elif level == alc.log_level_success:
-            self.logger_instance.log(alc.log_level_success, message, *args)
+        elif level == alc.LOG_LEVEL_SUCCESS:
+            self.logger_instance.log(alc.LOG_LEVEL_SUCCESS, message, *args)
             if self.ui_logger is not None and self.should_log_to_ui:
                 self.ui_logger.success(message, *args)
 
@@ -164,7 +164,7 @@ class AppLogger(metaclass=Singleton):
         self._log(logging.INFO, message, *args)
 
     def success(self, message, *args: object):
-        self._log(alc.log_level_success, message, *args)
+        self._log(alc.LOG_LEVEL_SUCCESS, message, *args)
 
     def warning(self, message, *args: object):
         self._log(logging.WARNING, message, *args)

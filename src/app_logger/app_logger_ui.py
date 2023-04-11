@@ -116,7 +116,7 @@ class AppUILogger:
         elif level == logging.INFO:
             self.ui_message = "[INFO]\t\t" + self.log_message
             theme = self.info_theme
-        elif level == alc.log_level_success:
+        elif level == alc.LOG_LEVEL_SUCCESS:
             self.ui_message = "[SUCCESS]\t\t" + self.log_message
             theme = self.success_theme
         elif level == logging.WARNING:
@@ -128,7 +128,7 @@ class AppUILogger:
         elif level == logging.CRITICAL:
             self.ui_message = "[CRITICAL]\t\t" + self.log_message
             theme = self.critical_theme
-        elif level == alc.log_level_exception:
+        elif level == alc.LOG_LEVEL_EXCEPTION:
             self.ui_message = "[EXCEPTION]\t\t" + self.log_message
             theme = self.critical_theme
 
@@ -148,7 +148,7 @@ class AppUILogger:
         self._log(logging.INFO, message, *args)
 
     def success(self, message, *args):
-        self._log(alc.log_level_success, message, *args)
+        self._log(alc.LOG_LEVEL_SUCCESS, message, *args)
 
     def warning(self, message, *args):
         self._log(logging.WARNING, message, *args)
@@ -160,7 +160,7 @@ class AppUILogger:
         self._log(logging.CRITICAL, message, *args)
 
     def exception(self, message, *args):
-        self._log(alc.log_level_exception, message, *args)
+        self._log(alc.LOG_LEVEL_EXCEPTION, message, *args)
 
     def clear_log(self):
         dpg.delete_item(self.filter_id, children_only=True)

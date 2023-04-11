@@ -3,10 +3,10 @@ import logging
 from app_debug.app_debug import IS_DEBUG_MODE_ENABLED
 
 # region Log Constants
-log_level_success = logging.INFO + 5
-log_level_exception = logging.CRITICAL + 10
-logging.addLevelName(log_level_success, "SUCCESS")
-logging.addLevelName(log_level_exception, "EXCEPTION")
+LOG_LEVEL_SUCCESS = logging.INFO + 5
+LOG_LEVEL_EXCEPTION = logging.CRITICAL + 10
+logging.addLevelName(LOG_LEVEL_SUCCESS, "SUCCESS")
+logging.addLevelName(LOG_LEVEL_EXCEPTION, "EXCEPTION")
 if IS_DEBUG_MODE_ENABLED:
     print("AppLoggingCustom.__init__()")
 # endregion Log Constants
