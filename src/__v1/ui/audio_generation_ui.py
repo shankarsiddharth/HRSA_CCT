@@ -515,37 +515,65 @@ def parse_ink_script(audio_folder_path, file_path, room_name):
                         log.warning(log_text)
                     continue
             else:
-                log.trace("string_to_parse: " + string_to_parse)
-                text_to_display = string_to_parse.split("#")[0].strip()
-                # TODO: Check the length of the dialogue text and display error to the user
-                if len(text_to_display) > hrsa_cct_constants.MAX_DIALOGUE_TEXT_CHARACTER_COUNT:
-                    # TODO: Display error message by collecting this error data in a collection and display in the end
-                    log_text = str(line_number) + ' : ' + 'Length exceeds max character count'
-                    log.warning(log_text)
-                string_without_name = string_to_parse.split(":", 1)
-                log.trace("string_without_name: " + str(string_without_name))
-                # TODO: Error Check for all the string operations
-                split_1 = string_without_name[1].split("\"")
-                log.trace("split_1: " + str(split_1))
-                dialogue_string = split_1[1].strip()
-                log.trace("dialogue_string: " + dialogue_string)
-                split_3 = split_1[2].strip()
-                log.trace("split_3: " + str(split_3))
-                split_4 = split_3.split("#")
-                log.trace("split_4: " + str(split_4))
-                audio_file_name = split_4[1].strip()
-                audio_file_name_with_extension = audio_file_name + ".mp3"
-                log.debug("Dialogue Text: " + str(dialogue_string))
-                log.debug("Audio File Name: " + str(audio_file_name))
-                audio_file_path = os.path.join(audio_folder_path, audio_file_name_with_extension)
-                log.debug("Audio File Path: " + str(audio_file_path))
-                character_type = split_4[2].strip()
+                try:
+                    log.trace("string_to_parse: " + string_to_parse)
+                    text_to_display = string_to_parse.split("#")[0].strip()
+                    # TODO: Check the length of the dialogue text and display error to the user
+                    if len(text_to_display) > hrsa_cct_constants.MAX_DIALOGUE_TEXT_CHARACTER_COUNT:
+                        # TODO: Display error message by collecting this error data in a collection and display in the end
+                        log_text = str(line_number) + ' : ' + 'Length exceeds max character count'
+                        log.warning(log_text)
+                    string_without_name = string_to_parse.split(":", 1)
+                    log.trace("string_without_name: " + str(string_without_name))
+                    # TODO: Error Check for all the string operations
+                    split_1 = string_without_name[1].split("\"")
+                    log.trace("split_1: " + str(split_1))
+                    dialogue_string = split_1[1].strip()
+                    log.trace("dialogue_string: " + dialogue_string)
+                    split_3 = split_1[2].strip()
+                    log.trace("split_3: " + str(split_3))
+                    split_4 = split_3.split("#")
+                    log.trace("split_4: " + str(split_4))
+                    audio_file_name = split_4[1].strip()
+                    audio_file_name_with_extension = audio_file_name + ".mp3"
+                    log.debug("Dialogue Text: " + str(dialogue_string))
+                    log.debug("Audio File Name: " + str(audio_file_name))
+                    audio_file_path = os.path.join(audio_folder_path, audio_file_name_with_extension)
+                    log.debug("Audio File Path: " + str(audio_file_path))
+                    character_type = split_4[2].strip()
+                except Exception as e:
+                    log.error("---------------------------------------------------------------------------------------------------------")
+                    log_text = 'Line Number : ' + str(line_number) + ' : ' + 'Error parsing ink file, ' + str(e)
+                    log.error(log_text)
+                    log_text = "^ Make sure the line number :" + str(line_number) + " is in the correct format"
+                    log.error(log_text)
+                    log_text = "^ The format is as follows:"
+                    log.error(log_text)
+                    log_text = "\t<Character Name> : \"<Dialogue Text>\" #<Audio File Name> #<Character Type>"
+                    log.error(log_text)
+                    log_text = "^ Examples are as follows:"
+                    log.error(log_text)
+                    log_text = "\tMedicalStudent: \"Hello, Good Morning Doctor\" #Audio_1 #MedicalStudent"
+                    log.error(log_text)
+                    log_text = "\tPatient: \"Hello, Good Morning Doctor\" #Audio_1 #Patient"
+                    log.error(log_text)
+                    log_text = "\tPlayer: \"Hello, Good Morning\" #Audio_1 #Player"
+                    log.error(log_text)
+                    log_text = "\tTrainer: \"You responded with a positive remark.\" #Audio_1 #Trainer #Left"
+                    log.error(log_text)
+                    log_text = "\tTrainer: \"You responded with a negative remark.\" #Audio_1 #Trainer #Right"
+                    log.error(log_text)
+                    log.error("---------------------------------------------------------------------------------------------------------")
+                    is_parsing_successful = False
+                    continue
                 # Create a Dict with audio file names as the key
                 # and contains a dictionary of text, character_type, audio_file_path
                 if audio_file_name in audio_dialogue_data:
                     # TODO: Error duplicate audio names
+                    log.error("---------------------------------------------------------------------------------------------------------")
                     log_text = str(line_number) + ' : ' + 'Duplicate Audio file names, ' + audio_file_name
                     log.error(log_text)
+                    log.error("---------------------------------------------------------------------------------------------------------")
                     is_parsing_successful = False
                     continue
                 else:
