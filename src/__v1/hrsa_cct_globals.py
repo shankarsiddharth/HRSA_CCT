@@ -65,8 +65,5 @@ scenario_path = ""
 scenario_path_source = ""
 scenario_path_destination = ""
 
-
-
-
 if sys.flags.dev_mode:
     print("hrsa_cc_globals.__init__()")

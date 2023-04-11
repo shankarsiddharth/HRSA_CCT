@@ -395,7 +395,11 @@ def callback_on_generate_audio_clicked():
         log.info('Complete - generate_audio_files')
         log_text = "total_characters_for_audio_generation : " + str(total_characters_for_audio_generation)
         log.info(log_text)
-        validate_audio_files()
+        if not hrsa_cct_globals.is_debug:
+            validate_audio_files()
+        else:
+            if hrsa_cct_globals.connect_to_cloud:
+                validate_audio_files()
         log.info('Complete - validate_audio_files')
     else:
         log.error("Ink Files Check Failed - Cannot Generate Audio Files")

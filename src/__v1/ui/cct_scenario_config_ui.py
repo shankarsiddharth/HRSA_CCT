@@ -359,6 +359,8 @@ def _help(message):
 
 
 def init_ui():
+    global patient_model_info_window
+
     _load_character_config()
 
     dpg.add_texture_registry(label="Demo Texture Container", tag="static_texture_container")

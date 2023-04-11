@@ -1,7 +1,4 @@
-import json
 import os
-import shutil
-from dataclasses import asdict
 
 import dearpygui.dearpygui as dpg
 
@@ -10,7 +7,6 @@ from __v1.hrsa_cct_globals import log
 from __v1.ui import cct_patient_info_ui, cct_scenario_config_ui, cct_workflow_ui, cct_scenario_ui, audio_generation_ui, translate_ui, show_ink_files_ui
 from __v1.ui import transfer_to_device_ui
 from app_version import app_version
-from hrsa_data.scenario_data.scenario_information.scenario_information import ScenarioInformation
 
 # debug build parameters
 is_debug: bool = hrsa_cct_globals.is_debug
@@ -23,9 +19,7 @@ VIEWPORT_WIDTH = 1200
 VIEWPORT_HEIGHT = 900  # 700
 
 # GUI Element Tags
-SCENARIO_NAME_INPUT_TEXT: str = "SCENARIO_NAME_INPUT_TEXT"
-SCENARIO_DESCRIPTION_INPUT_TEXT: str = "SCENARIO_DESCRIPTION_INPUT_TEXT"
-CREATE_SCENARIO_INFORMATION_BUTTON: str = "CREATE_SCENARIO_INFORMATION_BUTTON"
+
 FILE_DIALOG: str = "FILE_DIALOG"
 FILE_DIALOG_FOR_DATA_FOLDER: str = "FILE_DIALOG_FOR_DATA_FOLDER"
 SHOW_FILE_DIALOG_BUTTON_DATA_FOLDER: str = "SHOW_FILE_DIALOG_BUTTON_DATA_FOLDER"
@@ -35,72 +29,10 @@ FILE_DIALOG_FOR_GOOGLE_CLOUD_CREDENTIALS: str = "FILE_DIALOG_FOR_GOOGLE_CLOUD_CR
 SHOW_FILE_DIALOG_BUTTON_GOOGLE_CLOUD_CREDENTIALS: str = "SHOW_FILE_DIALOG_BUTTON_GOOGLE_CLOUD_CREDENTIALS"
 GOOGLE_CLOUD_CREDENTIALS_FILE_PATH_TEXT: str = "GOOGLE_CLOUD_CREDENTIALS_FILE_PATH_TEXT"
 GOOGLE_CLOUD_CREDENTIALS_ERROR_TEXT: str = "GOOGLE_CLOUD_CREDENTIALS_ERROR_TEXT"
-FILE_DIALOG_FOR_SCENARIO_FOLDER_SOURCE: str = "FILE_DIALOG_FOR_SCENARIO_FOLDER_SOURCE"
-SHOW_FILE_DIALOG_BUTTON_SCENARIO_SOURCE_FOLDER: str = "SHOW_FILE_DIALOG_BUTTON_SCENARIO_SOURCE_FOLDER"
-SCENARIO_DIRECTORY_PATH_TEXT_SOURCE: str = "SCENARIO_DIRECTORY_PATH_TEXT_SOURCE"
+
 FILE_DIALOG_FOR_SCENARIO_FOLDER_DESTINATION: str = "FILE_DIALOG_FOR_SCENARIO_FOLDER_DESTINATION"
 SHOW_FILE_DIALOG_BUTTON_SCENARIO_DESTINATION_FOLDER: str = "SHOW_FILE_DIALOG_BUTTON_SCENARIO_DESTINATION_FOLDER"
 SCENARIO_DIRECTORY_PATH_TEXT_DESTINATION: str = "SCENARIO_DIRECTORY_PATH_TEXT_DESTINATION"
-COPY_SCENARIO_INFORMATION_BUTTON: str = "COPY_SCENARIO_INFORMATION_BUTTON"
-
-
-def create_scenario_folders(scenario_name, scenario_information_json_object) -> bool:
-    # Scenario Folder
-    scenario_path_root = os.path.join(hrsa_cct_config.get_user_hrsa_data_folder_path(), scenario_name)
-    log.info("scenario_path_root: " + scenario_path_root)
-    # TODO: Check if the a scenario name already exists and display error information to the user
-    try:
-        os.mkdir(scenario_path_root)
-    except FileExistsError:
-        log.error("Scenario folder already exists: " + scenario_name)
-        return False
-    # Default Language Folder
-    default_language_folder = os.path.join(scenario_path_root, hrsa_cct_globals.default_language_code)
-    log.info("default_language_folder: " + default_language_folder)
-    os.mkdir(default_language_folder)
-    hrsa_cct_globals.scenario_path = os.path.abspath(default_language_folder)
-    # Scenario Information JSON
-    scenario_information_json_path = os.path.join(hrsa_cct_globals.scenario_path, hrsa_cct_constants.SCENARIO_INFORMATION_JSON_FILE_NAME)
-    log.info("scenario_information_json_path: " + scenario_information_json_path)
-    with open(scenario_information_json_path, "w", encoding="utf-8") as output_file:
-        output_file.write(scenario_information_json_object)
-    # Break Room
-    break_room_folder_path = os.path.join(hrsa_cct_globals.scenario_path, hrsa_cct_constants.BREAK_ROOM_NAME)
-    os.mkdir(break_room_folder_path)
-    audio_folder = os.path.join(break_room_folder_path, hrsa_cct_constants.AUDIO_FOLDER_NAME)
-    os.mkdir(audio_folder)
-    file_path = os.path.join(break_room_folder_path, hrsa_cct_constants.DIALOGUE_INK_FILE_NAME)
-    open(file_path, 'a').close()
-    # Patient Room
-    patient_room_folder_path = os.path.join(hrsa_cct_globals.scenario_path, hrsa_cct_constants.PATIENT_ROOM_NAME)
-    os.mkdir(patient_room_folder_path)
-    audio_folder = os.path.join(patient_room_folder_path, hrsa_cct_constants.AUDIO_FOLDER_NAME)
-    os.mkdir(audio_folder)
-    file_path = os.path.join(patient_room_folder_path, hrsa_cct_constants.DIALOGUE_INK_FILE_NAME)
-    open(file_path, 'a').close()
-    # Feedback Room
-    feedback_room_folder_path = os.path.join(hrsa_cct_globals.scenario_path, hrsa_cct_constants.FEEDBACK_ROOM_NAME)
-    os.mkdir(feedback_room_folder_path)
-    # Break Room Feedback
-    break_room_feedback_folder_path = os.path.join(feedback_room_folder_path, hrsa_cct_constants.FEEDBACK_TYPE_BREAK_ROOM_NAME)
-    os.mkdir(break_room_feedback_folder_path)
-    audio_folder = os.path.join(break_room_feedback_folder_path, hrsa_cct_constants.AUDIO_FOLDER_NAME)
-    os.mkdir(audio_folder)
-    file_path = os.path.join(break_room_feedback_folder_path, hrsa_cct_constants.FEEDBACK_INK_FILE_NAME)
-    open(file_path, 'a').close()
-    # Patient Room Feedback
-    patient_room_feedback_folder_path = os.path.join(feedback_room_folder_path, hrsa_cct_constants.FEEDBACK_TYPE_PATIENT_ROOM_NAME)
-    os.mkdir(patient_room_feedback_folder_path)
-    audio_folder = os.path.join(patient_room_feedback_folder_path, hrsa_cct_constants.AUDIO_FOLDER_NAME)
-    os.mkdir(audio_folder)
-    file_path = os.path.join(patient_room_feedback_folder_path, hrsa_cct_constants.FEEDBACK_INK_FILE_NAME)
-    open(file_path, 'a').close()
-    log.info("New Scenario Created. Scenario Name: " + scenario_name)
-
-    hrsa_cct_globals.app_data = dict(file_path_name=scenario_path_root)
-    hrsa_cct_globals.scenario_path_destination = os.path.normpath(scenario_path_root)
-    # callback_on_scenario_destination_folder_selected(FILE_DIALOG_FOR_SCENARIO_FOLDER_DESTINATION, hrsa_cct_globals.app_data)
-    return True
 
 
 def callback_on_data_folder_selected(sender, app_data):
@@ -137,67 +69,12 @@ def callback_on_google_cloud_credentials_file_selected(sender, app_data):
         dpg.configure_item(cct_ui_panels.TRANSLATE_COLLAPSING_HEADER, show=False)
 
 
-def file_dialog_cancel_callback(sender, app_data, user_data):
-    pass
-
-
 def callback_on_show_file_dialog_clicked(item_tag):
     dpg.configure_item(item_tag, show=True, modal=True)
 
 
-def callback_on_create_scenario_button_clicked() -> None:
-    on_create_scenario_button_clicked()
-
-
-def on_create_scenario_button_clicked() -> bool:
-    scenario_name = dpg.get_value(SCENARIO_NAME_INPUT_TEXT)
-    scenario_description = dpg.get_value(SCENARIO_DESCRIPTION_INPUT_TEXT)
-    if scenario_name == "" or scenario_description == "":
-        log.error("Scenario Name or Scenario Description cannot be Empty")
-        return False
-
-    scenario_information: ScenarioInformation = ScenarioInformation()
-    scenario_information.name = scenario_name
-    scenario_information.localized_name = scenario_name
-    scenario_information.description = scenario_description
-    scenario_information_json_object = json.dumps(asdict(scenario_information), indent=4)
-    return create_scenario_folders(scenario_name, scenario_information_json_object)
-
-
-def callback_on_scenario_source_folder_selected(sender, app_data):
-    hrsa_cct_globals.scenario_path_source = os.path.normpath(str(app_data['file_path_name']))
-    log.info("Source Scenario Path: " + hrsa_cct_globals.scenario_path_source)
-    dpg.configure_item(SCENARIO_DIRECTORY_PATH_TEXT_SOURCE, default_value=hrsa_cct_globals.scenario_path_source)
-
-
-def callback_on_scenario_destination_folder_selected(sender, app_data):
-    log.info("Destination Scenario Path: " + hrsa_cct_globals.scenario_path_destination)
-    dpg.configure_item(SCENARIO_DIRECTORY_PATH_TEXT_DESTINATION, default_value=hrsa_cct_globals.scenario_path_destination)
-
-
-def callback_on_copy_scenario_button_clicked():
-    on_copy_scenario_button_clicked()
-
-
-def on_copy_scenario_button_clicked():
-    dpg.configure_item(COPY_SCENARIO_INFORMATION_BUTTON, show=False)
-    shutil.copytree(hrsa_cct_globals.scenario_path_source, hrsa_cct_globals.scenario_path_destination, dirs_exist_ok=True,
-                    ignore=shutil.ignore_patterns('*.mp3', '*.wav', 'scenario_information.json', 'feedback.json', 'dialogue.json', 'es-US'))
-    log.info("Scenario Folder Copy Complete from: " + hrsa_cct_globals.scenario_path_source + "\tto: " + hrsa_cct_globals.scenario_path_destination)
-    dpg.configure_item(COPY_SCENARIO_INFORMATION_BUTTON, show=True)
-
-    cct_scenario_ui.set_current_scenario_path(hrsa_cct_globals.scenario_path_destination)
-
-
-def callback_on_create_scenario_by_copy_button_clicked():
-    if hrsa_cct_globals.scenario_path_source is None \
-            or hrsa_cct_globals.scenario_path_source == "" \
-            or len(hrsa_cct_globals.scenario_path_source) == 0:
-        log.error("Please, Select Source Scenario Folder and Try Again")
-        return None
-    is_scenario_created = on_create_scenario_button_clicked()
-    if is_scenario_created:
-        on_copy_scenario_button_clicked()
+def file_dialog_cancel_callback(sender, app_data, user_data):
+    pass
 
 
 def save_init():
@@ -274,24 +151,7 @@ def main() -> None:
         # Choose Workflow UI - Initialize
         cct_workflow_ui.init_ui()
 
-        # region Create Scenario UI
-        with dpg.collapsing_header(label="Create Scenario", tag=cct_ui_panels.CREATE_SCENARIO_COLLAPSING_HEADER, default_open=True):
-            dpg.add_input_text(tag=SCENARIO_NAME_INPUT_TEXT, label="Scenario Name", default_value="")
-            dpg.add_input_text(tag=SCENARIO_DESCRIPTION_INPUT_TEXT, label="Scenario Description", multiline=True, tab_input=False)
-            dpg.add_spacer(height=5)
-            dpg.add_file_dialog(tag=FILE_DIALOG_FOR_SCENARIO_FOLDER_SOURCE, height=300, width=450, directory_selector=True, show=False,
-                                callback=callback_on_scenario_source_folder_selected,
-                                default_path=hrsa_cct_config.get_file_dialog_default_path(),
-                                cancel_callback=file_dialog_cancel_callback)
-            dpg.add_button(tag=SHOW_FILE_DIALOG_BUTTON_SCENARIO_SOURCE_FOLDER, label="Select Source Scenario Folder",
-                           callback=lambda s, a: callback_on_show_file_dialog_clicked(item_tag=FILE_DIALOG_FOR_SCENARIO_FOLDER_SOURCE))
-            dpg.add_text(tag=SCENARIO_DIRECTORY_PATH_TEXT_SOURCE)
-            dpg.add_spacer(height=5)
-            dpg.add_button(tag=COPY_SCENARIO_INFORMATION_BUTTON, label="Create Scenario", callback=callback_on_create_scenario_by_copy_button_clicked)
-            dpg.add_separator()
-        # endregion Create Scenario UI
-
-        # Select Scenario UI - Initialize
+        # Create / Select Scenario UI - Initialize
         cct_scenario_ui.init_ui()
 
         # Patient Info UI - Initialize
