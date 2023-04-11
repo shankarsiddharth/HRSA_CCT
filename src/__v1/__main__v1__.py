@@ -6,6 +6,8 @@ from __v1 import hrsa_cct_config, cct_ui_panels, hrsa_cct_constants, hrsa_cct_gl
 from __v1.hrsa_cct_globals import log
 from __v1.ui import cct_patient_info_ui, cct_scenario_config_ui, cct_workflow_ui, cct_scenario_ui, audio_generation_ui, translate_ui, show_ink_files_ui
 from __v1.ui import transfer_to_device_ui
+from app_font_registry.app_dpg_font_registry import AppFontRegistry
+from app_theme.app_dpg_theme import AppTheme
 from app_version import app_version
 
 # debug build parameters
@@ -33,6 +35,9 @@ GOOGLE_CLOUD_CREDENTIALS_ERROR_TEXT: str = "GOOGLE_CLOUD_CREDENTIALS_ERROR_TEXT"
 FILE_DIALOG_FOR_SCENARIO_FOLDER_DESTINATION: str = "FILE_DIALOG_FOR_SCENARIO_FOLDER_DESTINATION"
 SHOW_FILE_DIALOG_BUTTON_SCENARIO_DESTINATION_FOLDER: str = "SHOW_FILE_DIALOG_BUTTON_SCENARIO_DESTINATION_FOLDER"
 SCENARIO_DIRECTORY_PATH_TEXT_DESTINATION: str = "SCENARIO_DIRECTORY_PATH_TEXT_DESTINATION"
+
+app_theme = AppTheme()
+font_registry = AppFontRegistry()
 
 
 def callback_on_data_folder_selected(sender, app_data):
@@ -94,9 +99,13 @@ def __exit_callback__(sender, app_data, user_data):
 
 def main() -> None:
     dpg.create_context()
-    # light_theme_id = themes.create_theme_imgui_light()
-    # dark_theme_id = themes.create_theme_imgui_dark()
-    # dpg.bind_theme(dark_theme_id)
+
+    # Bind a theme to the dpg application context
+    app_theme.on_render()
+    dpg.bind_theme(app_theme.dark_theme)
+
+    font_registry.on_render()
+    dpg.bind_font(font_registry.default_font)
 
     if not is_debug:
         dpg.configure_app(manual_callback_management=False, docking=True, docking_space=True, load_init_file=hrsa_cct_config.dpg_ini_file_path)
