@@ -1,5 +1,6 @@
 import sys
 
+from app_debug.app_debug import IS_DEBUG_MODE_ENABLED
 from app_file_system.app_file_system import AppFileSystem
 from app_file_system.app_file_system_constants import AppFileSystemConstants
 from app_logger.app_logger import AppLogger
@@ -56,7 +57,8 @@ app_data = dict()
 
 connect_to_cloud = False
 
-is_debug: bool = sys.flags.dev_mode
+# is_debug: bool = sys.flags.dev_mode
+is_debug: bool = IS_DEBUG_MODE_ENABLED
 
 show_advanced_options: bool = is_debug
 
