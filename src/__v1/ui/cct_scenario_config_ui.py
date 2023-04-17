@@ -37,6 +37,8 @@ DEFAULT_MEDICAL_STUDENT_SUBTITLE_TEXT_COLOR: str = "#FF0000"
 DEFAULT_TRAINER_SUBTITLE_TEXT_COLOR: str = "#00ABFF"
 DEFAULT_PATIENT_SUBTITLE_TEXT_COLOR: str = "#0CA600"
 
+NO_AVAILABLE_CHARACTER: str = "No available Character."
+
 scenario_config_json_file_path = ""
 scu_scenario_path = ""
 
@@ -104,6 +106,7 @@ def _get_character_by_uid(uid):
 
 
 def _get_characters_of_type(conditions):
+    print(conditions)
     data_of_type = []
     global model_data_list
 
@@ -197,7 +200,11 @@ def _load_character_model_image(image_name):
 
 def _callback_update_filter(sender, app_data, user_data):
     gender = dpg.get_value(get_combo_tag(user_data, GENDER_LABEL))
+    if gender.find(' ') != -1:
+        gender = gender[:gender.find(' ')]
     ethnicity = dpg.get_value(get_combo_tag(user_data, ETHNICITY_LABEL))
+    if ethnicity.find(' ') != -1:
+        ethnicity = ethnicity[:ethnicity.find(' ')]
 
     target_window = get_model_window_tag(user_data)
 
@@ -219,6 +226,8 @@ def _callback_update_filter(sender, app_data, user_data):
             image_id = _load_character_model_image(patient.uid)
             dpg.add_image_button(image_id, callback=_update_model_config, tag='uid_' + patient.uid,
                                  user_data=user_data, background_color=[0])
+        if len(patients_data) == 0:
+            dpg.add_text(NO_AVAILABLE_CHARACTER)
 
 
 def _show_scenario_config_ui_sections():
@@ -380,11 +389,23 @@ def init_ui():
                                    show=False):
             # region Patient Config
             dpg.add_text(PATIENT_LABEL, indent=20)
+            available_gender = ['None']
+            available_ethnicity = ['None']
+            for gender in ['Male', 'Female']:
+                available_model = _get_characters_of_type({'CharacterType': 'kPatient', 'GenderType': 'k' + gender})
+                if len(available_model) > 0:
+                    available_gender.append('{0} ({1})'.format(gender, len(available_model)))
+            for ethnicity in ['White', 'Black', 'Hispanic']:
+                available_model = _get_characters_of_type({'CharacterType': 'kPatient', 'EthnicityType': 'k' + ethnicity})
+                if len(available_model) > 0:
+                    available_ethnicity.append('{0} ({1})'.format(ethnicity, len(available_model)))
             with dpg.group(horizontal=True, indent=20):
-                dpg.add_combo(('None', 'Male', 'Female'), label=GENDER_LABEL, default_value='None',
+                dpg.add_text(GENDER_LABEL + ': ')
+                dpg.add_combo(available_gender, label='', default_value='None',
                               tag=get_combo_tag(PATIENT_LABEL, GENDER_LABEL), callback=_callback_update_filter, width=200,
                               user_data=PATIENT_LABEL)
-                dpg.add_combo(('None', 'White', 'Black', 'Hispanic'), label=ETHNICITY_LABEL,
+                dpg.add_text(ETHNICITY_LABEL + ': ')
+                dpg.add_combo(available_ethnicity, label='',
                               default_value='None', tag=get_combo_tag(PATIENT_LABEL, ETHNICITY_LABEL),
                               callback=_callback_update_filter, width=200,
                               user_data=PATIENT_LABEL)
@@ -405,12 +426,24 @@ def init_ui():
 
             # region Medical Student Config
             dpg.add_text('Medical Student', indent=20)
+            available_gender = ['None']
+            available_ethnicity = ['None']
+            for gender in ['Male', 'Female']:
+                available_model = _get_characters_of_type({'CharacterType': 'kMedicalStudent', 'GenderType': 'k' + gender})
+                if len(available_model) > 0:
+                    available_gender.append('{0} ({1})'.format(gender, len(available_model)))
+            for ethnicity in ['White', 'Black', 'Hispanic']:
+                available_model = _get_characters_of_type({'CharacterType': 'kMedicalStudent', 'EthnicityType': 'k' + ethnicity})
+                if len(available_model) > 0:
+                    available_ethnicity.append('{0} ({1})'.format(ethnicity, len(available_model)))
             with dpg.group(horizontal=True, indent=20):
-                dpg.add_combo(('None', 'Male', 'Female'), label=GENDER_LABEL, default_value='None',
+                dpg.add_text(GENDER_LABEL + ': ')
+                dpg.add_combo(available_gender, label='', default_value='None',
                               tag=get_combo_tag(MEDICAL_STUDENT_LABEL, GENDER_LABEL),
                               callback=_callback_update_filter, width=200,
                               user_data=MEDICAL_STUDENT_LABEL)
-                dpg.add_combo(('None', 'White', 'Black', 'Hispanic'), label=ETHNICITY_LABEL,
+                dpg.add_text(ETHNICITY_LABEL + ': ')
+                dpg.add_combo(available_ethnicity, label='',
                               default_value='None', tag=get_combo_tag(MEDICAL_STUDENT_LABEL, ETHNICITY_LABEL),
                               callback=_callback_update_filter, width=200,
                               user_data=MEDICAL_STUDENT_LABEL)
@@ -431,11 +464,23 @@ def init_ui():
 
             # region Trainer Config
             dpg.add_text(TRAINER_LABEL, indent=20)
+            available_gender = ['None']
+            available_ethnicity = ['None']
+            for gender in ['Male', 'Female']:
+                available_model = _get_characters_of_type({'CharacterType': 'kTrainer', 'GenderType': 'k' + gender})
+                if len(available_model) > 0:
+                    available_gender.append('{0} ({1})'.format(gender, len(available_model)))
+            for ethnicity in ['White', 'Black', 'Hispanic']:
+                available_model = _get_characters_of_type({'CharacterType': 'kTrainer', 'EthnicityType': 'k' + ethnicity})
+                if len(available_model) > 0:
+                    available_ethnicity.append('{0} ({1})'.format(ethnicity, len(available_model)))
             with dpg.group(horizontal=True, indent=20):
-                dpg.add_combo(('None', 'Male', 'Female'), label=GENDER_LABEL, default_value='None',
+                dpg.add_text(GENDER_LABEL + ': ')
+                dpg.add_combo(available_gender, label='', default_value='None',
                               tag=get_combo_tag(TRAINER_LABEL, GENDER_LABEL),
                               callback=_callback_update_filter, width=200, user_data=TRAINER_LABEL)
-                dpg.add_combo(('None', 'White', 'Black', 'Hispanic'), label=ETHNICITY_LABEL,
+                dpg.add_text(ETHNICITY_LABEL + ': ')
+                dpg.add_combo(available_ethnicity, label='',
                               default_value='None', tag=get_combo_tag(TRAINER_LABEL, ETHNICITY_LABEL),
                               callback=_callback_update_filter, width=200,
                               user_data=TRAINER_LABEL)
