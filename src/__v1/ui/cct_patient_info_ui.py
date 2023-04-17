@@ -384,12 +384,12 @@ def _add_allergy_ui(allergy_id: int):
                        user_data={'header_name': header_name, 'id': allergy_id},
                        callback=_callback_delete_allergy)
     dpg.add_input_text(tag=_get_ui_child_object_tag(header_name, 'substance_medication', allergy_id),
-                       label='Substance Medication',
+                       label='Substance (or) Medication',
                        user_data={'header_name': header_name, 'node_name': 'substance_medication', 'id': allergy_id},
                        default_value=allergy.substance_medication, parent=header_tag, indent=20,
                        callback=_callback_update_allergy)
     dpg.add_input_text(tag=_get_ui_child_object_tag(header_name, 'substance_drug_class', allergy_id),
-                       label='Substance Drug Class',
+                       label='Substance (or) Drug Class',
                        user_data={'header_name': header_name, 'node_name': 'substance_drug_class', 'id': allergy_id},
                        default_value=allergy.substance_drug_class, parent=header_tag, indent=20,
                        callback=_callback_update_allergy)
