@@ -666,12 +666,15 @@ def init_ui():
                 dpg.add_text("Voice", tag=_get_character_voice_config_ui_tag(character_name, AG_VOICE_CONFIG_UI_SECTION_VOICE, "text"), indent=460)
 
             with dpg.group(tag=AG_PLAYER_VOICE_CONFIGURATION_GROUP, horizontal=True, show=True, indent=40):
+                dpg.add_text(AG_VOICE_CONFIG_UI_SECTION_LANGUAGE_CODE)
                 dpg.add_listbox(tag=_get_character_voice_config_ui_tag(character_name, AG_VOICE_CONFIG_UI_SECTION_LANGUAGE_CODE, "list"), width=100,
-                                label=AG_VOICE_CONFIG_UI_SECTION_LANGUAGE_CODE, num_items=4, callback=callback_on_change_language_code, user_data={"node": character_name})
+                                label='', num_items=4, callback=callback_on_change_language_code, user_data={"node": character_name})
+                dpg.add_text('Gender')
                 dpg.add_listbox(tag=_get_character_voice_config_ui_tag(character_name, AG_VOICE_CONFIG_UI_SECTION_GENDER, "list"), width=100,
-                                label="Gender", num_items=3, show=True, callback=callback_on_gender_selected, user_data={"node": character_name})
+                                label='', num_items=3, show=True, callback=callback_on_gender_selected, user_data={"node": character_name})
+                dpg.add_text('Voice')
                 dpg.add_listbox(tag=_get_character_voice_config_ui_tag(character_name, AG_VOICE_CONFIG_UI_SECTION_VOICE, "list"), width=150,
-                                label="Voice", num_items=10)
+                                label="", num_items=10)
             # endregion Player Voice Configuration
 
             # region Medical Student Voice Configuration
@@ -682,12 +685,15 @@ def init_ui():
                 dpg.add_text("Gender", tag=_get_character_voice_config_ui_tag(character_name, AG_VOICE_CONFIG_UI_SECTION_GENDER, "text"), indent=260)
                 dpg.add_text("Voice", tag=_get_character_voice_config_ui_tag(character_name, AG_VOICE_CONFIG_UI_SECTION_VOICE, "text"), indent=460)
             with dpg.group(tag=AG_MEDICAL_STUDENT_VOICE_CONFIGURATION_GROUP, horizontal=True, show=True, indent=40):
+                dpg.add_text(AG_VOICE_CONFIG_UI_SECTION_LANGUAGE_CODE)
                 dpg.add_listbox(tag=_get_character_voice_config_ui_tag(character_name, AG_VOICE_CONFIG_UI_SECTION_LANGUAGE_CODE, "list"), width=100,
-                                label=AG_VOICE_CONFIG_UI_SECTION_LANGUAGE_CODE, num_items=4, callback=callback_on_change_language_code, user_data={"node": character_name})
+                                label='', num_items=4, callback=callback_on_change_language_code, user_data={"node": character_name})
+                dpg.add_text('Gender')
                 dpg.add_listbox(tag=_get_character_voice_config_ui_tag(character_name, AG_VOICE_CONFIG_UI_SECTION_GENDER, "list"), width=100,
-                                label="Gender", num_items=3, show=True, callback=callback_on_gender_selected, user_data={"node": character_name})
+                                label="", num_items=3, show=True, callback=callback_on_gender_selected, user_data={"node": character_name})
+                dpg.add_text('Voice')
                 dpg.add_listbox(tag=_get_character_voice_config_ui_tag(character_name, AG_VOICE_CONFIG_UI_SECTION_VOICE, "list"), width=150,
-                                label="Voice", num_items=10)
+                                label="", num_items=10)
             # endregion Medical Student Voice Configuration
 
             # region Patient Voice Configuration
@@ -698,12 +704,15 @@ def init_ui():
                 dpg.add_text("Gender", tag=_get_character_voice_config_ui_tag(character_name, AG_VOICE_CONFIG_UI_SECTION_GENDER, "text"), indent=260)
                 dpg.add_text("Voice", tag=_get_character_voice_config_ui_tag(character_name, AG_VOICE_CONFIG_UI_SECTION_VOICE, "text"), indent=460)
             with dpg.group(tag=AG_PATIENT_VOICE_CONFIGURATION_GROUP, horizontal=True, show=True, indent=40):
+                dpg.add_text(AG_VOICE_CONFIG_UI_SECTION_LANGUAGE_CODE)
                 dpg.add_listbox(tag=_get_character_voice_config_ui_tag(character_name, AG_VOICE_CONFIG_UI_SECTION_LANGUAGE_CODE, "list"), width=100,
-                                label=AG_VOICE_CONFIG_UI_SECTION_LANGUAGE_CODE, num_items=4, callback=callback_on_change_language_code, user_data={"node": character_name})
+                                label='', num_items=4, callback=callback_on_change_language_code, user_data={"node": character_name})
+                dpg.add_text('Gender')
                 dpg.add_listbox(tag=_get_character_voice_config_ui_tag(character_name, AG_VOICE_CONFIG_UI_SECTION_GENDER, "list"), width=100,
-                                label="Gender", num_items=3, show=True, callback=callback_on_gender_selected, user_data={"node": character_name})
+                                label="", num_items=3, show=True, callback=callback_on_gender_selected, user_data={"node": character_name})
+                dpg.add_text('Voice')
                 dpg.add_listbox(tag=_get_character_voice_config_ui_tag(character_name, AG_VOICE_CONFIG_UI_SECTION_VOICE, "list"), width=150,
-                                label="Voice", num_items=10)
+                                label="", num_items=10)
             # endregion Patient Voice Configuration
 
             # region Trainer Voice Configuration
@@ -714,12 +723,15 @@ def init_ui():
                 dpg.add_text("Gender", tag=_get_character_voice_config_ui_tag(character_name, AG_VOICE_CONFIG_UI_SECTION_GENDER, "text"), indent=260)
                 dpg.add_text("Voice", tag=_get_character_voice_config_ui_tag(character_name, AG_VOICE_CONFIG_UI_SECTION_VOICE, "text"), indent=460)
             with dpg.group(tag=AG_TRAINER_VOICE_CONFIGURATION_GROUP, horizontal=True, show=True, indent=40):
+                dpg.add_text(AG_VOICE_CONFIG_UI_SECTION_LANGUAGE_CODE)
                 dpg.add_listbox(tag=_get_character_voice_config_ui_tag(character_name, AG_VOICE_CONFIG_UI_SECTION_LANGUAGE_CODE, "list"), width=100,
-                                label=AG_VOICE_CONFIG_UI_SECTION_LANGUAGE_CODE, num_items=4, callback=callback_on_change_language_code, user_data={"node": character_name})
+                                label='', num_items=4, callback=callback_on_change_language_code, user_data={"node": character_name})
+                dpg.add_text('Gender')
                 dpg.add_listbox(tag=_get_character_voice_config_ui_tag(character_name, AG_VOICE_CONFIG_UI_SECTION_GENDER, "list"), width=100,
-                                label="Gender", num_items=3, show=True, callback=callback_on_gender_selected, user_data={"node": character_name})
+                                label="", num_items=3, show=True, callback=callback_on_gender_selected, user_data={"node": character_name})
+                dpg.add_text('Voice')
                 dpg.add_listbox(tag=_get_character_voice_config_ui_tag(character_name, AG_VOICE_CONFIG_UI_SECTION_VOICE, "list"), width=150,
-                                label="Voice", num_items=10)
+                                label="", num_items=10)
             # endregion Trainer Voice Configuration
 
             dpg.add_button(tag=SAVE_AUDIO_SETTINGS_BUTTON, label="Save voice settings", show=True, callback=save_audio_settings)
