@@ -182,6 +182,12 @@ def translate_patient_info(file_path: str = None):
 
 
 def callback_on_translate_text_clicked():
+    dpg.configure_item(TRANSLATE_TEXT_BUTTON, show=False)
+    process_translation()
+    dpg.configure_item(TRANSLATE_TEXT_BUTTON, show=True)
+
+
+def process_translation():
     if project_id == '':
         log.error("Google Cloud Project ID is not set.")
         return
@@ -306,8 +312,10 @@ def callback_on_translate_text_clicked():
                 log.error("Error Occurred while translating text: " + dialogue_text_list_element)
         with open(new_file_path, "w", encoding="utf-8") as file:
             file.write(data)
+    log.clear_log()
     log_text = "Translation Complete! total_characters_translated : " + str(total_characters_translated)
     log.info(log_text)
+    log.success("Translation Completed Successfully.")
 
 
 def callback_on_show_file_dialog_clicked(item_tag):
@@ -320,7 +328,7 @@ def file_dialog_cancel_callback(sender, app_data, user_data):
 
 def init_ui():
     with dpg.collapsing_header(tag=cct_ui_panels.TRANSLATE_COLLAPSING_HEADER,
-                               label="Translation", default_open=False,
+                               label="Translation (Text)", default_open=False,
                                show=hrsa_cct_config.is_google_cloud_credentials_file_found()):
         dpg.add_file_dialog(tag=FILE_DIALOG_FOR_SOURCE_SCENARIO_FOLDER, height=300, width=450, directory_selector=True, show=False,
                             callback=callback_on_source_scenario_folder_selected,

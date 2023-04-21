@@ -1,6 +1,7 @@
 import json
 import os
 import pathlib
+import re
 import shutil
 import sys
 from dataclasses import asdict
@@ -48,6 +49,14 @@ def callback_on_scenario_source_folder_selected(sender, app_data):
 
 
 def create_scenario_folders(scenario_name, scenario_information_json_object) -> bool:
+    # Scenario Name Validation
+    scenario_name = scenario_name.strip()
+    if scenario_name == "":
+        log.error("Scenario Name cannot be empty")
+        return False
+    if not re.match(hrsa_cct_globals.scenario_name_regular_expression, scenario_name):
+        log.error("Scenario Name is not valid. Invalid Name: " + scenario_name)
+        return False
     # Scenario Folder
     scenario_path_root = os.path.join(hrsa_cct_config.get_user_hrsa_data_folder_path(), scenario_name)
     log.info("scenario_path_root: " + scenario_path_root)
@@ -56,6 +65,10 @@ def create_scenario_folders(scenario_name, scenario_information_json_object) -> 
         os.mkdir(scenario_path_root)
     except FileExistsError:
         log.error("Scenario folder already exists: " + scenario_name)
+        return False
+    except Exception as e:
+        log.error("Scenario Name is not valid. Invalid Name: " + scenario_name)
+        log.error(e)
         return False
     # Default Language Folder
     default_language_folder = os.path.join(scenario_path_root, hrsa_cct_globals.default_language_code)
@@ -133,6 +146,12 @@ def on_copy_scenario_button_clicked():
 
 
 def callback_on_create_scenario_by_copy_button_clicked():
+    dpg.configure_item(COPY_SCENARIO_INFORMATION_BUTTON, show=False)
+    create_scenario_by_copy()
+    dpg.configure_item(COPY_SCENARIO_INFORMATION_BUTTON, show=True)
+
+
+def create_scenario_by_copy():
     is_checked = dpg.get_value(USE_SCENARIO_TEMPLATE_CHECKBOX)
     if is_checked:
         template_folder_path = hfs.get_default_data_scenario_template_folder_path()
@@ -150,6 +169,8 @@ def callback_on_create_scenario_by_copy_button_clicked():
     is_scenario_created = on_create_scenario_button_clicked()
     if is_scenario_created:
         on_copy_scenario_button_clicked()
+        log.clear_log()
+        log.success("Scenario Created Successfully.")
 
 
 def callback_on_use_scenario_template_checkbox_clicked():
@@ -250,9 +271,9 @@ def init_ui():
                             callback=callback_on_scenario_source_folder_selected,
                             default_path=hrsa_cct_config.get_file_dialog_default_path(),
                             cancel_callback=file_dialog_cancel_callback)
-        dpg.add_checkbox(tag=USE_SCENARIO_TEMPLATE_CHECKBOX, label="Use Scenario Template", default_value=False, callback=callback_on_use_scenario_template_checkbox_clicked)
+        dpg.add_checkbox(tag=USE_SCENARIO_TEMPLATE_CHECKBOX, label="Use Scenario Template", default_value=True, callback=callback_on_use_scenario_template_checkbox_clicked)
         dpg.add_spacer(height=5)
-        dpg.add_button(tag=SHOW_FILE_DIALOG_BUTTON_SCENARIO_SOURCE_FOLDER, label="Select Source Scenario Folder",
+        dpg.add_button(tag=SHOW_FILE_DIALOG_BUTTON_SCENARIO_SOURCE_FOLDER, label="Select Source Scenario Folder...",
                        callback=lambda s, a: callback_on_show_file_dialog_clicked(item_tag=FILE_DIALOG_FOR_SCENARIO_FOLDER_SOURCE))
         dpg.add_text(tag=SCENARIO_DIRECTORY_PATH_TEXT_SOURCE)
         dpg.add_spacer(height=5)
@@ -288,6 +309,7 @@ def init_ui():
 
 def init_data():
     refresh_scenario_list()
+    callback_on_use_scenario_template_checkbox_clicked()
 
 
 if sys.flags.dev_mode:

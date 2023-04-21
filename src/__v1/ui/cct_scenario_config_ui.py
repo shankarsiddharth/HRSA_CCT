@@ -20,7 +20,6 @@ scenario_config: ScenarioConfig = ScenarioConfig()
 
 CCT_CHARACTER_CONFIG_COLLAPSING_HEADER: str = 'CCT_CHARACTER_CONFIG_COLLAPSING_HEADER'
 CCT_DIALOGUE_UI_CONFIG_COLLAPSING_HEADER: str = 'CCT_DIALOGUE_UI_CONFIG_COLLAPSING_HEADER'
-SCU_SCENARIO_CONFIG_JSON_PATH_TEXT: str = 'SCU_SCENARIO_CONFIG_JSON_PATH_TEXT'
 SCU_OPEN_FILE_DIALOG: str = 'SCU_OPEN_FILE_DIALOG'
 CCT_SCENARIO_CONFIG_SAVE_SETTINGS_BUTTON: str = 'CCT_SCENARIO_CONFIG_SAVE_SETTINGS_BUTTON'
 
@@ -82,7 +81,7 @@ def set_scenario_path(scenario_path):
     dic_scenario_path = scenario_path
     scenario_config_json_file_path = os.path.join(dic_scenario_path, hrsa_cct_globals.default_language_code,
                                                   hrsa_cct_constants.SCENARIO_CONFIG_JSON_FILE_NAME)
-    dpg.configure_item(SCU_SCENARIO_CONFIG_JSON_PATH_TEXT, default_value=scenario_config_json_file_path)
+    dpg.configure_item(cct_advanced_options_ui.SCU_SCENARIO_CONFIG_JSON_PATH_TEXT, default_value=scenario_config_json_file_path)
     _load_character_config_for_current_scenario(None, app_data=dict(file_path_name=scenario_config_json_file_path),
                                                 user_data=None)
     _show_scenario_config_ui_sections()
@@ -259,7 +258,7 @@ def _load_character_config_for_current_scenario(sender, app_data, user_data):
 
     _show_scenario_config_ui_sections()
 
-    dpg.configure_item(SCU_SCENARIO_CONFIG_JSON_PATH_TEXT, default_value=scenario_config_json_file_path)
+    dpg.configure_item(cct_advanced_options_ui.SCU_SCENARIO_CONFIG_JSON_PATH_TEXT, default_value=scenario_config_json_file_path)
 
 
 def _update_current_scenario_config_file():
@@ -270,6 +269,8 @@ def _update_current_scenario_config_file():
         log.debug("Scenario Config json file path is empty!")
         return
     ScenarioConfig.save_to_json_file(scenario_config, scenario_config_json_file_path)
+    log.clear_log()
+    log.success("Scenario Configuration Saved Successfully.")
 
 
 def _clear_filter(sender, app_data, user_data):
@@ -373,8 +374,10 @@ def init_ui():
     _load_character_config()
 
     dpg.add_texture_registry(label="Demo Texture Container", tag="static_texture_container")
-    with dpg.collapsing_header(tag=cct_ui_panels.CCT_SCENARIO_CONFIG_COLLAPSING_HEADER, label="Scenario Config", default_open=False):
-        dpg.add_text(tag=SCU_SCENARIO_CONFIG_JSON_PATH_TEXT)
+    with dpg.collapsing_header(tag=cct_ui_panels.CCT_SCENARIO_CONFIG_COLLAPSING_HEADER,
+                               label="Character Selection / Subtitle Color / Question Timer - (Scenario Configuration)",
+                               default_open=False):
+        dpg.add_text(tag=cct_advanced_options_ui.SCU_SCENARIO_CONFIG_JSON_PATH_TEXT)
         with dpg.file_dialog(height=300, width=600, directory_selector=False, show=False,
                              callback=_load_character_config_for_current_scenario, tag=SCU_OPEN_FILE_DIALOG,
                              modal=True, default_path=hrsa_cct_config.get_file_dialog_default_path(),
@@ -385,7 +388,7 @@ def init_ui():
                            callback=lambda: dpg.show_item(SCU_OPEN_FILE_DIALOG))
         # region Character Config
         with dpg.collapsing_header(indent=25, tag=CCT_CHARACTER_CONFIG_COLLAPSING_HEADER,
-                                   label="Character Config", default_open=True,
+                                   label="Character Configuration", default_open=False,
                                    show=False):
             # region Patient Config
             dpg.add_text(PATIENT_LABEL, indent=20)
@@ -512,7 +515,7 @@ def init_ui():
 
         # region Dialogue UI Config
         with dpg.collapsing_header(indent=25, tag=CCT_DIALOGUE_UI_CONFIG_COLLAPSING_HEADER,
-                                   label="Dialogue UI Config", default_open=True,
+                                   label="Dialogue UI Configuration", default_open=False,
                                    show=False):
             with dpg.group(horizontal=True):
                 dpg.add_text("Player Subtitle Text Color")
@@ -573,7 +576,7 @@ def init_ui():
 
             # endregion Dialogue UI Config
 
-        dpg.add_button(tag=CCT_SCENARIO_CONFIG_SAVE_SETTINGS_BUTTON, label="Save Setting",
+        dpg.add_button(tag=CCT_SCENARIO_CONFIG_SAVE_SETTINGS_BUTTON, label="Save Scenario Configuration",
                        show=False, callback=_update_current_scenario_config_file)
 
         dpg.add_separator()

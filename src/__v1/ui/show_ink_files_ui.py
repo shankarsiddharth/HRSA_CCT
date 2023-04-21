@@ -13,7 +13,6 @@ thread_counter = 0
 
 # UI Constants
 SIF_FILE_DIALOG_FOR_SCENARIO_FOLDER: str = 'SIF_FILE_DIALOG_FOR_SCENARIO_FOLDER'
-SIF_SCENARIO_DIRECTORY_PATH_TEXT: str = 'SIF_SCENARIO_DIRECTORY_PATH_TEXT'
 
 OPEN_BREAK_ROOM_DIALOGUE_INK_FILE_BUTTON: str = 'OPEN_BREAK_ROOM_DIALOGUE_INK_FILE_BUTTON'
 OPEN_PATIENT_ROOM_DIALOGUE_INK_FILE_BUTTON: str = 'OPEN_PATIENT_ROOM_DIALOGUE_INK_FILE_BUTTON'
@@ -36,7 +35,7 @@ patient_room_feedback_ink_file_path: str = ''
 
 def set_scenario_path(scenario_path):
     source_scenario_language_code_path = os.path.join(scenario_path, hcg.default_language_code)
-    dpg.configure_item(SIF_SCENARIO_DIRECTORY_PATH_TEXT, default_value=source_scenario_language_code_path)
+    dpg.configure_item(cct_advanced_options_ui.SIF_SCENARIO_DIRECTORY_PATH_TEXT, default_value=source_scenario_language_code_path)
     global break_room_dialogue_ink_file_path, patient_room_dialogue_ink_file_path, break_room_feedback_ink_file_path, patient_room_feedback_ink_file_path
     break_room_dialogue_ink_file_path = os.path.join(source_scenario_language_code_path, hcc.BREAK_ROOM_NAME, hcc.DIALOGUE_INK_FILE_NAME)
     patient_room_dialogue_ink_file_path = os.path.join(source_scenario_language_code_path, hcc.PATIENT_ROOM_NAME, hcc.DIALOGUE_INK_FILE_NAME)
@@ -134,23 +133,23 @@ def init_ui():
                             cancel_callback=file_dialog_cancel_callback)
         dpg.add_button(tag=cct_advanced_options_ui.SIF_SHOW_FILE_DIALOG_BUTTON_SCENARIO_FOLDER, label="Select Scenario Folder...",
                        callback=lambda s, a: _callback_on_show_file_dialog_clicked(item_tag=SIF_FILE_DIALOG_FOR_SCENARIO_FOLDER))
-        dpg.add_text(tag=SIF_SCENARIO_DIRECTORY_PATH_TEXT)
+        dpg.add_text(tag=cct_advanced_options_ui.SIF_SCENARIO_DIRECTORY_PATH_TEXT)
 
         # dpg.add_text('')
         dpg.add_text("Break Room Ink File", bullet=True)
-        dpg.add_button(label="Open Break Room Dialogue Ink File", tag=OPEN_BREAK_ROOM_DIALOGUE_INK_FILE_BUTTON, callback=_open_break_room_dialogue_ink_file, indent=20)
+        dpg.add_button(label="Open Break Room Dialogue Ink File...", tag=OPEN_BREAK_ROOM_DIALOGUE_INK_FILE_BUTTON, callback=_open_break_room_dialogue_ink_file, indent=20)
         dpg.add_text(tag=SIF_BREAK_ROOM_DIALOGUE_INK_FILE_PATH_TEXT, indent=20)
         # dpg.add_text('')
         dpg.add_text("Patient Room Ink File", bullet=True)
-        dpg.add_button(label="Open Patient Room Dialogue Ink File", tag=OPEN_PATIENT_ROOM_DIALOGUE_INK_FILE_BUTTON, callback=_open_patient_room_dialogue_ink_file, indent=20)
+        dpg.add_button(label="Open Patient Room Dialogue Ink File...", tag=OPEN_PATIENT_ROOM_DIALOGUE_INK_FILE_BUTTON, callback=_open_patient_room_dialogue_ink_file, indent=20)
         dpg.add_text(tag=SIF_PATIENT_ROOM_DIALOGUE_INK_FILE_PATH_TEXT, indent=20)
         # dpg.add_text('')
         dpg.add_text("Feedback Ink File for Break Room", bullet=True)
-        dpg.add_button(label="Open Break Room Feedback Ink File", tag=OPEN_BREAK_ROOM_FEEDBACK_INK_FILE_BUTTON, callback=_open_break_room_feedback_ink_file, indent=20)
+        dpg.add_button(label="Open Break Room Feedback Ink File...", tag=OPEN_BREAK_ROOM_FEEDBACK_INK_FILE_BUTTON, callback=_open_break_room_feedback_ink_file, indent=20)
         dpg.add_text(tag=SIF_BREAK_ROOM_FEEDBACK_INK_FILE_PATH_TEXT, indent=20)
         # dpg.add_text('')
         dpg.add_text("Feedback Ink File for Patient Room", bullet=True)
-        dpg.add_button(label="Open Patient Room Feedback Ink File", tag=OPEN_PATIENT_ROOM_FEEDBACK_INK_FILE_BUTTON, callback=_open_patient_room_feedback_ink_file, indent=20)
+        dpg.add_button(label="Open Patient Room Feedback Ink File...", tag=OPEN_PATIENT_ROOM_FEEDBACK_INK_FILE_BUTTON, callback=_open_patient_room_feedback_ink_file, indent=20)
         dpg.add_text(tag=SIF_PATIENT_ROOM_FEEDBACK_INK_FILE_PATH_TEXT, indent=20)
         dpg.add_separator()
 

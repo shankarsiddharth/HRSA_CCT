@@ -181,4 +181,5 @@ class AppLogger(metaclass=Singleton):
             self.ui_logger.exception(message, *args)
 
     def clear_log(self):
-        pass
+        if self.ui_logger is not None:
+            self.ui_logger.clear_log()

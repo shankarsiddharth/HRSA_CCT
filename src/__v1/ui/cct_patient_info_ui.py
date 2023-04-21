@@ -18,7 +18,6 @@ patient_info: PatientInformation = PatientInformation()
 piu_scenario_path = ''
 patient_information_json_file_path = ''
 
-PIU_SCENARIO_PATIENT_INFO_JSON_PATH_TEXT: str = 'PIU_SCENARIO_DIRECTORY_PATH_TEXT'
 PIU_OPEN_FILE_DIALOG: str = 'PIU_OPEN_FILE_DIALOG'
 PIU_PATIENT_INFO_GROUP: str = 'PIU_PATIENT_INFO_GROUP'
 
@@ -42,7 +41,7 @@ def set_scenario_path(scenario_path):
     piu_scenario_path = scenario_path
     patient_information_json_file_path = os.path.join(piu_scenario_path, hrsa_cct_globals.default_language_code,
                                                       hrsa_cct_constants.PATIENT_INFORMATION_JSON_FILE_NAME)
-    dpg.configure_item(PIU_SCENARIO_PATIENT_INFO_JSON_PATH_TEXT, default_value=patient_information_json_file_path)
+    dpg.configure_item(cct_advanced_options_ui.PIU_SCENARIO_PATIENT_INFO_JSON_PATH_TEXT, default_value=patient_information_json_file_path)
     _load_patient_info_file(patient_information_json_file_path)
     _toggle_patient_info_ui_sections(True)
 
@@ -531,6 +530,8 @@ def _callback_export_patient_info(sender, app_data, user_data):
         return
     # Save the patient information to a JSON file
     PatientInformation.save_to_json_file(patient_info, patient_information_json_file_path)
+    log.clear_log()
+    log.success("Patient Information Saved Successfully.")
 
 
 def _toggle_patient_info_ui_sections(value: bool):
@@ -544,7 +545,7 @@ def file_dialog_confirm_callback(sender, app_data, user_data):
         log.error("Patient Information json file name is invalid! Choose " + hrsa_cct_constants.PATIENT_INFORMATION_JSON_FILE_NAME + " file.")
         return
     _load_patient_info_file(file_path_name)
-    dpg.configure_item(PIU_SCENARIO_PATIENT_INFO_JSON_PATH_TEXT, default_value=file_path_name)
+    dpg.configure_item(cct_advanced_options_ui.PIU_SCENARIO_PATIENT_INFO_JSON_PATH_TEXT, default_value=file_path_name)
     _toggle_patient_info_ui_sections(True)
 
 
@@ -557,7 +558,7 @@ def init_ui():
                                default_open=False):
         # TODO: Add a 'Clear Data Button' that clears all the UI information
 
-        dpg.add_text(tag=PIU_SCENARIO_PATIENT_INFO_JSON_PATH_TEXT)
+        dpg.add_text(tag=cct_advanced_options_ui.PIU_SCENARIO_PATIENT_INFO_JSON_PATH_TEXT)
 
         with dpg.file_dialog(height=300, width=600, directory_selector=False, show=False,
                              callback=file_dialog_confirm_callback, tag=PIU_OPEN_FILE_DIALOG,
@@ -572,7 +573,7 @@ def init_ui():
         with dpg.group(show=False, tag=PIU_PATIENT_INFO_GROUP):
             # region Patient Demographics
             header_name = patient_demographics_header_name
-            with dpg.collapsing_header(label=header_name, tag=_get_header_tag(header_name), default_open=True, indent=20):
+            with dpg.collapsing_header(label=header_name, tag=_get_header_tag(header_name), default_open=False, indent=20):
                 dpg.add_input_text(tag=_get_ui_object_tag(header_name, 'first_name'), label='First Name',
                                    user_data={'header_name': header_name, 'node_name': 'first_name'},
                                    default_value='', indent=20, callback=_callback_update_patient_demographics)
@@ -658,7 +659,7 @@ def init_ui():
 
             # region Problems
             header_name = problems_header_name
-            with dpg.collapsing_header(label=header_name, tag=_get_header_tag(header_name), default_open=True, indent=20):
+            with dpg.collapsing_header(label=header_name, tag=_get_header_tag(header_name), default_open=False, indent=20):
                 with dpg.group(horizontal=True, indent=20):
                     dpg.add_button(label='Add Problem', callback=_callback_add_problem)
                     dpg.add_button(label='Delete The Last Problem', callback=_callback_delete_last_problem)
@@ -668,7 +669,7 @@ def init_ui():
 
             # region SDOH Problems Health Concerns
             header_name = sdoh_problems_header_name
-            with dpg.collapsing_header(label=header_name, tag=_get_header_tag(header_name), default_open=True, indent=20):
+            with dpg.collapsing_header(label=header_name, tag=_get_header_tag(header_name), default_open=False, indent=20):
                 with dpg.group(horizontal=True, indent=20):
                     dpg.add_button(label='Add SDOH Problem', callback=_callback_add_sdoh_problem)
                     dpg.add_button(label='Delete The Last SDOH Problem', callback=_callback_delete_last_sdoh_problem)
@@ -678,7 +679,7 @@ def init_ui():
 
             # region Medications
             header_name = medications_header_name
-            with dpg.collapsing_header(label=header_name, tag=_get_header_tag(header_name), default_open=True, indent=20):
+            with dpg.collapsing_header(label=header_name, tag=_get_header_tag(header_name), default_open=False, indent=20):
                 with dpg.group(horizontal=True, indent=20):
                     dpg.add_button(label='Add Medication', callback=_callback_add_medication)
                     dpg.add_button(label='Delete The Last Medication', callback=_callback_delete_last_medication)
@@ -688,7 +689,7 @@ def init_ui():
 
             # region Allergies Intolerances
             header_name = allergies_intolerances_header_name
-            with dpg.collapsing_header(label=header_name, tag=_get_header_tag(header_name), default_open=True, indent=20):
+            with dpg.collapsing_header(label=header_name, tag=_get_header_tag(header_name), default_open=False, indent=20):
                 with dpg.group(horizontal=True, indent=20):
                     dpg.add_button(label='Add Allergy', callback=_callback_add_allergy)
                     dpg.add_button(label='Delete The Last Allergy', callback=_callback_delete_last_allergy)
@@ -698,7 +699,7 @@ def init_ui():
 
             # region Vital Signs
             header_name = vital_signs_header_name
-            with dpg.collapsing_header(label=header_name, tag=_get_header_tag(header_name), default_open=True, indent=20):
+            with dpg.collapsing_header(label=header_name, tag=_get_header_tag(header_name), default_open=False, indent=20):
                 dpg.add_input_text(tag=_get_ui_object_tag(header_name, 'systolic_blood_pressure'),
                                    label='Systolic Blood Pressure',
                                    user_data={'header_name': header_name, 'node_name': 'systolic_blood_pressure'},
@@ -749,7 +750,7 @@ def init_ui():
 
             # region Family Health History
             header_name = family_health_history_name
-            with dpg.collapsing_header(label=header_name, tag=_get_header_tag(header_name), default_open=True, indent=20):
+            with dpg.collapsing_header(label=header_name, tag=_get_header_tag(header_name), default_open=False, indent=20):
                 with dpg.group(horizontal=True, indent=20):
                     dpg.add_button(label='Add Family History', callback=_callback_add_family_health_history)
                     dpg.add_button(label='Delete The Last Family History',
@@ -760,7 +761,7 @@ def init_ui():
 
             # region Social Health History
             header_name = social_health_history_header_name
-            with dpg.collapsing_header(label=header_name, tag=_get_header_tag(header_name), default_open=True, indent=20):
+            with dpg.collapsing_header(label=header_name, tag=_get_header_tag(header_name), default_open=False, indent=20):
                 dpg.add_input_text(tag=_get_ui_object_tag(header_name, 'social_history_observation'),
                                    label='Social History Observation',
                                    user_data={'header_name': header_name, 'node_name': 'social_history_observation'},

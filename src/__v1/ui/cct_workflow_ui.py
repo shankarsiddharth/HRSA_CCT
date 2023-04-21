@@ -84,6 +84,10 @@ def set_advanced_options_visibility(should_show_advanced_options):
     dpg.configure_item(caou.SIF_SHOW_FILE_DIALOG_BUTTON_SCENARIO_FOLDER, show=should_show_advanced_options)
     dpg.configure_item(caou.SHOW_FILE_DIALOG_BUTTON_SCENARIO_FOLDER, show=should_show_advanced_options)
     dpg.configure_item(caou.SHOW_FILE_DIALOG_BUTTON_SOURCE_SCENARIO_FOLDER, show=should_show_advanced_options)
+    dpg.configure_item(caou.PIU_SCENARIO_PATIENT_INFO_JSON_PATH_TEXT, show=should_show_advanced_options)
+    dpg.configure_item(caou.SCU_SCENARIO_CONFIG_JSON_PATH_TEXT, show=should_show_advanced_options)
+    dpg.configure_item(caou.SIF_SCENARIO_DIRECTORY_PATH_TEXT, show=should_show_advanced_options)
+    dpg.configure_item(caou.AG_SCENARIO_DIRECTORY_PATH_TEXT, show=should_show_advanced_options)
     caou.on_advanced_options_clicked(should_show_advanced_options)
 
 
@@ -96,6 +100,7 @@ def init_data():
     # Set the default workflow
     default_workflow = dpg.get_value(CHOOSE_WORKFLOW_RADIO_BUTTON)
     callback_on_choose_workflow_radio_button_clicked(None, default_workflow, None)
+    callback_on_show_advanced_options_clicked(None, None, None)
 
 
 def init_ui():

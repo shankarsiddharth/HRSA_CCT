@@ -31,7 +31,7 @@ class AppUILogger:
         with dpg.group(horizontal=True, parent=self.window_id):
             dpg.add_checkbox(label="Auto-scroll", default_value=True, callback=lambda sender: self.auto_scroll(dpg.get_value(sender)))
             dpg.add_checkbox(tag=self._show_all_logs_tag, label="Show All Logs", default_value=self._default_show_all_logs, callback=self.__callback_show_all_logs)
-            dpg.add_button(label="Clear", callback=lambda: dpg.delete_item(self.filter_id, children_only=True))
+            dpg.add_button(label="Clear", callback=self.clear_log_ui)
 
         dpg.add_input_text(tag=self._filter_text_tag, label="Filter", callback=self.__callback_on_filter_text_changed,
                            parent=self.window_id)
@@ -71,6 +71,9 @@ class AppUILogger:
 
     def auto_scroll(self, value):
         self._auto_scroll = value
+
+    def clear_log_ui(self):
+        dpg.delete_item(self.filter_id, children_only=True)
 
     def __callback_show_all_logs(self, sender):
         self.__on_show_all_logs()

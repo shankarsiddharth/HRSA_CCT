@@ -58,7 +58,6 @@ is_parsing_successful: bool = False
 total_characters_for_audio_generation = 0
 
 # GUI Element Tags
-SCENARIO_DIRECTORY_PATH_TEXT: str = "SCENARIO_DIRECTORY_PATH_TEXT"
 GENERATE_AUDIO_BUTTON: str = "GENERATE_AUDIO_BUTTON"
 PARSE_INK_SCRIPTS_BUTTON: str = "PARSE_INK_SCRIPTS_BUTTON"
 COMPILE_INK_SCRIPTS_BUTTON: str = "COMPILE_INK_SCRIPTS_BUTTON"
@@ -70,7 +69,7 @@ SAVE_AUDIO_SETTINGS_BUTTON: str = "CONFIGURE_AUDIO_BUTTON"
 FILE_DIALOG_FOR_SCENARIO_FOLDER: str = "FILE_DIALOG_FOR_SCENARIO_FOLDER"
 AG_LANGUAGE_LISTBOX_GROUP: str = "AG_LANGUAGE_LISTBOX_GROUP"
 AG_LANGUAGE_LISTBOX: str = "AG_LANGUAGE_LISTBOX"
-SCENARIO_LANGUAGE_CODE_DIRECTORY_PATH_TEXT: str = "SCENARIO_LANGUAGE_CODE_DIRECTORY_PATH_TEXT"
+AG_SCENARIO_LANGUAGE_CODE_DIRECTORY_PATH_TEXT: str = "AG_SCENARIO_LANGUAGE_CODE_DIRECTORY_PATH_TEXT"
 VOICE_CONFIG_SECTION: str = "VOICE_CONFIG_SECTION"
 
 AG_PLAYER_TITLE_GROUP: str = "AG_PLAYER_TITLE_GROUP"
@@ -111,7 +110,7 @@ def callback_on_scenario_folder_selected(sender, app_data):
     folder_language_list = list()
     global scenario_path_root
     scenario_path_root = os.path.normpath(str(app_data['file_path_name']))
-    dpg.configure_item(SCENARIO_DIRECTORY_PATH_TEXT, default_value=scenario_path_root)
+    dpg.configure_item(cct_advanced_options_ui.AG_SCENARIO_DIRECTORY_PATH_TEXT, default_value=scenario_path_root)
     for file in os.listdir(scenario_path_root):
         directory_path = os.path.join(scenario_path_root, file)
         if os.path.isdir(directory_path):
@@ -145,8 +144,8 @@ def callback_on_language_code_selected(sender):
             global new_character_voice_config_data
             new_character_voice_config_data = copy.deepcopy(character_voice_config_data)
             log.debug("character_voice_config_data : " + str(character_voice_config_data))
-        dpg.configure_item(SCENARIO_LANGUAGE_CODE_DIRECTORY_PATH_TEXT, default_value=scenario_language_code_folder_path)
-        dpg.configure_item(SCENARIO_LANGUAGE_CODE_DIRECTORY_PATH_TEXT, show=True)
+        dpg.configure_item(AG_SCENARIO_LANGUAGE_CODE_DIRECTORY_PATH_TEXT, default_value=scenario_language_code_folder_path)
+        dpg.configure_item(AG_SCENARIO_LANGUAGE_CODE_DIRECTORY_PATH_TEXT, show=True)
         new_button_label = "Generate Audio (" + selected_language_code + ")"
         dpg.configure_item(GENERATE_AUDIO_BUTTON, label=new_button_label)
         dpg.configure_item(PARSE_INK_SCRIPTS_BUTTON, show=True)
@@ -173,8 +172,8 @@ def callback_on_language_code_selected(sender):
             pass
         log.info("Selected Language for Audio Generation: " + selected_language_code)
     else:
-        dpg.configure_item(SCENARIO_LANGUAGE_CODE_DIRECTORY_PATH_TEXT, default_value="")
-        dpg.configure_item(SCENARIO_LANGUAGE_CODE_DIRECTORY_PATH_TEXT, show=False)
+        dpg.configure_item(AG_SCENARIO_LANGUAGE_CODE_DIRECTORY_PATH_TEXT, default_value="")
+        dpg.configure_item(AG_SCENARIO_LANGUAGE_CODE_DIRECTORY_PATH_TEXT, show=False)
         dpg.configure_item(PARSE_INK_SCRIPTS_BUTTON, show=False)
         dpg.configure_item(GENERATE_AUDIO_BUTTON, show=False)
         dpg.configure_item(VOICE_CONFIG_SECTION, show=False)
@@ -341,10 +340,10 @@ def compile_ink_files():
         cmd_string = inklecate_windows_path + " -o" + " " + json_file_path + " " + ink_file_path
         completed_process_result = subprocess.run([inklecate_windows_path, "-o", json_file_path, ink_file_path],
                                                   capture_output=True, text=True)
-        log.debug("cmd_string: " + cmd_string)
-        log.debug("stdout: " + completed_process_result.stdout)
-        log.debug("stderr: " + completed_process_result.stderr)
-        log.debug("returncode: " + str(completed_process_result.returncode))
+        log.trace("cmd_string: " + cmd_string)
+        log.trace("stdout: " + completed_process_result.stdout)
+        log.trace("stderr: " + completed_process_result.stderr)
+        log.trace("returncode: " + str(completed_process_result.returncode))
 
 
 def callback_on_parse_ink_scripts_clicked():
@@ -398,6 +397,8 @@ def callback_on_generate_audio_clicked():
         if hrsa_cct_globals.connect_to_cloud:
             validate_audio_files()
         log.info('Complete - validate_audio_files')
+        log.clear_log()
+        log.success('Audio Generation Completed')
     else:
         log.error("Ink Files Check Failed - Cannot Generate Audio Files")
 
@@ -649,14 +650,14 @@ def init_ui():
                             cancel_callback=file_dialog_cancel_callback)
         dpg.add_button(tag=cct_advanced_options_ui.SHOW_FILE_DIALOG_BUTTON_SCENARIO_FOLDER, label="Select Scenario Folder...",
                        callback=lambda s, a: callback_on_show_file_dialog_clicked(item_tag=FILE_DIALOG_FOR_SCENARIO_FOLDER))
-        dpg.add_text(tag=SCENARIO_DIRECTORY_PATH_TEXT)
+        dpg.add_text(tag=cct_advanced_options_ui.AG_SCENARIO_DIRECTORY_PATH_TEXT)
         with dpg.group(tag=AG_LANGUAGE_LISTBOX_GROUP, horizontal=True, show=False):
             dpg.add_text("Audio Generation Language: ")
             dpg.add_listbox(tag=AG_LANGUAGE_LISTBOX, items=hrsa_cct_globals.language_list,
                             callback=callback_on_language_code_selected, default_value="")
-        dpg.add_text(tag=SCENARIO_LANGUAGE_CODE_DIRECTORY_PATH_TEXT, show=False)
+        dpg.add_text(tag=AG_SCENARIO_LANGUAGE_CODE_DIRECTORY_PATH_TEXT, show=False)
         # TODO: Voice Configuration
-        with dpg.collapsing_header(indent=50, tag=VOICE_CONFIG_SECTION, label="Configure Character Voice Settings", default_open=True, show=False):
+        with dpg.collapsing_header(indent=50, tag=VOICE_CONFIG_SECTION, label="Configure Character Voice Settings", default_open=False, show=False):
             # region Player Voice Configuration
             character_name = "Player"
             with dpg.group(tag=AG_PLAYER_TITLE_GROUP, horizontal=True, show=True):
