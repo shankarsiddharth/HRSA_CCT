@@ -410,7 +410,9 @@ def init_ui():
                               callback=_callback_update_filter, width=200,
                               user_data=PATIENT_LABEL)
                 dpg.add_button(label='Clear Filter', callback=_clear_filter, user_data=PATIENT_LABEL)
-
+            with dpg.group(horizontal=True):
+                dpg.add_text('Available Characters:')
+                dpg.add_text('Current Selection:', indent=500)
             with dpg.group(horizontal=True):
                 dpg.add_child_window(width=500, height=225, tag=get_model_window_tag(PATIENT_LABEL))
                 dpg.add_child_window(width=225, height=225, tag=get_model_detail_window_tag(PATIENT_LABEL))
@@ -448,7 +450,9 @@ def init_ui():
                               callback=_callback_update_filter, width=200,
                               user_data=MEDICAL_STUDENT_LABEL)
                 dpg.add_button(label='Clear Filter', callback=_clear_filter, user_data=MEDICAL_STUDENT_LABEL)
-
+            with dpg.group(horizontal=True):
+                dpg.add_text('Available Characters:')
+                dpg.add_text('Current Selection:', indent=500)
             with dpg.group(horizontal=True):
                 dpg.add_child_window(width=500, height=225, tag=get_model_window_tag(MEDICAL_STUDENT_LABEL))
                 dpg.add_child_window(width=225, height=225, tag=get_model_detail_window_tag(MEDICAL_STUDENT_LABEL))
@@ -485,7 +489,9 @@ def init_ui():
                               callback=_callback_update_filter, width=200,
                               user_data=TRAINER_LABEL)
                 dpg.add_button(label='Clear Filter', callback=_clear_filter, user_data=TRAINER_LABEL)
-
+            with dpg.group(horizontal=True):
+                dpg.add_text('Available Characters:')
+                dpg.add_text('Current Selection:', indent=500)
             with dpg.group(horizontal=True):
                 dpg.add_child_window(width=500, height=225, tag=get_model_window_tag(TRAINER_LABEL))
                 dpg.add_child_window(width=225, height=225, tag=get_model_detail_window_tag(TRAINER_LABEL))
