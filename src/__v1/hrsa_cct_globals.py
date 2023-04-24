@@ -45,7 +45,7 @@ option_text_prefixes = [
     '5',
 ]
 
-scenario_name_regular_expression = r"^[a-zA-Z0-9 _-]+$"
+scenario_name_regular_expression = r"^[a-zA-Z0-9 ]+$"
 dialogue_regular_expression = r"\".*?\""
 option_regular_expression = r"[*](.*)\[(.*?(?=`))`(.*?(?=`))`(.*?(?=`))`(.*?(?=`|\]))(?:`(.*)])?"
 feedback_option_regular_expression = r"\[[12345]\]"
