@@ -1,11 +1,13 @@
 import os.path
 import sys
-import asyncio
+import threading
+from queue import Queue
 
 import dearpygui.dearpygui as dpg
 from adbutils import adb
 
-from __v1 import cct_ui_panels, hrsa_cct_config, hrsa_cct_globals
+from __v1 import cct_ui_panels, hrsa_cct_config
+from __v1.hrsa_cct_globals import log
 
 connected_devices = []
 target_devices = []
@@ -13,12 +15,18 @@ scenario_list = []
 selected_scenario_list = []
 
 TTD_SELECT_APK_FILE_DIALOG: str = 'TTD_SELECT_APK_FILE_DIALOG'
-TOD_DEVICES_GROUP: str = 'TOD_DEVICES_GROUP'
-TOD_MESSAGE_TEXT: str = 'TOD_MESSAGE_TEXT'
+TTD_DEVICES_GROUP: str = 'TTD_DEVICES_GROUP'
+TTD_MESSAGE_TEXT: str = 'TTD_MESSAGE_TEXT'
 
 HRSA_DATA_ROOT_PATH: str = '/storage/emulated/0/HRSAData/'
 
-TOD_SCENARIO_LIST_WINDOW: str = "TOD_SCENARIO_LIST_WINDOW"
+TTD_SCENARIO_LIST_WINDOW: str = "TTD_SCENARIO_LIST_WINDOW"
+
+transfer_thread = None
+
+transfer_thread_message = Queue()
+
+message_lock = threading.Lock()
 
 
 def kill_adb_server():
@@ -108,6 +116,7 @@ def _transfer_scenario_data(sender, app_data, user_data):
             target_file_path = os.path.join(HRSA_DATA_ROOT_PATH, source_file_path[left:])
             target_file_path = target_file_path.replace(os.sep, '/')
             device.sync.push(source_file_path, target_file_path, mode=0o777)
+            log.success('Transfer {0} to {1} successfully.'.format(scenario, device))
 
 
 def _install_latest_package(sender, app_data, user_data):
@@ -135,13 +144,13 @@ def init_ui():
             dpg.add_button(label='Refresh', callback=refresh_device_list)
             dpg.add_button(label='Select All', callback=toggle_select_all, user_data=True)
             dpg.add_button(label='Unselect All', callback=toggle_select_all, user_data=False)
-        with dpg.group(tag=TOD_DEVICES_GROUP, indent=40):
+        with dpg.group(tag=TTD_DEVICES_GROUP, indent=40):
             pass
-        dpg.add_text('No Device Connected!', tag=TOD_MESSAGE_TEXT, indent=40)
+        dpg.add_text('No Device Connected!', tag=TTD_MESSAGE_TEXT, indent=40)
         dpg.add_button(label='Install Latest Package', callback=_install_latest_package, user_data=True)
 
         dpg.add_separator()
-        dpg.add_child_window(width=500, height=225, tag=TOD_SCENARIO_LIST_WINDOW)
+        dpg.add_child_window(width=500, height=225, tag=TTD_SCENARIO_LIST_WINDOW)
         dpg.add_button(label='Enable Media Transfer', callback=_toggle_media_transfer, user_data=True)
         dpg.add_button(label='Transfer Scenarios', callback=_callback_transfer_scenarios_data, user_data=True)
 
@@ -164,12 +173,12 @@ def toggle_select_all(sender, app_data, user_data):
 
 
 def create_device_checkbox_tag(device_id):
-    return 'TOD_DEVICE_CHECKBOX_' + str(device_id)
+    return 'TTD_DEVICE_CHECKBOX_' + str(device_id)
 
 
 def refresh_device_list():
     # Clear device list
-    dpg.delete_item(TOD_DEVICES_GROUP, children_only=True)
+    dpg.delete_item(TTD_DEVICES_GROUP, children_only=True)
     # Get connected devices
     global connected_devices
     connected_devices = adb.device_list()
@@ -177,15 +186,15 @@ def refresh_device_list():
         device_label = f"{device.serial} ({device.prop.model})"
         dpg.add_checkbox(label=device_label,
                          tag=create_device_checkbox_tag(device.serial),
-                         parent=TOD_DEVICES_GROUP,
+                         parent=TTD_DEVICES_GROUP,
                          source="bool_value", callback=_select_target_device,
                          user_data=device.serial)
     # Show message if no device connected and hide message if there is at least one device connected
-    dpg.configure_item(TOD_MESSAGE_TEXT, show=(len(connected_devices) <= 0))
+    dpg.configure_item(TTD_MESSAGE_TEXT, show=(len(connected_devices) <= 0))
 
 
 def create_scenario_checkbox_tag(scenario_name):
-    return 'TOD_SCENARIO_CHECKBOX_' + str(scenario_name)
+    return 'TTD_SCENARIO_CHECKBOX_' + str(scenario_name)
 
 
 def _select_target_scenario(sender, app_data, user_data):
@@ -198,7 +207,7 @@ def _select_target_scenario(sender, app_data, user_data):
 
 
 def refresh_scenario_list():
-    dpg.delete_item(TOD_SCENARIO_LIST_WINDOW, children_only=True)
+    dpg.delete_item(TTD_SCENARIO_LIST_WINDOW, children_only=True)
     global scenario_list
     if hrsa_cct_config.is_user_hrsa_data_folder_found():
         scenario_list = hrsa_cct_config.get_scenario_list()
@@ -207,7 +216,7 @@ def refresh_scenario_list():
     for scenario in scenario_list:
         dpg.add_checkbox(label=scenario,
                          tag=create_scenario_checkbox_tag(scenario),
-                         parent=TOD_SCENARIO_LIST_WINDOW,
+                         parent=TTD_SCENARIO_LIST_WINDOW,
                          source="bool_value", callback=_select_target_scenario,
                          user_data=scenario)
 
@@ -248,6 +257,11 @@ def _adb_util_unzip_file(device, file_path: str):
 def init_data():
     refresh_device_list()
     refresh_scenario_list()
+
+
+def update():
+    if transfer_thread is not None:
+        pass
 
 
 if sys.flags.dev_mode:

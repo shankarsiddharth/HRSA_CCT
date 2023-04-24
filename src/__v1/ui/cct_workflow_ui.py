@@ -105,7 +105,8 @@ def init_data():
 
 def init_ui():
     # Choose Workflow UI
-    with dpg.collapsing_header(label="Choose Workflow", default_open=True):
+    with dpg.collapsing_header(label="Choose Workflow",
+                               default_open=True, open_on_double_click=False, open_on_arrow=False):
         with dpg.group(horizontal=True):
             dpg.add_radio_button(items=WORKFLOW_OPTION_LIST, horizontal=True,
                                  tag=CHOOSE_WORKFLOW_RADIO_BUTTON, default_value=DEFAULT_WORKFLOW_OPTION, callback=callback_on_choose_workflow_radio_button_clicked)

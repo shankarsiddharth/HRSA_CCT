@@ -21,7 +21,8 @@ VIEWPORT_WIDTH = 1200
 VIEWPORT_HEIGHT = 900  # 700
 
 # GUI Element Tags
-
+GOOGLE_CLOUD_CREDENTIALS_HEADER_TAG: str = "GOOGLE_CLOUD_CREDENTIALS_HEADER_TAG"
+HRSA_DATA_FOLDER_HEADER_TAG: str = "HRSA_DATA_FOLDER_HEADER_TAG"
 FILE_DIALOG: str = "FILE_DIALOG"
 FILE_DIALOG_FOR_DATA_FOLDER: str = "FILE_DIALOG_FOR_DATA_FOLDER"
 SHOW_FILE_DIALOG_BUTTON_DATA_FOLDER: str = "SHOW_FILE_DIALOG_BUTTON_DATA_FOLDER"
@@ -42,11 +43,11 @@ font_registry = AppFontRegistry()
 
 def callback_on_data_folder_selected(sender, app_data):
     data_path = os.path.normpath(str(app_data['file_path_name']))
-    log.info('Data Folder Path: ' + data_path)
+    log.trace('Data Folder Path: ' + data_path)
     hrsa_cct_config.update_user_hrsa_data_folder_path(data_path)
     # TODO : Error Checking of Valid Data Folder
     if hrsa_cct_config.is_user_hrsa_data_folder_found():
-        log.info('Data Folder Selected')
+        log.trace('Data Folder Selected')
         dpg.configure_item(DATA_DIRECTORY_PATH_TEXT, default_value=hrsa_cct_config.get_user_hrsa_data_folder_path(), show=True)
         dpg.configure_item(DATA_DIRECTORY_ERROR_TEXT, show=False)
     else:
@@ -63,7 +64,7 @@ def callback_on_google_cloud_credentials_file_selected(sender, app_data):
     if hrsa_cct_config.is_google_cloud_credentials_file_found():
         dpg.configure_item(GOOGLE_CLOUD_CREDENTIALS_FILE_PATH_TEXT, default_value=hrsa_cct_config.get_google_cloud_credentials_file_path(),
                            show=True)
-        log.info('Google Cloud Credentials File Selected')
+        log.trace('Google Cloud Credentials File Selected')
         dpg.configure_item(GOOGLE_CLOUD_CREDENTIALS_ERROR_TEXT, show=False)
         dpg.configure_item(cct_ui_panels.AUDIO_GENERATION_COLLAPSING_HEADER, show=True)
         dpg.configure_item(cct_ui_panels.TRANSLATE_COLLAPSING_HEADER, show=True)
@@ -91,7 +92,7 @@ def callback_on_connect_to_cloud_checkbox_clicked(sender, app_data, user_data):
 
 
 def __exit_callback__(sender, app_data, user_data):
-    # log.info("User clicked on the Close Window button.")
+    # log.trace("User clicked on the Close Window button.")
     # show_ink_files_ui.wait_for_all_ink_threads()
     log.close_ui()
     transfer_to_device_ui.kill_adb_server()
@@ -129,7 +130,8 @@ def main() -> None:
         # endregion Debug UI
 
         # region App Config UI
-        with dpg.collapsing_header(label="Google Cloud Credentials File", default_open=True):
+        with dpg.collapsing_header(label="Google Cloud Credentials File", tag=GOOGLE_CLOUD_CREDENTIALS_HEADER_TAG,
+                                   default_open=True, open_on_double_click=False, open_on_arrow=False):
             with dpg.file_dialog(tag=FILE_DIALOG_FOR_GOOGLE_CLOUD_CREDENTIALS, directory_selector=False, height=300, width=450, show=False,
                                  callback=callback_on_google_cloud_credentials_file_selected,
                                  default_path=hrsa_cct_config.get_file_dialog_default_path(),
@@ -143,7 +145,8 @@ def main() -> None:
                          show=(not hrsa_cct_config.is_google_cloud_credentials_file_found()))
             dpg.add_separator()
 
-        with dpg.collapsing_header(label="Choose a location of the HRSAData Folder", default_open=True):
+        with dpg.collapsing_header(label="Choose a location of the HRSAData Folder", tag=HRSA_DATA_FOLDER_HEADER_TAG,
+                                   default_open=True, open_on_double_click=False, open_on_arrow=False):
             dpg.add_file_dialog(tag=FILE_DIALOG_FOR_DATA_FOLDER, height=300, width=450, directory_selector=True, show=False,
                                 callback=callback_on_data_folder_selected,
                                 default_path=hrsa_cct_config.get_file_dialog_default_path(),
@@ -184,6 +187,7 @@ def main() -> None:
     log.on_init_and_render_ui()
 
     # Init Data for UIs
+    init_data()
     cct_workflow_ui.init_data()  # Show Default Workflow UI
     cct_scenario_ui.init_data()
     cct_patient_info_ui.init_data()
@@ -195,13 +199,17 @@ def main() -> None:
     dpg.maximize_viewport()
     # dpg.set_primary_window(hrsa_cct_constants.HRSA_CCT_TOOL, True)
 
-    if not is_debug:
-        dpg.start_dearpygui()
-    else:
-        while dpg.is_dearpygui_running():
+    while dpg.is_dearpygui_running():
+
+        if is_debug:
             jobs = dpg.get_callback_queue()  # retrieves and clears queue
             dpg.run_callbacks(jobs)
-            dpg.render_dearpygui_frame()
+
+        # Update Method Calls for UIs
+        transfer_to_device_ui.update()
+
+        # Render the Current DearPyGUI Frame
+        dpg.render_dearpygui_frame()
 
     dpg.destroy_context()
 
@@ -217,11 +225,21 @@ def check_hrsa_config_files():
     if hrsa_cct_config.is_google_cloud_credentials_file_found():
         audio_generation_ui.initialize_audio_generation()
         translate_ui.initialize_translate()
+    else:
+        log.warning("Please Select the Google Cloud Credentials File.")
 
 
 def update_connect_to_cloud():
     if not hrsa_cct_globals.is_debug:
         hrsa_cct_globals.connect_to_cloud = True
+
+
+def init_data():
+    check_hrsa_config_files()
+    if hrsa_cct_config.is_user_hrsa_data_folder_found():
+        dpg.configure_item(HRSA_DATA_FOLDER_HEADER_TAG, default_open=False)
+    if audio_generation_ui.is_credentials_initialized:
+        dpg.configure_item(GOOGLE_CLOUD_CREDENTIALS_HEADER_TAG, default_open=False)
 
 
 if __name__ == "__main__":

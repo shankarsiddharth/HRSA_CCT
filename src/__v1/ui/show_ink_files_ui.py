@@ -105,7 +105,7 @@ def _callback_on_scenario_folder_selected(sender, app_data):
     source_scenario_folder_path = os.path.normpath(selected_file_path)
     # source_scenario_language_code_path = os.path.join(source_scenario_folder_path, hcg.default_language_code)
     # new_data_path = os.path.abspath(source_scenario_folder_path)
-    # log.info("source_scenario_language_code_path: " + source_scenario_language_code_path)
+    # log.trace("source_scenario_language_code_path: " + source_scenario_language_code_path)
     # set_scenario_path(source_scenario_language_code_path)
     set_scenario_path(source_scenario_folder_path)
 
@@ -126,7 +126,9 @@ def file_dialog_cancel_callback(sender, app_data):
 
 
 def init_ui():
-    with dpg.collapsing_header(label="Ink Files", tag=cct_ui_panels.SHOW_INK_FILES_COLLAPSING_HEADER, default_open=False):
+    with dpg.collapsing_header(label="Ink Files",
+                               tag=cct_ui_panels.SHOW_INK_FILES_COLLAPSING_HEADER,
+                               default_open=False, open_on_double_click=False, open_on_arrow=False):
         dpg.add_file_dialog(tag=SIF_FILE_DIALOG_FOR_SCENARIO_FOLDER, height=300, width=450, directory_selector=True, show=False,
                             callback=_callback_on_scenario_folder_selected,
                             default_path=hrsa_cct_config.get_file_dialog_default_path(),

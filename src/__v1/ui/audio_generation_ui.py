@@ -17,10 +17,10 @@ from __v1.hrsa_cct_globals import log, hfsc, hfs
 
 voices = ListVoicesResponse()
 client = None
-
+is_credentials_initialized = False
 
 def initialize_audio_generation():
-    global voices, client
+    global voices, client, is_credentials_initialized
     # Google Cloud Configuration Data
     # Get Credentials from JSON file
     if hrsa_cct_config.is_google_cloud_credentials_file_found():
@@ -31,7 +31,10 @@ def initialize_audio_generation():
             client = texttospeech.TextToSpeechClient(credentials=credentials)
             # TODO: Error Handling / Add a function and a function call to cache the data from service on each application run
             voices = client.list_voices()
+            log.success("Google Credentials Initialized Successfully.")
+            is_credentials_initialized = True
         except Exception as e:
+            is_credentials_initialized = False
             log.error(str(e))
             if "401" in str(e):
                 log.error("Error while initializing Google Cloud Text-to-Speech Client: - Please check if the Google Cloud Credentials JSON file is valid")
@@ -55,6 +58,7 @@ gender_list = ["MALE", "FEMALE"]
 voice_list = list()
 
 is_parsing_successful: bool = False
+is_audio_generation_successful: bool = False
 total_characters_for_audio_generation = 0
 
 # GUI Element Tags
@@ -127,7 +131,7 @@ def callback_on_scenario_folder_selected(sender, app_data):
     dpg.set_value(AG_LANGUAGE_LISTBOX, hrsa_cct_globals.none_language_code)
     callback_on_language_code_selected(AG_LANGUAGE_LISTBOX)
     dpg.configure_item(AG_LANGUAGE_LISTBOX_GROUP, show=True)
-    log.info("Selected Scenario Folder for Audio Generation: " + scenario_path_root)
+    log.trace("Selected Scenario Folder for Audio Generation: " + scenario_path_root)
 
 
 def callback_on_language_code_selected(sender):
@@ -170,7 +174,7 @@ def callback_on_language_code_selected(sender):
         else:
             # TODO: Log Error
             pass
-        log.info("Selected Language for Audio Generation: " + selected_language_code)
+        log.trace("Selected Language for Audio Generation: " + selected_language_code)
     else:
         dpg.configure_item(AG_SCENARIO_LANGUAGE_CODE_DIRECTORY_PATH_TEXT, default_value="")
         dpg.configure_item(AG_SCENARIO_LANGUAGE_CODE_DIRECTORY_PATH_TEXT, show=False)
@@ -179,7 +183,7 @@ def callback_on_language_code_selected(sender):
         dpg.configure_item(VOICE_CONFIG_SECTION, show=False)
         if hrsa_cct_globals.show_advanced_options:
             dpg.configure_item(COMPILE_INK_SCRIPTS_BUTTON, show=False)
-        log.warning("Selected Language for Audio Generation: " + selected_language_code)
+        log.trace("Selected Language for Audio Generation: " + selected_language_code)
 
 
 def callback_on_change_language_code(sender, app_data, user_data):
@@ -285,7 +289,7 @@ def save_audio_settings(sender):
             with open(character_voice_config_file_path, 'w') as output_json_file:
                 output_json_file.write(character_voice_config_json_object)
             character_voice_config_data = new_character_voice_config_data
-            log.info("Voice Configuration for Audio Generation Saved")
+            log.success("Voice Configuration for Audio Generation Saved")
         else:
             # TODO: Log Error
             pass
@@ -293,6 +297,8 @@ def save_audio_settings(sender):
 
 def generate_audio_files():
     global room_dialogue_data, character_voice_config_data
+    global is_audio_generation_successful
+    is_audio_generation_successful = True
     # Break Room Audio Generation
     log.info('Processing Break Room Audio files')
     audio_dialogue_data = room_dialogue_data[hrsa_cct_constants.BREAK_ROOM_NAME]
@@ -309,7 +315,8 @@ def generate_audio_files():
     log.info('Processing Feedback room - Patient Room Audio files')
     audio_dialogue_data = room_dialogue_data[hrsa_cct_constants.FEEDBACK_TYPE_PATIENT_ROOM_NAME]
     generate_audio_files_for_room(audio_dialogue_data)
-    log.info('Audio Generation Complete')
+    if is_audio_generation_successful:
+        log.trace('Audio Generation process Completed')
 
 
 def generate_audio_files_for_room(audio_dialogue_data):
@@ -348,16 +355,25 @@ def compile_ink_files():
 
 def callback_on_parse_ink_scripts_clicked():
     global scenario_language_code_folder_path
+    global is_parsing_successful
+    is_parsing_successful = True
+    log.clear_log()
     parse_all_ink_scripts(path=scenario_language_code_folder_path)
+    if is_parsing_successful:
+        log.clear_log()
+        log.success("Ink Files Check Successful.")
+    else:
+        log.error("Ink Files Check Failed. Please see the logs above for more details.")
 
 
 def callback_on_compile_ink_scripts_clicked():
     # Compile all ink files to JSON
     compile_ink_files()
-    log.info('Complete - compile_ink_files')
+    log.trace('Complete - compile_ink_files')
+    log.success("Ink Files Compilation Successful.")
 
 
-def validate_audio_files():
+def validate_audio_files() -> bool:
     global audio_folder_path_list, ink_file_path_list
     for index, audio_folder_path in enumerate(audio_folder_path_list):
         total_audio_files = len([name for name in os.listdir(audio_folder_path) if (os.path.isfile(os.path.join(audio_folder_path, name)) and name.endswith('.mp3'))])
@@ -373,13 +389,14 @@ def validate_audio_files():
             log.error("Audio Folder Path: " + audio_folder_path)
             log.error("Ink File Path: " + ink_file_path_list[index])
             log.error("Please check the Ink file and Audio Folder Path")
+            return False
         else:
             log.info("Verified Number of Audio Files and Ink Audio Tags")
+            return True
 
 
 def callback_on_generate_audio_clicked():
-    global is_parsing_successful
-    is_parsing_successful = True
+    global is_audio_generation_successful
     # Check for the Voice Configuration File
     dpg.configure_item(PARSE_INK_SCRIPTS_BUTTON, show=False)
     dpg.configure_item(GENERATE_AUDIO_BUTTON, show=False)
@@ -388,17 +405,29 @@ def callback_on_generate_audio_clicked():
 
     # Process For Audio Generation
     callback_on_parse_ink_scripts_clicked()
-    callback_on_compile_ink_scripts_clicked()
     if is_parsing_successful:
+        callback_on_compile_ink_scripts_clicked()
         generate_audio_files()
-        log.info('Complete - generate_audio_files')
-        log_text = "total_characters_for_audio_generation : " + str(total_characters_for_audio_generation)
-        log.info(log_text)
-        if hrsa_cct_globals.connect_to_cloud:
-            validate_audio_files()
-        log.info('Complete - validate_audio_files')
-        log.clear_log()
-        log.success('Audio Generation Completed')
+        if is_audio_generation_successful:
+            log.info('Complete - generate_audio_files')
+            log_text = "total_characters_for_audio_generation : " + str(total_characters_for_audio_generation)
+            log.info(log_text)
+            if hrsa_cct_globals.connect_to_cloud:
+                is_audio_files_valid = validate_audio_files()
+                if is_audio_files_valid:
+                    log.info('Complete - validate_audio_files')
+                    log.clear_log()
+                    log.success('Audio Generation Completed')
+                else:
+                    log.error("Audio Files Check Failed.")
+            else:
+                log.info('Skipping Audio Validation - Not Connected to Cloud')
+        else:
+            log.error("=====================================================================================")
+            log.error("Audio Generation Failed - Cannot Generate Audio Files for One or More Dialogue Texts")
+            log.error("Please, make sure you are connected to the internet and try again.")
+            log.error("If connection is not the issue, check if the Google Credentials File is valid.")
+            log.error("=====================================================================================")
     else:
         log.error("Ink Files Check Failed - Cannot Generate Audio Files")
 
@@ -437,7 +466,7 @@ def parse_all_ink_scripts(path=""):
     process_feedback_ink_file_for_room(hrsa_cct_constants.FEEDBACK_TYPE_PATIENT_ROOM_NAME)
     log.info('Complete - Processing Feedback Room - Patient Room ink file')
     json_object = json.dumps(room_dialogue_data)
-    log.debug("Room Dialogue Dict: " + json_object)
+    log.trace("Room Dialogue Dict: " + json_object)
 
 
 def process_dialogue_ink_file_for_room(room_name):
@@ -590,6 +619,7 @@ def parse_ink_script(audio_folder_path, file_path, room_name):
 
 
 def generate_audio_gc_tts(dialogue_text, audio_file_path, language_code, in_gender_text, voice_name):
+    global is_audio_generation_successful
     # TODO: Change the 'MALE' & 'FEMALE' string check into a global constant check
     ssml_gender = texttospeech.SsmlVoiceGender.FEMALE
     if in_gender_text == "MALE":
@@ -614,7 +644,7 @@ def generate_audio_gc_tts(dialogue_text, audio_file_path, language_code, in_gend
         audio_encoding=texttospeech.AudioEncoding.MP3
     )
 
-    log.info("Sending Google Cloud TTS Request....")
+    log.trace("Sending Google Cloud TTS Request....")
     # Perform the text-to-speech request on the text input with the selected
     # voice parameters and audio file type
     try:
@@ -629,8 +659,13 @@ def generate_audio_gc_tts(dialogue_text, audio_file_path, language_code, in_gend
             log_text = "Audio File Written : " + audio_file_path
             log.info(log_text)
     except Exception as e:
-        log.error(str(e))
-        log.error("Google Cloud TTS Request Failed")
+        log.trace(str(e))
+        log.error("---------------------------------------------------------------------------------------------------------")
+        log.error("Google Cloud TTS Request Failed for the following dialogue text:")
+        log.error(dialogue_text)
+        log.error(audio_file_path)
+        log.error("---------------------------------------------------------------------------------------------------------")
+        is_audio_generation_successful = False
 
 
 def callback_on_show_file_dialog_clicked(item_tag):
@@ -643,7 +678,8 @@ def file_dialog_cancel_callback(sender, app_data, user_data):
 
 def init_ui():
     with dpg.collapsing_header(tag=cct_ui_panels.AUDIO_GENERATION_COLLAPSING_HEADER,
-                               label="Audio Generation", default_open=False, show=hrsa_cct_config.is_google_cloud_credentials_file_found()):
+                               label="Audio Generation", default_open=False, open_on_double_click=False, open_on_arrow=False,
+                               show=hrsa_cct_config.is_google_cloud_credentials_file_found()):
         dpg.add_file_dialog(tag=FILE_DIALOG_FOR_SCENARIO_FOLDER, height=300, width=450, directory_selector=True, show=False,
                             callback=callback_on_scenario_folder_selected,
                             default_path=hrsa_cct_config.get_file_dialog_default_path(),

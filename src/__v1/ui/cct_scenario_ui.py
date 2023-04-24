@@ -44,7 +44,7 @@ current_scenario_name: str = ""
 # region Create Scenario Methods
 def callback_on_scenario_source_folder_selected(sender, app_data):
     hrsa_cct_globals.scenario_path_source = os.path.normpath(str(app_data['file_path_name']))
-    log.info("Source Scenario Path: " + hrsa_cct_globals.scenario_path_source)
+    log.trace("Source Scenario Path: " + hrsa_cct_globals.scenario_path_source)
     dpg.configure_item(SCENARIO_DIRECTORY_PATH_TEXT_SOURCE, default_value=hrsa_cct_globals.scenario_path_source)
 
 
@@ -59,7 +59,7 @@ def create_scenario_folders(scenario_name, scenario_information_json_object) -> 
         return False
     # Scenario Folder
     scenario_path_root = os.path.join(hrsa_cct_config.get_user_hrsa_data_folder_path(), scenario_name)
-    log.info("scenario_path_root: " + scenario_path_root)
+    log.trace("scenario_path_root: " + scenario_path_root)
     # TODO: Check if the a scenario name already exists and display error information to the user
     try:
         os.mkdir(scenario_path_root)
@@ -72,12 +72,12 @@ def create_scenario_folders(scenario_name, scenario_information_json_object) -> 
         return False
     # Default Language Folder
     default_language_folder = os.path.join(scenario_path_root, hrsa_cct_globals.default_language_code)
-    log.info("default_language_folder: " + default_language_folder)
+    log.trace("default_language_folder: " + default_language_folder)
     os.mkdir(default_language_folder)
     hrsa_cct_globals.scenario_path = os.path.abspath(default_language_folder)
     # Scenario Information JSON
     scenario_information_json_path = os.path.join(hrsa_cct_globals.scenario_path, hrsa_cct_constants.SCENARIO_INFORMATION_JSON_FILE_NAME)
-    log.info("scenario_information_json_path: " + scenario_information_json_path)
+    log.trace("scenario_information_json_path: " + scenario_information_json_path)
     with open(scenario_information_json_path, "w", encoding="utf-8") as output_file:
         output_file.write(scenario_information_json_object)
     # Break Room
@@ -111,7 +111,7 @@ def create_scenario_folders(scenario_name, scenario_information_json_object) -> 
     os.mkdir(audio_folder)
     file_path = os.path.join(patient_room_feedback_folder_path, hrsa_cct_constants.FEEDBACK_INK_FILE_NAME)
     open(file_path, 'a').close()
-    log.info("New Scenario Created. Scenario Name: " + scenario_name)
+    log.trace("New Scenario Created. Scenario Name: " + scenario_name)
 
     hrsa_cct_globals.app_data = dict(file_path_name=scenario_path_root)
     hrsa_cct_globals.scenario_path_destination = os.path.normpath(scenario_path_root)
@@ -139,7 +139,7 @@ def on_copy_scenario_button_clicked():
     dpg.configure_item(COPY_SCENARIO_INFORMATION_BUTTON, show=False)
     shutil.copytree(source_path, hrsa_cct_globals.scenario_path_destination, dirs_exist_ok=True,
                     ignore=shutil.ignore_patterns('*.mp3', '*.wav', 'scenario_information.json', 'feedback.json', 'dialogue.json', 'es-US'))
-    log.info("Scenario Folder Copy Complete from: " + hrsa_cct_globals.scenario_path_source + "\tto: " + hrsa_cct_globals.scenario_path_destination)
+    log.trace("Scenario Folder Copy Complete from: " + hrsa_cct_globals.scenario_path_source + "\tto: " + hrsa_cct_globals.scenario_path_destination)
     dpg.configure_item(COPY_SCENARIO_INFORMATION_BUTTON, show=True)
 
     set_current_scenario_path(hrsa_cct_globals.scenario_path_destination)
@@ -263,7 +263,9 @@ def callback_on_scenario_folder_button_clicked(sender, app_data, user_data):
 
 def init_ui():
     # region Create Scenario UI
-    with dpg.collapsing_header(label="Create Scenario", tag=cct_ui_panels.CREATE_SCENARIO_COLLAPSING_HEADER, default_open=True):
+    with dpg.collapsing_header(label="Create Scenario",
+                               tag=cct_ui_panels.CREATE_SCENARIO_COLLAPSING_HEADER,
+                               default_open=True, open_on_double_click=False, open_on_arrow=False):
         dpg.add_input_text(tag=SCENARIO_NAME_INPUT_TEXT, label="Scenario Name", default_value="")
         dpg.add_input_text(tag=SCENARIO_DESCRIPTION_INPUT_TEXT, label="Scenario Description", multiline=True, tab_input=False)
         dpg.add_spacer(height=5)
@@ -282,8 +284,9 @@ def init_ui():
     # endregion Create Scenario UI
 
     # region Select Scenario UI
-    with dpg.collapsing_header(label="Select Scenario", tag=cct_ui_panels.SELECT_SCENARIO_COLLAPSING_HEADER,
-                               default_open=True):
+    with dpg.collapsing_header(label="Select Scenario",
+                               tag=cct_ui_panels.SELECT_SCENARIO_COLLAPSING_HEADER,
+                               default_open=True, open_on_double_click=False, open_on_arrow=False):
         dpg.add_button(label="Refresh Scenario List", indent=20, tag=CSU_REFRESH_SCENARIO_LIST_BUTTON,
                        callback=refresh_scenario_list, show=False)
         dpg.add_text(CSU_SELECT_SCENARIO_TEXT, tag=CSU_SELECTED_SCENARIO_TEXT_TAG, indent=40)

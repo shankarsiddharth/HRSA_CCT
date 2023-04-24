@@ -36,6 +36,9 @@ def initialize_translate():
                 data = json.load(f)
                 if gc_project_id == '':
                     project_id = data['project_id']
+
+            log.info("Project ID: " + project_id)
+
         except Exception as e:
             log.error(str(e))
             if "401" in str(e):
@@ -67,6 +70,8 @@ DESTINATION_SECTION_GROUP: str = "DESTINATION_SECTION_GROUP"
 LANGUAGE_LISTBOX_GROUP: str = "LANGUAGE_LISTBOX_GROUP"
 SOURCE_SECTION_GROUP: str = "SOURCE_SECTION_GROUP"
 
+is_translation_successful = False
+
 
 def callback_on_source_scenario_folder_selected(sender, app_data):
     global source_scenario_language_code_path
@@ -74,7 +79,7 @@ def callback_on_source_scenario_folder_selected(sender, app_data):
     source_scenario_folder_path = os.path.normpath(str(app_data['file_path_name']))
     source_scenario_language_code_path = os.path.join(source_scenario_folder_path, hrsa_cct_globals.default_language_code)
     new_data_path = os.path.abspath(source_scenario_folder_path)
-    log.info("source_scenario_language_code_path: " + source_scenario_language_code_path)
+    log.trace("source_scenario_language_code_path: " + source_scenario_language_code_path)
     new_language_list = copy.deepcopy(hrsa_cct_globals.language_list)
     if hrsa_cct_globals.default_language_code in new_language_list:
         new_language_list.remove(hrsa_cct_globals.default_language_code)
@@ -92,7 +97,7 @@ def set_new_language_code(sender):
     global new_data_path
     global new_scenario_path_language_code
     new_language_code = dpg.get_value(LANGUAGE_LISTBOX)
-    log.info("new_language_code: " + new_language_code)
+    log.trace("new_language_code: " + new_language_code)
     if (new_language_code.casefold() != hrsa_cct_globals.none_language_code.casefold()) \
             and (new_language_code.casefold() != hrsa_cct_globals.default_language_code.casefold()):
         new_scenario_path_language_code = os.path.join(new_data_path, new_language_code)
@@ -105,24 +110,34 @@ def set_new_language_code(sender):
 
 
 def translate_text(text="", language="es"):
+    global is_translation_successful
     if text == "" or text is None:
         return ""
 
     location = "global"
     parent = f"projects/{project_id}/locations/{location}"
-    log.info("Translating : " + text + " - to " + language)
-    response = clientTranslate.translate_text(
-        request={
-            "parent": parent,
-            "contents": [text],
-            "mime_type": "text/plain",  # mime types: text/plain, text/html
-            "source_language_code": "en-US",
-            "target_language_code": language,
-        }
-    )
+    log.info("Translating to (" + language + "): " + text)
+    try:
+        response = clientTranslate.translate_text(
+            request={
+                "parent": parent,
+                "contents": [text],
+                "mime_type": "text/plain",  # mime types: text/plain, text/html
+                "source_language_code": "en-US",
+                "target_language_code": language,
+            }
+        )
 
-    for translation in response.translations:
-        return translation.translated_text
+        for translation in response.translations:
+            return translation.translated_text
+    except Exception as e:
+        log.trace(str(e))
+        log.error("---------------------------------------------------------------------------------------------------------")
+        log.error("Google Cloud Translate Request Failed for the following dialogue text:")
+        log.error(text)
+        log.error("---------------------------------------------------------------------------------------------------------")
+        is_translation_successful = False
+        return ""
 
 
 def translate_patient_info(file_path: str = None):
@@ -183,7 +198,21 @@ def translate_patient_info(file_path: str = None):
 
 def callback_on_translate_text_clicked():
     dpg.configure_item(TRANSLATE_TEXT_BUTTON, show=False)
+    global is_translation_successful
+    is_translation_successful = True
     process_translation()
+    if is_translation_successful:
+        log.clear_log()
+        log_text = "Translation Complete! Total Characters Translated : " + str(total_characters_translated)
+        log.info(log_text)
+        log.success("Translation Completed Successfully.")
+    else:
+        log.error("===========================================================================")
+        log.error("Translation Failed - Cannot Translate one or more dialogue texts.")
+        log.error("Please, make sure you are connected to the internet and try again.")
+        log.error("If connection is not the issue, check if the Google Credentials File is valid.")
+        log.error("===========================================================================")
+
     dpg.configure_item(TRANSLATE_TEXT_BUTTON, show=True)
 
 
@@ -198,13 +227,14 @@ def process_translation():
     total_characters_to_translate = 0
     global new_scenario_path_language_code
     global source_scenario_language_code_path
+    global is_translation_successful
     # Delete the directory if it exists
     new_language_dir_path = pathlib.Path(new_scenario_path_language_code)
     if new_language_dir_path.exists() and new_language_dir_path.is_dir():
         shutil.rmtree(new_language_dir_path, ignore_errors=True)
     # copy directory
-    log.info("Source Language Scenario Path: " + source_scenario_language_code_path)
-    log.info("New Language Scenario Path: " + new_scenario_path_language_code)
+    log.trace("Source Language Scenario Path: " + source_scenario_language_code_path)
+    log.trace("New Language Scenario Path: " + new_scenario_path_language_code)
     # TODO: Add scenario_information.json once the translation functionality is complete for that file
     # TODO: add dirs_exist_ok=True to copytree and test the functionality
     # TODO: if the directory exist delete the entire directory and proceed with translation
@@ -304,7 +334,8 @@ def process_translation():
         for dialogue_text_list_element in dialogue_text_list:
             try:
                 translated_text = translate_text(text=dialogue_text_list_element, language=selected_language)
-                log.info("Translated Text: " + translated_text)
+                if translated_text != "":
+                    log.info("Translated Text: " + translated_text)
                 total_characters_translated = total_characters_translated + len(dialogue_text_list_element)
                 data = data.replace(dialogue_text_list_element, translated_text)
             except Exception as e:
@@ -312,10 +343,6 @@ def process_translation():
                 log.error("Error Occurred while translating text: " + dialogue_text_list_element)
         with open(new_file_path, "w", encoding="utf-8") as file:
             file.write(data)
-    log.clear_log()
-    log_text = "Translation Complete! total_characters_translated : " + str(total_characters_translated)
-    log.info(log_text)
-    log.success("Translation Completed Successfully.")
 
 
 def callback_on_show_file_dialog_clicked(item_tag):
@@ -328,7 +355,7 @@ def file_dialog_cancel_callback(sender, app_data, user_data):
 
 def init_ui():
     with dpg.collapsing_header(tag=cct_ui_panels.TRANSLATE_COLLAPSING_HEADER,
-                               label="Translation (Text)", default_open=False,
+                               label="Translation (Text)", default_open=False, open_on_double_click=False, open_on_arrow=False,
                                show=hrsa_cct_config.is_google_cloud_credentials_file_found()):
         dpg.add_file_dialog(tag=FILE_DIALOG_FOR_SOURCE_SCENARIO_FOLDER, height=300, width=450, directory_selector=True, show=False,
                             callback=callback_on_source_scenario_folder_selected,

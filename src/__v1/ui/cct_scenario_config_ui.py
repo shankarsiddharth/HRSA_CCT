@@ -376,7 +376,7 @@ def init_ui():
     dpg.add_texture_registry(label="Demo Texture Container", tag="static_texture_container")
     with dpg.collapsing_header(tag=cct_ui_panels.CCT_SCENARIO_CONFIG_COLLAPSING_HEADER,
                                label="Character Selection / Subtitle Color / Question Timer - (Scenario Configuration)",
-                               default_open=False):
+                               default_open=False, open_on_double_click=False, open_on_arrow=False):
         dpg.add_text(tag=cct_advanced_options_ui.SCU_SCENARIO_CONFIG_JSON_PATH_TEXT)
         with dpg.file_dialog(height=300, width=600, directory_selector=False, show=False,
                              callback=_load_character_config_for_current_scenario, tag=SCU_OPEN_FILE_DIALOG,

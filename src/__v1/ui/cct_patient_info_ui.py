@@ -554,8 +554,9 @@ def file_dialog_cancel_callback(sender, app_data, user_data):
 
 
 def init_ui():
-    with dpg.collapsing_header(label='Patient Information', tag=cct_ui_panels.CCT_PATIENT_INFO_COLLAPSING_HEADER,
-                               default_open=False):
+    with dpg.collapsing_header(label='Patient Information',
+                               tag=cct_ui_panels.CCT_PATIENT_INFO_COLLAPSING_HEADER,
+                               default_open=False, open_on_double_click=False, open_on_arrow=False):
         # TODO: Add a 'Clear Data Button' that clears all the UI information
 
         dpg.add_text(tag=cct_advanced_options_ui.PIU_SCENARIO_PATIENT_INFO_JSON_PATH_TEXT)
